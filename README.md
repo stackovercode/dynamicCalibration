@@ -44,7 +44,11 @@ Link: https://askubuntu.com/questions/1232969/qtcreator-not-recognizing-linked-l
 
 ### UR-Sim
 __________________________________________
-link: 
+link: https://www.universal-robots.com/download/software-e-series/simulator-linux/offline-simulator-e-series-ur-sim-for-linux-5111/
+
+Download offline simulatior e-series ur-sim for linux 5.11.1
+* Sudo
+* 
 ### pylon
 __________________________________________
 ### ROS
