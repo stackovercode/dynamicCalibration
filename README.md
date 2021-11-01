@@ -32,8 +32,9 @@ Build:
 
 ### qt Crator:
 __________________________________________
-
+Link: https://www.osradar.com/install-qtcreator-on-ubuntu-20-04-18-04/
 * sudo apt-get install qtcreator
+* sudo apt install build-essential
 
 ### UR-Sim
 __________________________________________
