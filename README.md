@@ -37,8 +37,9 @@ Link: https://www.osradar.com/install-qtcreator-on-ubuntu-20-04-18-04/
 * sudo apt install build-essential
 
 Compile kit error:
-*
-*
+* sudo apt install clang-8
+* sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-8 100
+* sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100
 
 ### UR-Sim
 __________________________________________
