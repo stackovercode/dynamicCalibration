@@ -36,7 +36,8 @@ Link: https://www.osradar.com/install-qtcreator-on-ubuntu-20-04-18-04/
 * sudo apt-get install qtcreator
 * sudo apt install build-essential
 
-Compile kit error:
+Dependencies:
+Link: https://askubuntu.com/questions/1232969/qtcreator-not-recognizing-linked-libraries-after-upgrading-ubuntu-to-20-04
 * sudo apt install clang-8
 * sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-8 100
 * sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100
