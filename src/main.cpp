@@ -32,7 +32,8 @@ int main(int argc, char* argv[]){
     MoveArm ur5arm;
 
 
-    bool runCalibrateCameraSekvens = true;
+    // I made something
+    bool runCalibrateCameraSekvens = false;
     bool runCalibrateWorkSpaceSekvens = false;
     bool runDetectionMarker = false;
     bool runComToRobot = false;
