@@ -3,14 +3,14 @@
 ## Workspace
 * Ubuntu 20.04 (Focal Fossa)
 
-#### Cmake:
+### Cmake:
 __________________________________________
 link: http.
 *
 *
-#### OpenCV:
+### OpenCV:
 __________________________________________
-#### SDU ur rtde:
+### SDU ur rtde:
 __________________________________________
 link: https://sdurobotics.gitlab.io/ur_rtde/index.html
 * sudo add-apt-repository ppa:sdurobotics/ur-rtde
@@ -30,14 +30,16 @@ Build:
 * make
 * sudo make install
 
-#### qt Crator:
+### qt Crator:
 __________________________________________
 
 * sudo apt-get install qtcreator
 
-#### UR-Sim
+### UR-Sim
 __________________________________________
 link: 
-#### pylon
-#### ROS
+### pylon
+__________________________________________
+### ROS
+__________________________________________
 
