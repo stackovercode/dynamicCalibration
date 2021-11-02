@@ -14,7 +14,7 @@
 #include <ur_rtde/robot_state.h>
 #include <ur_rtde/rtde_utility.h>
 
-
+// Hej Emil
 
 using namespace cv;
 using namespace std;
