@@ -332,7 +332,11 @@ std::string CameraCalibration::cameraCalibrationToString()
     std::stringstream ss;
     ss << "Reprojection error = \n" << mErrorRMS << std::endl
        << "Camera Matrix = \n" <<  mCameraMatrix << std::endl
-       << "DistortionCoefficient= \n" << mDistortionCoefficient << std::endl;
+       << "DistortionCoefficient= \n" << mDistortionCoefficient << std::endl
+       << "Center point = \n" << std::to_string(imageFramePoints[0].x) << ", " << std::to_string(imageFramePoints[0].y) << std::endl
+       << "Diagonal point = \n" << std::to_string(imageFramePoints[4].x) << ", " << std::to_string(imageFramePoints[4].y) << std::endl
+       << "Rotation vector center = \n" <<  mRvec << std::endl
+       << "Translation vector center = \n" <<  mTvec << std::endl;
     std::string result = ss.str();
 
     return result;
