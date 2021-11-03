@@ -26,7 +26,7 @@ FIND_PACKAGE( ur_rtde REQUIRED COMPONENTS
 include_directories(${Pylon_INCLUDE_DIRS})
 
 
-add_executable( main main.cpp camera.cpp camera.h cameraSettings.h cameraCalibration.cpp cameraCalibration.h detectionObject.cpp detectionObject.h workspaceCalibration.cpp workspaceCalibration.h detectionMarker.cpp detectionMarker.h moveArm.cpp moveArm.h)
+add_executable( main main.cpp camera.cpp camera.h cameraSettings.h cameraCalibration.cpp cameraCalibration.h detectionObject.cpp detectionObject.h workspaceCalibration.cpp workspaceCalibration.h detectionMarker.cpp detectionMarker.h moveArm.cpp moveArm.h myHTTPClient.cpp myHTTPClient.h)
 target_link_libraries( main 
 	${OpenCV_LIBS} 
 	${Pylon_LIBRARIES} 
