@@ -23,6 +23,7 @@ using namespace std;
 int main(int argc, char* argv[]){
 
 
+    // working on HTTP Com for database
     std::string ur5IP = "192.168.100.50";
 
     ur_rtde::RTDEIOInterface rtde_io(ur5IP);
