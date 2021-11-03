@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <curlpp/cURLpp.hpp>
+#include <curl/curl.h>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
 
