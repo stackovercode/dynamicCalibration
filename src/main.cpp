@@ -13,6 +13,7 @@
 #include <ur_rtde/rtde_export.h>
 #include <ur_rtde/robot_state.h>
 #include <ur_rtde/rtde_utility.h>
+#include "myHTTPClient.h"
 
 
 
@@ -22,6 +23,11 @@ using namespace std;
 
 int main(int argc, char* argv[]){
 
+    /* Simulate */
+    bool runWhitGUI = false;
+    /* HTTP Server variables */
+    std::string httpServerIP    = "10.126.33.179";
+    int httpServerPort          = 33333;
 
     // working on HTTP Com for database
     std::string ur5IP = "192.168.100.50";
@@ -31,6 +37,8 @@ int main(int argc, char* argv[]){
     ur_rtde::RTDEControlInterface rtde_control(ur5IP, 30004);
     /* RTDE handler object */
     MoveArm ur5arm;
+    // HTTP
+    MyHTTPClient httpClient(httpServerIP,httpServerPort);
 
 
     // I made something
@@ -61,7 +69,7 @@ int main(int argc, char* argv[]){
 
         std::cout << "/* Calibrate camera sekvens */" << std::endl;
         cameraCalibrate.initialize(rtde_receive, rtde_control);
-        //httpClient.sendCameraCalibrationMatrix(cameraCalibrate.cameraCalibrationToString());
+        httpClient.sendCameraCalibrationMatrix(cameraCalibrate.cameraCalibrationToString());
     }
 
     //////////// Transformation sekvens //////////////

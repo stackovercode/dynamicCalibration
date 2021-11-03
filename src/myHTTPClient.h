@@ -14,11 +14,11 @@ public:
     MyHTTPClient(std::string ip, int port);
 
     bool begin();
-    void sendTransformationMatrix(std::string tMatrix);
+    //void sendTransformationMatrix(std::string tMatrix);
     void sendCameraCalibrationMatrix(std::string ccMatrix);
-    void sendPoints(std::array<std::string, 6> points);
+    //void sendPoints(std::array<std::string, 6> points);
     void sendStatus(std::string status);
-    void sendEndOfThrow();
+    //void sendEndOfThrow();
 
 private:
     std::string mHost;
