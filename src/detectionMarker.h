@@ -4,6 +4,7 @@
 #include <ur_rtde/rtde_receive_interface.h>
 #include <ur_rtde/rtde_control_interface.h>
 #include "camera.h"
+#include "moveArm.h"
 #include "cameraSettings.h"
 #include <fstream>
 
@@ -20,7 +21,7 @@ public:
 
     std::string markerDetectionToString();
 
-    cv::Point3f mRobotPointtest3d;
+    cv::Point3f mRobotPoint3d;
 
 private:
     int mNumberOfCalibrationImages;
@@ -52,8 +53,11 @@ private:
     void action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
 
     double lineLength(double sX, double sY, double eX, double eY);
+    double getDistance2Object(cv::Point2f origo, cv::Point2f dia);
+    double getPixelPermm(cv::Point2f origo, cv::Point2f dia);
     cv::Point2f centerPoint(cv::Vec4f line1, cv::Vec4f line2);
     cv::Point2f vectorBetween2Points(cv::Point2f startPoint, cv::Point2f endPoint);
+    cv::Point3f vectorfromframeCPtoCBCp(cv::Point2i checkerBoardCP, cv::Point2i frameCP, double pixelPmm, double distanceObj);
 
     bool writeFileTranRot (cv::Mat tempRvec, cv::Mat tempTvec);
     void detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);

@@ -126,17 +126,23 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             Point2i checkerboardCenter = centerPoint(checkerboardLine1, checkerboardLine2);
             Point2i frameCenter = {imgUndistorted.size().width/2, imgUndistorted.size().height/2};
 
-            drawMarker(imgUndistorted, {frameCenter.x, frameCenter.y}, Scalar(0,0,255), MARKER_STAR, 20, 4, 4);
-            drawMarker(imgUndistorted, {checkerboardCenter.x, checkerboardCenter.y}, Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
+            mRobotPoint3d = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj);
 
-            Point2f robotPointtest = vectorBetween2Points(imageFramePoints[0], frameCenter) * pixelPmm;
-            Point3f robotPointtest3d;
+            MoveArm urArm;
+            double velocity = 0.1, acceleration = 0.1;
+            urArm.getToCheckerboard();
 
-            robotPointtest3d.x = (robotPointtest.x + 16)/1000; // + 16 for translation between camera and tcp(gripper) in x axis
-            robotPointtest3d.y = (robotPointtest.y + 43)/1000; // + 43 for translation between camera and tcp(gripper) in y axis
-            robotPointtest3d.z = (distanceObj - 129)/1000; // - 129 for translation between camera and tcp(gripper) in z axis
+//            drawMarker(imgUndistorted, {frameCenter.x, frameCenter.y}, Scalar(0,0,255), MARKER_STAR, 20, 4, 4);
+//            drawMarker(imgUndistorted, {checkerboardCenter.x, checkerboardCenter.y}, Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
 
-            mRobotPointtest3d = robotPointtest3d;
+//            Point2f robotPointtest = vectorBetween2Points(imageFramePoints[0], frameCenter) * pixelPmm;
+//            Point3f robotPointtest3d;
+
+//            robotPointtest3d.x = (robotPointtest.x + 16)/1000; // + 16 for translation between camera and tcp(gripper) in x axis
+//            robotPointtest3d.y = (robotPointtest.y + 43)/1000; // + 43 for translation between camera and tcp(gripper) in y axis
+//            robotPointtest3d.z = (distanceObj - 129)/1000; // - 129 for translation between camera and tcp(gripper) in z axis
+
+//            mRobotPointtest3d = robotPointtest3d;
 
 //            cout<< "Origo from pP: " << imageFramePoints[0] <<endl;
 //            cout<< "Origo from findCorners: " << corners[0] <<endl;
@@ -146,7 +152,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 //            cout<< "Rotation vector " << mRvec <<endl;
 //            cout<< "Translation vector " << mTvec <<endl;
 //            cout<< "Distance to object: " << distanceObj <<endl;
-            cout<< robotPointtest3d <<endl;
+            //cout<< robotPointtest3d <<endl;
 
             openCvImage = imgUndistorted.clone();
             int width = openCvImage.size().width * 60/100;
@@ -289,6 +295,35 @@ cv::Point2f DetectionMarker::vectorBetween2Points(cv::Point2f startPoint, cv::Po
     cv::Point2f pointVector = {(endPoint.x - startPoint.x), (endPoint.y - startPoint.y)};
 
     return pointVector;
+}
+
+cv::Point3f DetectionMarker::vectorfromframeCPtoCBCp(cv::Point2i checkerBoardCP, cv::Point2i frameCP, double pixelPmm, double distanceObj){
+
+    Point2f robotPoint2d = vectorBetween2Points(checkerBoardCP, frameCP) * pixelPmm;
+    Point3f robotPoint3d;
+
+    robotPoint3d.x = (robotPoint2d.x + 16)/1000; // + 16 for translation between camera and tcp(gripper) in x axis
+    robotPoint3d.y = (robotPoint2d.y + 43)/1000; // + 43 for translation between camera and tcp(gripper) in y axis
+    robotPoint3d.z = (distanceObj - 129)/1000; // - 129 for translation between camera and tcp(gripper) in z axis
+
+    return robotPoint3d;
+}
+
+double DetectionMarker::getDistance2Object(cv::Point2f origo, cv::Point2f dia){
+    double focalL = 3316.188; //f = (pixel*distance)/width = (536.6*395.52/64)
+    double widthObj = 64.03;
+
+    double distanceObj = (widthObj*focalL)/ DetectionMarker::lineLength(origo.x, origo.y, dia.x, dia.y);
+
+    return distanceObj;
+}
+
+double DetectionMarker::getPixelPermm(cv::Point2f origo, cv::Point2f dia){
+    double widthObj = 64.03;
+
+    double pixelPmm = widthObj / DetectionMarker::lineLength(origo.x, origo.y, dia.x, dia.y);
+
+    return pixelPmm;
 }
 
 bool DetectionMarker::writeFileTranRot (Mat tempRvec, Mat tempTvec){
