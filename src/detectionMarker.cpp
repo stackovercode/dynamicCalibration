@@ -90,7 +90,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             framePoints.push_back(Point3f(4.0, 0.0, 0.0));
             framePoints.push_back(Point3f(0.0, 5.0, 0.0));
 
-            if (runSQ) {
+//            if (true) {
                 try{
                     solvePnP(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
                     //writeFileTranRot(mRvec, mTvec);
@@ -99,8 +99,8 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 } catch(exception& e){
                     cout<< "Exception: " << endl;
                 }
-                runSQ = false;
-            }
+//                runSQ = false;
+//            }
             projectPoints(framePoints, mRvec, mTvec, mCameraMatrix, mDistortionCoefficient, imageFramePoints);
 
             line(imgUndistorted, imageFramePoints[0], imageFramePoints[1], Scalar(0,255,0), 2, LINE_AA);
@@ -128,9 +128,16 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             mRobotPoint3d = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj);
 
-            MoveArm urArm;
-            double velocity = 0.1, acceleration = 0.1;
-            urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
+            std::cout << "Print: " << mRobotPoint3d << std::endl;
+
+
+//            if (runToChecker) {
+//                ;
+//            }
+
+//            MoveArm urArm;
+//            double velocity = 0.1, acceleration = 0.1;
+//            urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
 
 //            drawMarker(imgUndistorted, {frameCenter.x, frameCenter.y}, Scalar(0,0,255), MARKER_STAR, 20, 4, 4);
 //            drawMarker(imgUndistorted, {checkerboardCenter.x, checkerboardCenter.y}, Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
@@ -170,6 +177,10 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             char keyPressed = cv::waitKey(1);
             if(keyPressed == 'g'|| keyPressed == 'G' ){
                 runSQ = true;
+                MoveArm urArm;
+                double velocity = 0.1, acceleration = 0.1;
+                urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
+
                 //std::cout << "Grabbing and saving imge" << imageNr << ". to folder \"imageResources\"..." << std::endl;
                 //std::stringstream fileName;
                 //fileName<< "../imageResources/" << "Image" << imageNr << ".png";

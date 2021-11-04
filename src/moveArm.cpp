@@ -41,17 +41,10 @@ void MoveArm::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECo
 
 void MoveArm::getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, cv::Point3f position, double velocity, double acceleration){
     std::vector<double> baseFrame = reciver.getTargetTCPPose();
-    std::vector<double> featureFrame = {position.x,position.y,position.z,0.0,0.0,0.0};
+    std::vector<double> featureFrame = {position.x,position.y,position.z-0.05,0.0,0.0,0.0};
     std::vector<double> moveFrame = controller.poseTrans(baseFrame,featureFrame);
     std::cout << "Move frame: " << readVector(moveFrame) << std::endl;
     controller.moveL({moveFrame}, velocity, acceleration);
-
-    /*
-                MoveArm ur5arm;
-                cv::Point3f position = {0.3, 0.2, 0.1};
-                double velocity = 0.1, acceleration = 0.1;
-                ur5arm.getToCheckerboard(reciver, controller, position, velocity, acceleration);
-    */
 }
 
 std::vector<double> MoveArm::receivePose(ur_rtde::RTDEReceiveInterface &reciver){

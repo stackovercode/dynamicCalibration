@@ -69,7 +69,7 @@ int main(int argc, char* argv[]){
 
         std::cout << "/* Calibrate camera sekvens */" << std::endl;
         cameraCalibrate.initialize(rtde_receive, rtde_control);
-        httpClient.sendCameraCalibrationMatrix(cameraCalibrate.cameraCalibrationToString());
+        //httpClient.sendCameraCalibrationMatrix(cameraCalibrate.cameraCalibrationToString());
     }
 
     //////////// Transformation sekvens //////////////
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]){
 //         //base[2] += 0.1;
 //         rtde_control.moveL({moveFrame}, 0.10,0.10);
 
-         robotCom.getToCheckerboard(rtde_receive, rtde_control);
+         //robotCom.getToCheckerboard(rtde_receive, rtde_control);
 
          //process.receivePose(reciver);
          //process.getPoseFile("../Detection/RobotposeData.txt");
