@@ -313,9 +313,14 @@ cv::Point3f DetectionMarker::vectorfromframeCPtoCBCp(cv::Point2i checkerBoardCP,
     Point2f robotPoint2d = vectorBetween2Points(checkerBoardCP, frameCP) * pixelPmm;
     Point3f robotPoint3d;
 
-    robotPoint3d.x = (robotPoint2d.x + 16)/1000; // + 16 for translation between camera and tcp(gripper) in x axis
-    robotPoint3d.y = (robotPoint2d.y + 43)/1000; // + 43 for translation between camera and tcp(gripper) in y axis
-    robotPoint3d.z = (distanceObj - 129)/1000; // - 129 for translation between camera and tcp(gripper) in z axis
+//    robotPoint3d.x = (robotPoint2d.x + 16)/1000; // + 16 for translation between camera and tcp(gripper) in x axis
+//    robotPoint3d.y = (robotPoint2d.y + 43)/1000; // + 43 for translation between camera and tcp(gripper) in y axis
+//    robotPoint3d.z = (distanceObj - 129)/1000; // - 129 for translation between camera and tcp(gripper) in z axis
+
+    robotPoint3d.x = (robotPoint2d.x)/1000;
+    robotPoint3d.y = (robotPoint2d.y)/1000;
+    robotPoint3d.z = 0;
+
 
     return robotPoint3d;
 }
