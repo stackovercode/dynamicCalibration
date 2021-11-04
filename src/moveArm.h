@@ -25,7 +25,7 @@ public:
 
     std::vector<double> moveCalibrate(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity = 0.5, double acceleration = 0.5, int positionStatus = 0);
 
-    void getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller);
+    void getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, cv::Point3f position, double velocity, double acceleration);
 
 
 
