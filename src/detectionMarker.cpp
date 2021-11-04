@@ -134,7 +134,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             robotPointtest3d.x = (robotPointtest.x + 16)/1000; // + 16 for translation between camera and tcp(gripper) in x axis
             robotPointtest3d.y = (robotPointtest.y + 43)/1000; // + 43 for translation between camera and tcp(gripper) in y axis
-            robotPointtest3d.z = ((distanceObj/pixelPmm) - 129)/1000; // - 129 for translation between camera and tcp(gripper) in z axis
+            robotPointtest3d.z = (distanceObj - 129)/1000; // - 129 for translation between camera and tcp(gripper) in z axis
 
             mRobotPointtest3d = robotPointtest3d;
 
