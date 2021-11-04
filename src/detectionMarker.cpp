@@ -130,7 +130,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             MoveArm urArm;
             double velocity = 0.1, acceleration = 0.1;
-            urArm.getToCheckerboard();
+            urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
 
 //            drawMarker(imgUndistorted, {frameCenter.x, frameCenter.y}, Scalar(0,0,255), MARKER_STAR, 20, 4, 4);
 //            drawMarker(imgUndistorted, {checkerboardCenter.x, checkerboardCenter.y}, Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
