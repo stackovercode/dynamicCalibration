@@ -20,6 +20,7 @@ DetectionMarker::DetectionMarker( CameraSettings& cameraSettings, int verticalIn
 void DetectionMarker::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller){
 
 
+    cout<< "Insite detectionMarker!" <<endl;
     detectImages(reciver, controller);
 
 }
@@ -85,9 +86,9 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             framePoints.push_back(Point3f(2.0, 0.0, 0.0));
             framePoints.push_back(Point3f(0.0, 2.0, 0.0));
             framePoints.push_back(Point3f(0.0, 0.0, 2.0));
-  //          framePoints.push_back(Point3f(4.0, 5.0, 0.0));
-//            framePoints.push_back(Point3f(4.0, 0.0, 0.0));
-//            framePoints.push_back(Point3f(0.0, 5.0, 0.0));
+            framePoints.push_back(Point3f(4.0, 5.0, 0.0));
+            framePoints.push_back(Point3f(4.0, 0.0, 0.0));
+            framePoints.push_back(Point3f(0.0, 5.0, 0.0));
 
             if (runSQ) {
                 try{
@@ -115,7 +116,27 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             double distanceObj;
 
             distanceObj = (widthObj*focalL)/lineLength(imageFramePoints[0].x, imageFramePoints[0].y, imageFramePoints[4].x, imageFramePoints[4].y);
-            //double pixelPmm = widthObj / lineLength(imageFramePoints[0].x, imageFramePoints[0].y, imageFramePoints[4].x, imageFramePoints[4].y);
+            double pixelPmm = widthObj / lineLength(imageFramePoints[0].x, imageFramePoints[0].y, imageFramePoints[4].x, imageFramePoints[4].y);
+
+            Vec4f checkerboardLine1, checkerboardLine2;
+
+            checkerboardLine1 = {imageFramePoints[0].x, imageFramePoints[0].y, imageFramePoints[4].x, imageFramePoints[4].y};
+            checkerboardLine2 = {imageFramePoints[5].x, imageFramePoints[5].y, imageFramePoints[6].x, imageFramePoints[6].y};
+
+            Point2i checkerboardCenter = centerPoint(checkerboardLine1, checkerboardLine2);
+            Point2i frameCenter = {imgUndistorted.size().width/2, imgUndistorted.size().height/2};
+
+            drawMarker(imgUndistorted, {frameCenter.x, frameCenter.y}, Scalar(0,0,255), MARKER_STAR, 20, 4, 4);
+            drawMarker(imgUndistorted, {checkerboardCenter.x, checkerboardCenter.y}, Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
+
+            Point2f robotPointtest = vectorBetween2Points(imageFramePoints[0], frameCenter) * pixelPmm;
+            Point3f robotPointtest3d;
+
+            robotPointtest3d.x = (robotPointtest.x + 16)/1000; // + 16 for translation between camera and tcp(gripper) in x axis
+            robotPointtest3d.y = (robotPointtest.y + 43)/1000; // + 43 for translation between camera and tcp(gripper) in y axis
+            robotPointtest3d.z = ((distanceObj/pixelPmm) - 129)/1000; // - 129 for translation between camera and tcp(gripper) in z axis
+
+            mRobotPointtest3d = robotPointtest3d;
 
 //            cout<< "Origo from pP: " << imageFramePoints[0] <<endl;
 //            cout<< "Origo from findCorners: " << corners[0] <<endl;
@@ -125,6 +146,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 //            cout<< "Rotation vector " << mRvec <<endl;
 //            cout<< "Translation vector " << mTvec <<endl;
 //            cout<< "Distance to object: " << distanceObj <<endl;
+            cout<< robotPointtest3d <<endl;
 
             openCvImage = imgUndistorted.clone();
             int width = openCvImage.size().width * 60/100;
@@ -247,6 +269,28 @@ double DetectionMarker::lineLength(double sX, double sY, double eX, double eY){
     return vLength;
 }
 
+cv::Point2f DetectionMarker::centerPoint(cv::Vec4f line1, cv::Vec4f line2)
+{
+    float cPX, cPY;
+    cv::Point2f cPoint;
+
+    cPX = (((((line1[0]*line1[3])-(line1[1]*line1[2]))*(line2[0]-line2[2]))-((line1[0]-line1[2])*((line2[0]*line2[3])-(line2[1]*line2[2]))))/(((line1[0]-line1[2])*(line2[1]-line2[3]))-((line1[1]-line1[3])*(line2[0]-line2[2]))));
+
+    cPY =  (((((line1[0]*line1[3])-(line1[1]*line1[2]))*(line2[1]-line2[3]))-((line1[1]-line1[3])*((line2[0]*line2[3])-(line2[1]*line2[2]))))/(((line1[0]-line1[2])*(line2[1]-line2[3]))-((line1[1]-line1[3])*(line2[0]-line2[2]))));
+
+    cPoint = {cPX, cPY};
+
+
+    return cPoint;
+}
+
+cv::Point2f DetectionMarker::vectorBetween2Points(cv::Point2f startPoint, cv::Point2f endPoint){
+
+    cv::Point2f pointVector = {(endPoint.x - startPoint.x), (endPoint.y - startPoint.y)};
+
+    return pointVector;
+}
+
 bool DetectionMarker::writeFileTranRot (Mat tempRvec, Mat tempTvec){
     std::ofstream myfile;
     myfile.open ("../Detection/MarkertransposeData.txt");
@@ -260,6 +304,3 @@ bool DetectionMarker::writeFileTranRot (Mat tempRvec, Mat tempTvec){
     return 0;
 
 }
-
-
-
