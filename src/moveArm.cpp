@@ -21,16 +21,15 @@ void MoveArm::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECo
     //std::vector<double> hej = controller.getTCPOffset();
     //std::cout << "text: " << readVector(hej) << std::endl;
 
-    std::vector<double> baseFrame = reciver.getActualTCPPose();
-    std::cout << "move Base: " << readVector(baseFrame) << std::endl;
-    std::vector<double> featureFrame = {0.1,0.1,0.1,2.56827,-1.80924,-0.0107754};
+
+    //std::vector<double> featureFrame = {0.1,0.1,0.1,2.56827,-1.80924,-0.0107754};
     //ur_rtde::RTDEControlInterface rtde_control("192.168.100.50", 30004);
-    std::vector<double> moveFrame;
+    //std::vector<double> moveFrame;
 
-    moveFrame = controller.poseTrans(baseFrame,featureFrame);
+    //moveFrame = controller.poseTrans(baseFrame,featureFrame);
 
-    std::cout << "move Move: " << readVector(moveFrame) << std::endl;
-    std::cout << controller.isConnected() << std::endl;
+    //std::cout << "move Move: " << readVector(moveFrame) << std::endl;
+    //std::cout << controller.isConnected() << std::endl;
     //controller.moveL(moveFrame, 0.25,1.2);
 
     //process.receivePose(reciver);
@@ -39,12 +38,77 @@ void MoveArm::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECo
 
 }
 
-void MoveArm::getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, cv::Point3f position, double velocity, double acceleration){
+void MoveArm::getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Point3f position, double velocity, double acceleration){
+    std::cout << "Moving to checker postion" << std::endl;
     std::vector<double> baseFrame = reciver.getTargetTCPPose();
-    std::vector<double> featureFrame = {position.x,position.y,position.z-0.05,0.0,0.0,0.0};
+    std::cout << "Move frame: " << readVector(baseFrame) << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::vector<double> featureFrame = {position.x,position.y,position.z,0.0,0.0,0.0};
     std::vector<double> moveFrame = controller.poseTrans(baseFrame,featureFrame);
     std::cout << "Move frame: " << readVector(moveFrame) << std::endl;
     controller.moveL({moveFrame}, velocity, acceleration);
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    controller.stopL();
+}
+
+void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Point3f position, int progress, double velocity, double acceleration){
+    if (progress < 4) {
+        std::cout << "Moving to job postion: " << progress << std::endl;
+    }
+    std::vector<double> targetJobPose1 = {0.0658822,-0.363385,-0.0169811,2.56832,-1.80919,-0.0107452};
+    std::vector<double> targetJobPose2 = {0.157756,-0.326576,-0.0173523,2.56832,-1.80919,-0.0107452};
+    std::vector<double> targetJobPose3 = {0.250143,-0.287226,-0.0177096,2.56832,-1.80919,-0.0107452};
+    std::vector<double> baseFrame = {-0.0423311,-0.38472,0.274039,2.56832,-1.80919,-0.0107453};
+    std::vector<double> featureFrame = {position.x,position.y,0.0,0.0,0.0,0.0};
+    std::vector<double> startFrame;
+    std::vector<double> endFrame;
+    if (progress >= 4) {
+        std::cout << "Done" << std::endl;
+    } else {
+        switch (progress) {
+        case 1:
+            std::cout << "Inside case 1. start job." << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            startFrame = controller.poseTrans(baseFrame,featureFrame);
+            endFrame = controller.poseTrans(startFrame,targetJobPose1);
+
+            controller.moveL({endFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            controller.moveL({baseFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            controller.stopL();
+            break;
+        case 2:
+            std::cout << "Inside case 2. start job." << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            startFrame = controller.poseTrans(baseFrame,featureFrame);
+            endFrame = controller.poseTrans(startFrame,targetJobPose2);
+
+            controller.moveL({endFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            controller.moveL({baseFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            controller.stopL();
+            break;
+        case 3:
+            std::cout << "Inside case 3. start job." << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            startFrame = controller.poseTrans(baseFrame,featureFrame);
+            endFrame = controller.poseTrans(startFrame,targetJobPose3);
+
+            controller.moveL({endFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            controller.moveL({baseFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            controller.stopL();
+            break;
+        default:
+            std::cout << "Error: Went to default in switch statement" << std::endl;
+            break;
+        }
+
+    }
+
 }
 
 std::vector<double> MoveArm::receivePose(ur_rtde::RTDEReceiveInterface &reciver){
@@ -156,7 +220,10 @@ std::vector<double> MoveArm::moveCalibrate(RTDEReceiveInterface &reciver, ur_rtd
         std::vector<double> startPos_q25 = {-1.24799,-1.12373,-2.04463,-2.98072,-1.56071,1.52225, velocity, acceleration, blend};
         path_q.push_back(startPos_q25);
         std::vector<double> startPos_q26 = {-1.36689,-1.28005,-1.90308,-3.10318,-1.70538,1.5708, velocity, acceleration, blend};
+        //std::vector<double> newStartPos_q26 = {-78.1*deg2rad, -97.3*deg2rad, -26.1*deg2rad, -236.8*deg2rad, -97.8*deg2rad, 90*deg2rad, velocity, acceleration, blend};
+        //std::vector<double> newStartPos_q26 = {-1.3631, -1.6982, -0.4555, -4.1329, -1.7069, -1.5707, velocity, acceleration, blend};
         path_q.push_back(startPos_q26);
+        //path_q.push_back(newStartPos_q26);
 
         /*//Dataset 1
         std::vector<double> startPos_q1 = {-65*deg2rad, -89*deg2rad, -90*deg2rad, -179*deg2rad, 0*deg2rad, 89*deg2rad, velocity, acceleration, blend};

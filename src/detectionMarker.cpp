@@ -1,4 +1,5 @@
 #include "detectionMarker.h"
+#include <cstddef>
 
 using namespace cv;
 using namespace std;
@@ -103,6 +104,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 //            }
             projectPoints(framePoints, mRvec, mTvec, mCameraMatrix, mDistortionCoefficient, imageFramePoints);
 
+
             line(imgUndistorted, imageFramePoints[0], imageFramePoints[1], Scalar(0,255,0), 2, LINE_AA);
             line(imgUndistorted, imageFramePoints[0], imageFramePoints[2], Scalar(255,0,0), 2, LINE_AA);
             line(imgUndistorted, imageFramePoints[0], imageFramePoints[3], Scalar(0,0,255), 2, LINE_AA);
@@ -127,20 +129,11 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             Point2i frameCenter = {imgUndistorted.size().width/2, imgUndistorted.size().height/2};
 
             mRobotPoint3d = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj);
-
             std::cout << "Print: " << mRobotPoint3d << std::endl;
 
 
-//            if (runToChecker) {
-//                ;
-//            }
-
-//            MoveArm urArm;
-//            double velocity = 0.1, acceleration = 0.1;
-//            urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
-
-//            drawMarker(imgUndistorted, {frameCenter.x, frameCenter.y}, Scalar(0,0,255), MARKER_STAR, 20, 4, 4);
-//            drawMarker(imgUndistorted, {checkerboardCenter.x, checkerboardCenter.y}, Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
+            drawMarker(imgUndistorted, {frameCenter.x, frameCenter.y}, Scalar(0,0,255), MARKER_STAR, 20, 4, 4);
+            drawMarker(imgUndistorted, {checkerboardCenter.x, checkerboardCenter.y}, Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
 
 //            Point2f robotPointtest = vectorBetween2Points(imageFramePoints[0], frameCenter) * pixelPmm;
 //            Point3f robotPointtest3d;
@@ -177,16 +170,18 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             char keyPressed = cv::waitKey(1);
             if(keyPressed == 'g'|| keyPressed == 'G' ){
                 runSQ = true;
-                MoveArm urArm;
-                double velocity = 0.1, acceleration = 0.1;
-                urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
+                cv::destroyWindow(vindue.str());
+                // Dont need to run the movement
+                //MoveArm urArm;
+                //double velocity = 0.1, acceleration = 0.1;
+                //urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
 
                 //std::cout << "Grabbing and saving imge" << imageNr << ". to folder \"imageResources\"..." << std::endl;
                 //std::stringstream fileName;
                 //fileName<< "../imageResources/" << "Image" << imageNr << ".png";
                 //cv::imwrite( fileName.str(), openCvImage );
                 //std::cout << "Grabing and saving image to lacation was succesfull" << std::endl;
-                cv::destroyWindow(vindue.str());
+
                 imageNr++;
 
             } else if (keyPressed == 'q'|| keyPressed == 'Q' ) { // Quit if Q is Pressed
@@ -319,7 +314,7 @@ cv::Point3f DetectionMarker::vectorfromframeCPtoCBCp(cv::Point2i checkerBoardCP,
 
     robotPoint3d.x = (robotPoint2d.x)/1000;
     robotPoint3d.y = (robotPoint2d.y)/1000;
-    robotPoint3d.z = 0;
+    robotPoint3d.z = 0.35;
 
 
     return robotPoint3d;

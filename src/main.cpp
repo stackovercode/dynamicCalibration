@@ -44,8 +44,8 @@ int main(int argc, char* argv[]){
     // I made something
     bool runCalibrateCameraSekvens = false;
     bool runCalibrateWorkSpaceSekvens = false;
-    bool runDetectionMarker = true;
-    bool runComToRobot = false;
+    bool runDetectionMarker = false;
+    bool runComToRobot = true;
     bool runMainSekvens = false;
     bool runTransSekvens = false;
 
@@ -90,16 +90,26 @@ int main(int argc, char* argv[]){
      if (runDetectionMarker)
      {
          std::cout << "/* Detection marker sekvens */" << std::endl;
+
+
          detectMarker.initialize(rtde_receive, rtde_control);
 
      }
      //////////// Communikation robot sekvens //////////////
      if (runComToRobot)
      {
-
          std::cout << "/* Communikation robot sekvens */" << std::endl;
          //robotCom.initialize(rtde_receive, rtde_control);
-
+         int progress = 1;
+         double velocity = 0.05;
+         double acceleration = 0.05;
+         cv::Point3d point = {0.0146505, 0.0136401, 0.0};
+         while(progress < 4 ){
+             std::cout << "Inside while loop. start Progress: " << progress << std::endl;
+             robotCom.getToJob(rtde_receive, rtde_control, point, progress, velocity, acceleration);
+             std::cout << "Inside while loop. Done job." << std::endl;
+             progress++;
+         }
 //         std::vector<double> baseFrame = rtde_receive.getTargetTCPPose();
 //        // std::cout << "move Base: " << ur5arm.readVector(baseFrame) << std::endl;
 //         //std::vector<double> base = {-0.0423306,-0.384721,0.27404,2.56833,-1.80919,-0.0107535};
