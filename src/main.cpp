@@ -107,7 +107,6 @@ int main(int argc, char* argv[]){
          while(progress < 4 ){
              std::cout << "Inside while loop. start Progress: " << progress << std::endl;
              robotCom.getToJob(rtde_receive, rtde_control, point, progress, velocity, acceleration);
-             std::cout << "Inside while loop. Done job." << std::endl;
              progress++;
          }
 //         std::vector<double> baseFrame = rtde_receive.getTargetTCPPose();

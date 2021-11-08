@@ -61,7 +61,11 @@ void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECont
     std::vector<double> baseFrame = {-0.0423311,-0.38472,0.274039,2.56832,-1.80919,-0.0107453};
     std::vector<double> featureFrame = {position.x,position.y,0.0,0.0,0.0,0.0};
     std::vector<double> startFrame;
-    std::vector<double> endFrame;
+    std::vector<double> endFrame = {0.0,-0.16,0.0,0.0,0.0,0.0};
+    std::vector<double> targetEndFrame;
+    std::vector<double> jointPose1 = controller.getInverseKinematics(targetJobPose1);
+    std::vector<double> jointPose2 = controller.getInverseKinematics(targetJobPose2);
+    std::vector<double> jointPose3 = controller.getInverseKinematics(targetJobPose3);
     if (progress >= 4) {
         std::cout << "Done" << std::endl;
     } else {
@@ -70,35 +74,52 @@ void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECont
             std::cout << "Inside case 1. start job." << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             startFrame = controller.poseTrans(baseFrame,featureFrame);
-            endFrame = controller.poseTrans(startFrame,targetJobPose1);
+            //endFrame = controller.poseTrans(startFrame,targetJobPose1);
 
-            controller.moveL({endFrame}, velocity, acceleration);
+//            for (int i = 0; i < 2; i++){
+//                    double dif = startFrame[i] - targetJobPose1[i];
+//                    endFrame.push_back(dif);
+//                }
+//            endFrame.push_back(0.0);
+//            endFrame.push_back(0.0);
+//            endFrame.push_back(0.0);
+//            endFrame.push_back(0.0);
+
+            targetEndFrame = controller.poseTrans(startFrame,endFrame);
+
+            controller.moveL({startFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            controller.moveL({baseFrame}, velocity, acceleration);
+            //controller.stopL();
+            controller.moveL({targetEndFrame}, velocity, acceleration,false);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            controller.stopL();
+            //controller.stopL();
+            //controller.moveJ(jointPose1, velocity, acceleration, false);
+//            std::cout << "targetFrame: " << readVector(targetEndFrame) << std::endl;
+            std::cout << "targetFrame: " << readVector(endFrame) << std::endl;
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             break;
         case 2:
-            std::cout << "Inside case 2. start job." << std::endl;
+            //std::cout << "Inside case 2. start job." << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             startFrame = controller.poseTrans(baseFrame,featureFrame);
             endFrame = controller.poseTrans(startFrame,targetJobPose2);
 
-            controller.moveL({endFrame}, velocity, acceleration);
+            //controller.moveL({endFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            controller.moveL({baseFrame}, velocity, acceleration);
+            //controller.moveL({baseFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             controller.stopL();
             break;
         case 3:
-            std::cout << "Inside case 3. start job." << std::endl;
+            //std::cout << "Inside case 3. start job." << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             startFrame = controller.poseTrans(baseFrame,featureFrame);
             endFrame = controller.poseTrans(startFrame,targetJobPose3);
 
-            controller.moveL({endFrame}, velocity, acceleration);
+            //controller.moveL({endFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            controller.moveL({baseFrame}, velocity, acceleration);
+            //controller.moveL({baseFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             controller.stopL();
             break;
