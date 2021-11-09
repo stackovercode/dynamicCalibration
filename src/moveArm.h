@@ -9,6 +9,7 @@
 #include <opencv2/opencv.hpp>
 #include "cameraCalibration.h"
 #include "camera.h"
+#include "workspaceCalibration.h"
 
 
 class MoveArm

@@ -1,10 +1,11 @@
 #include "moveArm.h"
-#include "algorithm"
 #include <chrono>
 #include <iomanip>
 #include <vector>
 #include <numeric>
 #include <iostream>
+#include <bits/stdc++.h> // Vector
+#include <algorithm>  // Reverse
 
 
 using namespace ur_rtde;
@@ -63,9 +64,7 @@ void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECont
     std::vector<double> startFrame;
     std::vector<double> endFrame = {0.0,-0.16,0.0,0.0,0.0,0.0};
     std::vector<double> targetEndFrame;
-    std::vector<double> jointPose1 = controller.getInverseKinematics(targetJobPose1);
-    std::vector<double> jointPose2 = controller.getInverseKinematics(targetJobPose2);
-    std::vector<double> jointPose3 = controller.getInverseKinematics(targetJobPose3);
+    WorkspaceCalibration p;
     if (progress >= 4) {
         std::cout << "Done" << std::endl;
     } else {
@@ -74,29 +73,15 @@ void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECont
             std::cout << "Inside case 1. start job." << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             startFrame = controller.poseTrans(baseFrame,featureFrame);
-            //endFrame = controller.poseTrans(startFrame,targetJobPose1);
-
-//            for (int i = 0; i < 2; i++){
-//                    double dif = startFrame[i] - targetJobPose1[i];
-//                    endFrame.push_back(dif);
-//                }
-//            endFrame.push_back(0.0);
-//            endFrame.push_back(0.0);
-//            endFrame.push_back(0.0);
-//            endFrame.push_back(0.0);
-
-            targetEndFrame = controller.poseTrans(startFrame,endFrame);
-
+            targetEndFrame = p.targetPointTransform(startFrame, targetJobPose1);
+            controller.moveL({baseFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             controller.moveL({startFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            //controller.moveL({targetEndFrame}, velocity, acceleration,true);
+            std::cout << "text" << readVector(targetEndFrame) << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(2000));
             //controller.stopL();
-            controller.moveL({targetEndFrame}, velocity, acceleration,false);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            //controller.stopL();
-            //controller.moveJ(jointPose1, velocity, acceleration, false);
-//            std::cout << "targetFrame: " << readVector(targetEndFrame) << std::endl;
-            std::cout << "targetFrame: " << readVector(endFrame) << std::endl;
-
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             break;
         case 2:
@@ -325,7 +310,6 @@ std::vector<double> MoveArm::moveCalibrate(RTDEReceiveInterface &reciver, ur_rtd
             break;
         }
     }
-
 
 }
 

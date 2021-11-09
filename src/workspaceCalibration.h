@@ -15,6 +15,9 @@
 class WorkspaceCalibration : public Camera
 {
 public:
+
+    WorkspaceCalibration();
+
     WorkspaceCalibration(CameraSettings& cameraSettings, DetectionObject& detectionObject);
 
     void initialize(ur_rtde::RTDEReceiveInterface &reciver,ur_rtde::RTDEControlInterface &controller, double lengthXmm, double lengthYmm);
@@ -35,6 +38,7 @@ public:
     void loadFileRobotJoint(std::string fileLocation);
     void loadFileRobotTCP(std::string fileLocation);
 
+    std::vector<double> targetPointTransform(std::vector<double> startPoint, std::vector<double> targetPoint);
     void loadFileImagePoints(std::string filepath);
 
 protected:

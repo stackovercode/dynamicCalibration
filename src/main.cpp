@@ -98,6 +98,7 @@ int main(int argc, char* argv[]){
      //////////// Communikation robot sekvens //////////////
      if (runComToRobot)
      {
+
          std::cout << "/* Communikation robot sekvens */" << std::endl;
          //robotCom.initialize(rtde_receive, rtde_control);
          int progress = 1;
@@ -109,6 +110,10 @@ int main(int argc, char* argv[]){
              robotCom.getToJob(rtde_receive, rtde_control, point, progress, velocity, acceleration);
              progress++;
          }
+
+
+
+
 //         std::vector<double> baseFrame = rtde_receive.getTargetTCPPose();
 //        // std::cout << "move Base: " << ur5arm.readVector(baseFrame) << std::endl;
 //         //std::vector<double> base = {-0.0423306,-0.384721,0.27404,2.56833,-1.80919,-0.0107535};

@@ -578,3 +578,47 @@ void WorkspaceCalibration::loadFileImagePoints(std::string fileLocation){
         }
     }
 }
+
+std::vector<double> WorkspaceCalibration::targetPointTransform(std::vector<double> startPoint, std::vector<double> targetPoint){
+
+    cv::Mat startPointRvec = (cv::Mat_<double>(3,1) << startPoint[3], startPoint[4], startPoint[5]);
+    cv::Mat startPointRM;
+    cv::Mat startPointTvec = (cv::Mat_<double>(3,1) << startPoint[0], startPoint[1], startPoint[2]);
+
+    Rodrigues(startPointRvec, startPointRM);
+
+    cv::Mat startPointTransform = (cv::Mat_<double>(4, 4) <<
+            startPointRM.at<double>(0,0), startPointRM.at<double>(0,1), startPointRM.at<double>(0,2), startPointTvec.at<double>(0,0),
+            startPointRM.at<double>(1,0), startPointRM.at<double>(1,1), startPointRM.at<double>(1,2), startPointTvec.at<double>(0,1),
+            startPointRM.at<double>(2,0), startPointRM.at<double>(2,1), startPointRM.at<double>(2,2), startPointTvec.at<double>(0,2),
+            0, 0, 0, 1);
+
+    cv::Mat targetPointRvec = (cv::Mat_<double>(3,1) << targetPoint[3], targetPoint[4], targetPoint[5]);
+    cv::Mat targetPointRM;
+    cv::Mat targetPointTvec = (cv::Mat_<double>(3,1) << targetPoint[0], targetPoint[1], targetPoint[2]);
+
+    Rodrigues(targetPointRvec, targetPointRM);
+
+    cv::Mat targetTransform = (cv::Mat_<double>(4, 4) <<
+            targetPointRM.at<double>(0,0), targetPointRM.at<double>(0,1), targetPointRM.at<double>(0,2), targetPointTvec.at<double>(0,0),
+            targetPointRM.at<double>(1,0), targetPointRM.at<double>(1,1), targetPointRM.at<double>(1,2), targetPointTvec.at<double>(0,1),
+            targetPointRM.at<double>(2,0), targetPointRM.at<double>(2,1), targetPointRM.at<double>(2,2), targetPointTvec.at<double>(0,2),
+            0, 0, 0, 1);
+
+    cv::Mat endTransform = startPointTransform.inv() * targetTransform;
+
+    cv::Mat endPointRM = (cv::Mat_<double>(3,3) <<
+                      endTransform.at<double>(0,0), endTransform.at<double>(0,1), endTransform.at<double>(0,2),
+                      endTransform.at<double>(1,0), endTransform.at<double>(1,1), endTransform.at<double>(1,2),
+                      endTransform.at<double>(2,0), endTransform.at<double>(2,1), endTransform.at<double>(2,2));
+
+    cv::Mat endPointRVec;
+
+    Rodrigues(endPointRM, endPointRVec);
+
+    cv::Mat endPointTvec = (cv::Mat_<double>(3,1) << endTransform.at<double>(0,3), endTransform.at<double>(1,3), endTransform.at<double>(2,3));
+
+    std::vector<double> endPoint = {endPointTvec.at<double>(0,0), endPointTvec.at<double>(0,1), endPointTvec.at<double>(0,2), endPointRVec.at<double>(0,0), endPointRVec.at<double>(0,1), endPointRVec.at<double>(0,2)};
+
+    return endPoint;
+}
