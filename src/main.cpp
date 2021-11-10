@@ -44,9 +44,9 @@ int main(int argc, char* argv[]){
     // I made something
     bool runCalibrateCameraSekvens = false;
     bool runCalibrateWorkSpaceSekvens = false;
-    bool runDetectionMarker = true;
+    bool runDetectionMarker = false;
     bool runComToRobot = false;
-    bool runMainSekvens = false;
+    bool runMainSekvens = true;
     bool runTransSekvens = false;
 
     /* Camera variabler */
@@ -154,7 +154,7 @@ int main(int argc, char* argv[]){
 
 
 
-         ur5arm.poseSwift(rtde_receive, rtde_control, 0.5, 0.5);
+         ur5arm.poseSwift(rtde_receive, rtde_control, 0.1, 0.1);
 //         while(true){
 //             try
 //             {

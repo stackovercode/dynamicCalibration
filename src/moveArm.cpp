@@ -144,8 +144,8 @@ void MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECon
     std::vector<std::vector<double>> path_q;
 
     //Dataset 2
-    std::vector<double> startPos_q6 = {-1.58481,-1.48048,-1.75088,-3.06395,-1.90983,1.75687, velocity, acceleration, blend};
-    path_q.push_back(startPos_q6);
+    //std::vector<double> startPos_q6 = {-1.58481,-1.48048,-1.75088,-3.06395,-1.90983,1.75687, velocity, acceleration, blend};
+    //path_q.push_back(startPos_q6);
     std::vector<double> startPos_q1 = {-1.36689,-1.28005,-1.90308,-3.10318,-1.70538,1.5708, velocity, acceleration, blend};
     path_q.push_back(startPos_q1);
 
@@ -159,17 +159,67 @@ void MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECon
     std::vector<double> pose = receiverNew.getActualTCPPose();
     //std::cout << readVector(pose) << std::endl;
 
-    path_q.clear();
-    path_q.push_back(startPos_q6);
-    controller.moveJ(path_q, false);
 
-    //controller.moveL(pose, velocity, acceleration);
+    //path_q.clear();
+    //path_q.push_back(startPos_q6);
+    //controller.moveJ(path_q, false);
 
-    std::vector<double> startPos_q2 = {-78*deg2rad,-73*deg2rad,-109*deg2rad,-177*deg2rad,-97*deg2rad,89*deg2rad, velocity, acceleration, blend};
 
-    path_q.clear();
-    path_q.push_back(startPos_q2);
-    controller.moveJ(path_q, false);
+
+    //std::vector<double> startPos_q2 = {-78*deg2rad,-73*deg2rad,-109*deg2rad,-177*deg2rad,-97*deg2rad,89*deg2rad, velocity, acceleration, blend};
+
+   // path_q.clear();
+    //path_q.push_back(startPos_q2);
+    //controller.moveJ(path_q, false);
+    std::vector<double> currentPose = {0.0146505+0.001518,0.0136401+0.004175,0.0,0.0,0.0,0.0};
+    std::vector<double> change_0_0 = controller.poseTrans(pose,currentPose);
+
+    std::vector<double> change_1_1 = {0.0,0.10,0.0,0.35,0.0,0.0};
+    std::vector<double> change_1_2 = {0.0,0.05,0.0,0.175,0.0,0.0};
+    std::vector<double> change_1_3 = {0.0,-0.05,0.0,-0.175,0.0,0.0};
+    std::vector<double> change_1_4 = {0.0,-0.10,0.0,-0.35,0.0,0.0};
+    std::vector<double> pose_1_1 = controller.poseTrans(change_0_0,change_1_1);
+    std::vector<double> pose_1_2 = controller.poseTrans(change_0_0,change_1_2);
+    std::vector<double> pose_1_3 = controller.poseTrans(change_0_0,change_1_3);
+    std::vector<double> pose_1_4 = controller.poseTrans(change_0_0,change_1_4);
+
+    std::vector<double> change_2_1 = {0.05,0.10,0.0,0.35,0.0,0.0};
+    std::vector<double> change_2_2 = {0.025,0.05,0.0,0.175,0.0,0.0};
+    std::vector<double> change_2_3 = {0.0,-0.05,0.0,-0.175,0.0,0.0};
+    std::vector<double> change_2_4 = {0.0,-0.10,0.0,-0.35,0.0,0.0};
+    std::vector<double> pose_2_1 = controller.poseTrans(change_0_0,change_2_1);
+    std::vector<double> pose_2_2 = controller.poseTrans(change_0_0,change_2_2);
+    std::vector<double> pose_2_3 = controller.poseTrans(change_0_0,change_2_3);
+    std::vector<double> pose_2_4 = controller.poseTrans(change_0_0,change_2_4);
+
+
+    std::vector<double> change_4_1 = {0.10,0.0,0.0,0.0,-0.35,0.0};
+    std::vector<double> change_4_2 = {0.05,0.0,0.0,0.0,-0.175,0.0};
+    std::vector<double> change_4_3 = {-0.05,0.0,0.0,0.0,0.175,0.0};
+    std::vector<double> change_4_4 = {-0.10,0.0,0.0,0.0,0.35,0.0};
+    std::vector<double> pose_4_1 = controller.poseTrans(change_0_0,change_4_1);
+    std::vector<double> pose_4_2 = controller.poseTrans(change_0_0,change_4_2);
+    std::vector<double> pose_4_3 = controller.poseTrans(change_0_0,change_4_3);
+    std::vector<double> pose_4_4 = controller.poseTrans(change_0_0,change_4_4);
+
+    controller.moveL(change_0_0, velocity, acceleration);
+    controller.moveL(pose_4_1, velocity, acceleration);
+    controller.moveL(pose_4_2, velocity, acceleration);
+    controller.moveL(pose_4_3, velocity, acceleration);
+    controller.moveL(pose_4_4, velocity, acceleration);
+
+    controller.moveL(change_0_0, velocity, acceleration);
+    controller.moveL(pose_1_1, velocity, acceleration);
+    controller.moveL(pose_1_2, velocity, acceleration);
+    controller.moveL(pose_1_3, velocity, acceleration);
+    controller.moveL(pose_1_4, velocity, acceleration);
+
+    controller.moveL(change_0_0, velocity, acceleration);
+    controller.moveL(pose_2_1, velocity, acceleration);
+    controller.moveL(pose_2_2, velocity, acceleration);
+    controller.moveL(pose_2_3, velocity, acceleration);
+    controller.moveL(pose_2_4, velocity, acceleration);
+
 
 }
 
