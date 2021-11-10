@@ -134,16 +134,25 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             cv::Point2f xVector = vectorBetween2Points(imageFramePoints[0], imageFramePoints[2]);
 
-            double xAngle = (atan(xVector.y/xVector.x));
+            double zRotation = (atan(xVector.y/xVector.x));
 
             //std::cout << "text: " << atan(xVector.y/xVector.x) << std::endl;
+
+            cv::Mat RRodriguesMatrix = (cv::Mat_<double>(3,3));
+            cv::Mat RRodriguesMatrixTrans = (cv::Mat_<double>(3,3));
+
+            Rodrigues(mRvec, RRodriguesMatrix);
+
+            transpose(RRodriguesMatrix, RRodriguesMatrixTrans);
+
+            cv::Vec3f rotation = rotationMatrixToEulerAngles(RRodriguesMatrixTrans);
 
             mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
             mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
             mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
-            mRobotPoint3d[3] = 0.0;
-            mRobotPoint3d[4] = 0.0;
-            mRobotPoint3d[5] = xAngle;
+            mRobotPoint3d[3] = rotation[0];
+            mRobotPoint3d[4] = rotation[1];
+            mRobotPoint3d[5] = zRotation;
 
             std::cout << "Print: " << mRobotPoint3d << std::endl;
 
@@ -355,6 +364,43 @@ double DetectionMarker::getPixelPermm(cv::Point2f origo, cv::Point2f dia){
     double pixelPmm = widthObj / DetectionMarker::lineLength(origo.x, origo.y, dia.x, dia.y);
 
     return pixelPmm;
+}
+
+bool DetectionMarker::isRotationMatrix(cv::Mat &R)
+{
+    cv::Mat Rt;
+    transpose(R, Rt);
+    cv::Mat shouldBeIdentity = Rt * R;
+    cv::Mat I = cv::Mat::eye(3, 3, shouldBeIdentity.type());
+
+    return  norm(I, shouldBeIdentity) < 1e-6;
+
+}
+
+cv::Vec3f DetectionMarker::rotationMatrixToEulerAngles(cv::Mat &R)
+{
+
+    assert(isRotationMatrix(R));
+
+    float sy = sqrt(R.at<double>(0, 0) * R.at<double>(0, 0) + R.at<double>(1, 0) * R.at<double>(1, 0));
+
+    bool singular = sy < 1e-6; // If
+
+    float x, y, z;
+    if (!singular)
+    {
+        x = atan2(R.at<double>(2, 1), R.at<double>(2, 2));
+        y = atan2(-R.at<double>(2, 0), sy);
+        z = atan2(R.at<double>(1, 0), R.at<double>(0, 0));
+    }
+    else
+    {
+        x = atan2(-R.at<double>(1, 2), R.at<double>(1, 1));
+        y = atan2(-R.at<double>(2, 0), sy);
+        z = 0;
+    }
+    return cv::Vec3f(x, y, z);
+
 }
 
 bool DetectionMarker::writeFileTranRot (Mat tempRvec, Mat tempTvec){

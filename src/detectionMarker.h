@@ -59,6 +59,8 @@ private:
     cv::Point2f centerPoint(cv::Vec4f line1, cv::Vec4f line2);
     cv::Point2f vectorBetween2Points(cv::Point2f startPoint, cv::Point2f endPoint);
     cv::Point3f vectorfromframeCPtoCBCp(cv::Point2i checkerBoardCP, cv::Point2i frameCP, double pixelPmm, double distanceObj);
+    bool isRotationMatrix(cv:Mat &R);
+    cv::Vec3f rotationMatrixToEulerAngles(cv::Mat &R);
 
     bool writeFileTranRot (cv::Mat tempRvec, cv::Mat tempTvec);
     void detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
