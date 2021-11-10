@@ -61,6 +61,7 @@ private:
     cv::Point3f vectorfromframeCPtoCBCp(cv::Point2i checkerBoardCP, cv::Point2i frameCP, double pixelPmm, double distanceObj);
     bool isRotationMatrix(cv:Mat &R);
     cv::Vec3f rotationMatrixToEulerAngles(cv::Mat &R);
+    cv::Vec3f rpy2rv(cv::Vec3f rpy);
 
     bool writeFileTranRot (cv::Mat tempRvec, cv::Mat tempTvec);
     void detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);

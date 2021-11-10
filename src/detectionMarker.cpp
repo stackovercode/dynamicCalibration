@@ -145,7 +145,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             transpose(RRodriguesMatrix, RRodriguesMatrixTrans);
 
-            cv::Vec3f rotation = rotationMatrixToEulerAngles(RRodriguesMatrixTrans);
+            cv::Vec3f rotation = rpy2rv(rotationMatrixToEulerAngles(RRodriguesMatrixTrans));
 
             mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
             mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
@@ -386,6 +386,43 @@ cv::Vec3f DetectionMarker::rotationMatrixToEulerAngles(cv::Mat &R)
     }
     return cv::Vec3f(x, y, z);
 
+}
+
+cv::Vec3f DetectionMarker::rpy2rv(cv::Vec3f rpy){
+
+    float alpha = rpy[2];
+    float beta = rpy[1];
+    float gamma = rpy[0];
+
+    float cAlpha = cos(alpha);
+    float cBeta = cos(beta);
+    float cGamma = cos(gamma);
+    float sAlpha = sin(alpha);
+    float sBeta = sin(beta);
+    float sGamma = sin(gamma);
+
+    float r11 = cAlpha*cBeta;
+    float r12 = cAlpha*sBeta*sGamma-sAlpha*cGamma;
+    float r13 = cAlpha*sBeta*cGamma+sAlpha*sGamma;
+    float r21 = sAlpha*cBeta;
+    float r22 = sAlpha*sBeta*sGamma+cAlpha*cGamma;
+    float r23 = sAlpha*sBeta*cGamma-cAlpha*sGamma;
+    float r31 = -sBeta;
+    float r32 = cBeta*sGamma;
+    float r33 = cBeta*cGamma;
+
+    float theta = acos((r11+r22+r33-1)/2);
+    float sth = sin(theta);
+    float kx = (r32-r23)/(2*sth);
+    float ky = (r13-r31)/(2*sth);
+    float kz = (r21-r12)/(2*sth);
+
+    cv::Vec3f rvec;
+    rvec[0] = (theta*kx);
+    rvec[1] = (theta*ky);
+    rvec[2] = (theta*kz);
+
+    return rvec;
 }
 
 bool DetectionMarker::writeFileTranRot (Mat tempRvec, Mat tempTvec){
