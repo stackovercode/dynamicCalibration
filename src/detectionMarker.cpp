@@ -4,6 +4,8 @@
 using namespace cv;
 using namespace std;
 
+
+
 DetectionMarker::DetectionMarker( CameraSettings& cameraSettings, int verticalIntersections, int horizontalIntersections, int squareSize, int numberOfCalibrationImages)
     : Camera(cameraSettings),
       mVerticalIntersections(verticalIntersections),
@@ -42,6 +44,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
     int imageNr = 1;
     int frame = 1;
+    int progress = 1;
     bool runSQ = false;
     while ( camera.IsGrabbing())
     {
@@ -113,6 +116,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 //            drawMarker(imgUndistorted, imageFramePoints[5], Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
 //            drawMarker(imgUndistorted, imageFramePoints[6], Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
 
+
             double focalL = 3316.188;
             double widthObj = 64.03;
             double distanceObj;
@@ -128,7 +132,19 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             Point2i checkerboardCenter = centerPoint(checkerboardLine1, checkerboardLine2);
             Point2i frameCenter = {imgUndistorted.size().width/2, imgUndistorted.size().height/2};
 
-            mRobotPoint3d = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj);
+            cv::Point2f xVector = vectorBetween2Points(imageFramePoints[0], imageFramePoints[2]);
+
+            double xAngle = (atan(xVector.y/xVector.x));
+
+            //std::cout << "text: " << atan(xVector.y/xVector.x) << std::endl;
+
+            mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
+            mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
+            mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
+            mRobotPoint3d[3] = 0.0;
+            mRobotPoint3d[4] = 0.0;
+            mRobotPoint3d[5] = xAngle;
+
             std::cout << "Print: " << mRobotPoint3d << std::endl;
 
 
@@ -172,10 +188,14 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 runSQ = true;
                 cv::destroyWindow(vindue.str());
                 // Dont need to run the movement
-                //MoveArm urArm;
-                //double velocity = 0.1, acceleration = 0.1;
-                //urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
-
+                MoveArm urArm;
+                double velocity = 0.1;
+                double acceleration = 0.1;
+                if(progress < 4){
+                std::cout << "Inside loop. start Progress: " << progress << std::endl;
+                urArm.getToJob(reciver, controller, mRobotPoint3d, progress, velocity, acceleration);
+                progress++;
+                }
                 //std::cout << "Grabbing and saving imge" << imageNr << ". to folder \"imageResources\"..." << std::endl;
                 //std::stringstream fileName;
                 //fileName<< "../imageResources/" << "Image" << imageNr << ".png";
@@ -314,7 +334,7 @@ cv::Point3f DetectionMarker::vectorfromframeCPtoCBCp(cv::Point2i checkerBoardCP,
 
     robotPoint3d.x = (robotPoint2d.x)/1000;
     robotPoint3d.y = (robotPoint2d.y)/1000;
-    robotPoint3d.z = 0.35;
+    robotPoint3d.z = 0.0;
 
 
     return robotPoint3d;

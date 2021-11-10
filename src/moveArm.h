@@ -28,7 +28,7 @@ public:
     std::vector<double> moveCalibrate(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity = 0.5, double acceleration = 0.5, int positionStatus = 0);
 
     void getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, cv::Point3f position, double velocity, double acceleration);
-    void getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Point3f position, int progress, double velocity, double acceleration);
+    void getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6d position, int progress, double velocity, double acceleration);
 
 
     void poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity, double acceleration);
@@ -40,6 +40,7 @@ public:
     void writeFileRobotPoses(std::vector<double> robotPoses);
 
     void closeURConnection(ur_rtde::RTDEControlInterface controller);
+    std::vector<double> targetPointTransform(std::vector<double> startPoint, std::vector<double> targetPoint, double zRotation);
 
 private:
     char mPoseTemp;

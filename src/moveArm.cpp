@@ -52,7 +52,7 @@ void MoveArm::getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde:
     controller.stopL();
 }
 
-void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Point3f position, int progress, double velocity, double acceleration){
+void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6d position, int progress, double velocity, double acceleration){
     if (progress < 4) {
         std::cout << "Moving to job postion: " << progress << std::endl;
     }
@@ -60,11 +60,11 @@ void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECont
     std::vector<double> targetJobPose2 = {0.157756,-0.326576,-0.0173523,2.56832,-1.80919,-0.0107452};
     std::vector<double> targetJobPose3 = {0.250143,-0.287226,-0.0177096,2.56832,-1.80919,-0.0107452};
     std::vector<double> baseFrame = {-0.0423311,-0.38472,0.274039,2.56832,-1.80919,-0.0107453};
-    std::vector<double> featureFrame = {position.x,position.y,0.0,0.0,0.0,0.0};
+    std::vector<double> featureFrame = {position[0],position[1],0.0,0.0,0.0,position[5]};
     std::vector<double> startFrame;
-    std::vector<double> endFrame = {0.0,-0.16,0.0,0.0,0.0,0.0};
+    std::vector<double> endFrame;
     std::vector<double> targetEndFrame;
-    WorkspaceCalibration p;
+    //WorkspaceCalibration p;
     if (progress >= 4) {
         std::cout << "Done" << std::endl;
     } else {
@@ -73,40 +73,49 @@ void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECont
             std::cout << "Inside case 1. start job." << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             startFrame = controller.poseTrans(baseFrame,featureFrame);
-            targetEndFrame = p.targetPointTransform(startFrame, targetJobPose1);
+            std::cout << "Featureframe: " << readVector(featureFrame) << std::endl;
+            targetEndFrame = targetPointTransform(startFrame, targetJobPose1, position[5]);
+            endFrame = controller.poseTrans(startFrame, targetEndFrame);
             controller.moveL({baseFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             controller.moveL({startFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            //controller.moveL({targetEndFrame}, velocity, acceleration,true);
-            std::cout << "text" << readVector(targetEndFrame) << std::endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-            //controller.stopL();
+            controller.moveL({endFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            controller.moveL({baseFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             break;
         case 2:
-            //std::cout << "Inside case 2. start job." << std::endl;
+            std::cout << "Inside case 2. start job." << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             startFrame = controller.poseTrans(baseFrame,featureFrame);
-            endFrame = controller.poseTrans(startFrame,targetJobPose2);
-
-            //controller.moveL({endFrame}, velocity, acceleration);
+            std::cout << "Featureframe: " << readVector(featureFrame) << std::endl;
+            targetEndFrame = targetPointTransform(startFrame, targetJobPose2, position[5]);
+            endFrame = controller.poseTrans(startFrame, targetEndFrame);
+            controller.moveL({baseFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            //controller.moveL({baseFrame}, velocity, acceleration);
+            controller.moveL({startFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            controller.stopL();
+            controller.moveL({endFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            controller.moveL({baseFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             break;
         case 3:
-            //std::cout << "Inside case 3. start job." << std::endl;
+            std::cout << "Inside case 3. start job." << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             startFrame = controller.poseTrans(baseFrame,featureFrame);
-            endFrame = controller.poseTrans(startFrame,targetJobPose3);
-
-            //controller.moveL({endFrame}, velocity, acceleration);
+            std::cout << "Featureframe: " << readVector(featureFrame) << std::endl;
+            targetEndFrame = targetPointTransform(startFrame, targetJobPose3, position[5]);
+            endFrame = controller.poseTrans(startFrame, targetEndFrame);
+            controller.moveL({baseFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            //controller.moveL({baseFrame}, velocity, acceleration);
+            controller.moveL({startFrame}, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            controller.stopL();
+            controller.moveL({endFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            controller.moveL({baseFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             break;
         default:
             std::cout << "Error: Went to default in switch statement" << std::endl;
@@ -340,3 +349,46 @@ void MoveArm::closeURConnection(RTDEControlInterface controller)
     controller.servoStop();
 }
 
+std::vector<double> MoveArm::targetPointTransform(std::vector<double> startPoint, std::vector<double> targetPoint, double zRotation){
+
+    cv::Mat startPointRvec = (cv::Mat_<double>(3,1) << startPoint[3], startPoint[4], startPoint[5]);
+    cv::Mat startPointRM;
+    cv::Mat startPointTvec = (cv::Mat_<double>(3,1) << startPoint[0], startPoint[1], startPoint[2]);
+
+    Rodrigues(startPointRvec, startPointRM);
+
+    cv::Mat startPointTransform = (cv::Mat_<double>(4, 4) <<
+            startPointRM.at<double>(0,0), startPointRM.at<double>(0,1), startPointRM.at<double>(0,2), startPointTvec.at<double>(0,0),
+            startPointRM.at<double>(1,0), startPointRM.at<double>(1,1), startPointRM.at<double>(1,2), startPointTvec.at<double>(0,1),
+            startPointRM.at<double>(2,0), startPointRM.at<double>(2,1), startPointRM.at<double>(2,2), startPointTvec.at<double>(0,2),
+            0, 0, 0, 1);
+
+    cv::Mat targetPointRvec = (cv::Mat_<double>(3,1) << targetPoint[3], targetPoint[4], targetPoint[5]);
+    cv::Mat targetPointRM;
+    cv::Mat targetPointTvec = (cv::Mat_<double>(3,1) << targetPoint[0], targetPoint[1], targetPoint[2]);
+
+    Rodrigues(targetPointRvec, targetPointRM);
+
+    cv::Mat targetTransform = (cv::Mat_<double>(4, 4) <<
+            targetPointRM.at<double>(0,0), targetPointRM.at<double>(0,1), targetPointRM.at<double>(0,2), targetPointTvec.at<double>(0,0),
+            targetPointRM.at<double>(1,0), targetPointRM.at<double>(1,1), targetPointRM.at<double>(1,2), targetPointTvec.at<double>(0,1),
+            targetPointRM.at<double>(2,0), targetPointRM.at<double>(2,1), targetPointRM.at<double>(2,2), targetPointTvec.at<double>(0,2),
+            0, 0, 0, 1);
+
+    cv::Mat endTransform = startPointTransform.inv() * targetTransform;
+
+    cv::Mat endPointRM = (cv::Mat_<double>(3,3) <<
+                      endTransform.at<double>(0,0), endTransform.at<double>(0,1), endTransform.at<double>(0,2),
+                      endTransform.at<double>(1,0), endTransform.at<double>(1,1), endTransform.at<double>(1,2),
+                      endTransform.at<double>(2,0), endTransform.at<double>(2,1), endTransform.at<double>(2,2));
+
+    cv::Mat endPointRVec;
+
+    Rodrigues(endPointRM, endPointRVec);
+
+    cv::Mat endPointTvec = (cv::Mat_<double>(3,1) << endTransform.at<double>(0,3), endTransform.at<double>(1,3), endTransform.at<double>(2,3));
+
+    std::vector<double> endPoint = {endPointTvec.at<double>(0,0), endPointTvec.at<double>(0,1), endPointTvec.at<double>(0,2), endPointRVec.at<double>(0,0), endPointRVec.at<double>(0,1), endPointRVec.at<double>(0,2) + zRotation};
+
+    return endPoint;
+}

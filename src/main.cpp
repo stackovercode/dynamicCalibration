@@ -44,8 +44,8 @@ int main(int argc, char* argv[]){
     // I made something
     bool runCalibrateCameraSekvens = false;
     bool runCalibrateWorkSpaceSekvens = false;
-    bool runDetectionMarker = false;
-    bool runComToRobot = true;
+    bool runDetectionMarker = true;
+    bool runComToRobot = false;
     bool runMainSekvens = false;
     bool runTransSekvens = false;
 
@@ -93,6 +93,8 @@ int main(int argc, char* argv[]){
 
 
          detectMarker.initialize(rtde_receive, rtde_control);
+         cv::Vec6d point = detectMarker.mRobotPoint3d;
+         std::cout << "text" << point << std::endl;
 
      }
      //////////// Communikation robot sekvens //////////////
@@ -102,9 +104,11 @@ int main(int argc, char* argv[]){
          std::cout << "/* Communikation robot sekvens */" << std::endl;
          //robotCom.initialize(rtde_receive, rtde_control);
          int progress = 1;
-         double velocity = 0.05;
-         double acceleration = 0.05;
-         cv::Point3d point = {0.0146505, 0.0136401, 0.0};
+         double velocity = 0.02;
+         double acceleration = 0.02;
+         //detectMarker.initialize(rtde_receive, rtde_control);
+         //cv::Point3d point = {0.0146505, 0.0136401, 0.0};
+         cv::Vec6d point = detectMarker.mRobotPoint3d;
          while(progress < 4 ){
              std::cout << "Inside while loop. start Progress: " << progress << std::endl;
              robotCom.getToJob(rtde_receive, rtde_control, point, progress, velocity, acceleration);

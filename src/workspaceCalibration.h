@@ -16,7 +16,7 @@ class WorkspaceCalibration : public Camera
 {
 public:
 
-    WorkspaceCalibration();
+    //WorkspaceCalibration();
 
     WorkspaceCalibration(CameraSettings& cameraSettings, DetectionObject& detectionObject);
 
@@ -38,7 +38,7 @@ public:
     void loadFileRobotJoint(std::string fileLocation);
     void loadFileRobotTCP(std::string fileLocation);
 
-    std::vector<double> targetPointTransform(std::vector<double> startPoint, std::vector<double> targetPoint);
+    //std::vector<double> targetPointTransform(std::vector<double> startPoint, std::vector<double> targetPoint);
     void loadFileImagePoints(std::string filepath);
 
 protected:

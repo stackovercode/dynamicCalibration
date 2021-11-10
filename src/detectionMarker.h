@@ -12,6 +12,7 @@
 class DetectionMarker : public Camera
 {
 public:
+
     DetectionMarker( CameraSettings& cameraSettings, int verticalIntersections = 5, int horizontalIntersections = 6,
                                                        int squareSize = 10, int numberOfCalibrationImages = 20);
     virtual ~DetectionMarker() = default;
@@ -21,7 +22,7 @@ public:
 
     std::string markerDetectionToString();
 
-    cv::Point3f mRobotPoint3d;
+    cv::Vec6d mRobotPoint3d;
 
 private:
     int mNumberOfCalibrationImages;
