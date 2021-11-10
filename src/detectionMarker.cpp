@@ -177,17 +177,14 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             cv::resize(openCvImage,openCvImage,dimension);
 
             std::stringstream vindue;
-            vindue << "Video feed: Press G to grab and colect imge, Q to Cancel and Quit or B to brake and reuse old image to calibration. nr. " << imageNr;
+            vindue << "Video feed: Press J to perfom job, C to get to checker, Q to Cancel and Quit" << imageNr;
             cv::namedWindow( vindue.str() , cv::WINDOW_AUTOSIZE);
             cv::imshow( vindue.str(), openCvImage);
 
-            // std::cout << "" << std::endl;
-            // Detect key press 'q' is pressed
             char keyPressed = cv::waitKey(1);
-            if(keyPressed == 'g'|| keyPressed == 'G' ){
+            if(keyPressed == 'j'|| keyPressed == 'J' ){
                 runSQ = true;
                 cv::destroyWindow(vindue.str());
-                // Dont need to run the movement
                 MoveArm urArm;
                 double velocity = 0.1;
                 double acceleration = 0.1;
@@ -196,14 +193,15 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 urArm.getToJob(reciver, controller, mRobotPoint3d, progress, velocity, acceleration);
                 progress++;
                 }
-                //std::cout << "Grabbing and saving imge" << imageNr << ". to folder \"imageResources\"..." << std::endl;
-                //std::stringstream fileName;
-                //fileName<< "../imageResources/" << "Image" << imageNr << ".png";
-                //cv::imwrite( fileName.str(), openCvImage );
-                //std::cout << "Grabing and saving image to lacation was succesfull" << std::endl;
-
                 imageNr++;
-
+            } else if (keyPressed == 'c'|| keyPressed == 'C' ) { // Quit if Q is Pressed
+                std::cout << "Shutting down camera..." << std::endl;
+                cv::destroyWindow(vindue.str());
+                MoveArm urArm;
+                double velocity = 0.1;
+                double acceleration = 0.1;
+                urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
+                imageNr++;
             } else if (keyPressed == 'q'|| keyPressed == 'Q' ) { // Quit if Q is Pressed
                 std::cout << "Shutting down camera..." << std::endl;
                 camera.Close();
@@ -212,19 +210,6 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                           << "The Grapping Proces was terminated." << std::endl
                           << "Closing program" << std::endl;
                 exit(0);
-            }else if (keyPressed == 'b'|| keyPressed == 'B' ) { // Brake and reuse old images.
-                std::cout << "Shutting down camera..." << std::endl;
-                camera.Close();
-                cv::destroyWindow(vindue.str());
-                std::cout << "Camera successfully closed." << std::endl
-                          << "The Grapping Proces was terminated." << std::endl
-                          << "Breaking out and continueing program with calibration." << std::endl;
-                break;
-
-            }else if (keyPressed == 'n'|| keyPressed == 'N' ) { // regrab N image.
-                cv::destroyWindow(vindue.str());
-                imageNr++;
-
             }
 
 
