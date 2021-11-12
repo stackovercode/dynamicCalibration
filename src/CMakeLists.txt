@@ -17,6 +17,9 @@ find_package( OpenCV REQUIRED )
 # Pylon 
 find_package(Pylon REQUIRED)
 
+# RobWork
+find_package(RobWork REQUIRED)
+
 #UR_RTDE
 FIND_PACKAGE( ur_rtde REQUIRED COMPONENTS
 	spin_msgs
@@ -40,10 +43,13 @@ ENDIF(CURL_FOUND)
 
 include_directories(
 	${Pylon_INCLUDE_DIRS}
-	${CURL_INCLUDE_DIR})
+	${CURL_INCLUDE_DIR}
+	${ROBWORK_INCLUDE_DIRS})
 
 
-LINK_DIRECTORIES( ${Boost_LIBRARY_DIR} )
+LINK_DIRECTORIES(
+	${Boost_LIBRARY_DIR}
+	${ROBWORK_LIBRARY_DIRS})
 
 add_executable( main main.cpp camera.cpp camera.h cameraSettings.h cameraCalibration.cpp cameraCalibration.h detectionObject.cpp detectionObject.h workspaceCalibration.cpp workspaceCalibration.h detectionMarker.cpp detectionMarker.h moveArm.cpp moveArm.h myHTTPClient.cpp myHTTPClient.h)
 target_link_libraries( main 
@@ -53,6 +59,7 @@ target_link_libraries( main
 	${Boost_SYSTEM_LIBRARY}
         ${Boost_FILESYSTEM_LIBRARY}
         ${CURLPP_LDFLAGS}
+        ${ROBWORK_LIBRARIES}
         #${CURL_LIBRARIES}
 )
 TARGET_LINK_LIBRARIES(main ur_rtde::rtde )
