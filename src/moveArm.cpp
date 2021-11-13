@@ -183,15 +183,23 @@ void MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECon
     std::vector<double> pose_1_3 = controller.poseTrans(change_0_0,change_1_3);
     std::vector<double> pose_1_4 = controller.poseTrans(change_0_0,change_1_4);
 
-    std::vector<double> change_2_1 = {0.05,0.10,0.0,0.35,0.0,0.0};
-    std::vector<double> change_2_2 = {0.025,0.05,0.0,0.175,0.0,0.0};
-    std::vector<double> change_2_3 = {0.0,-0.05,0.0,-0.175,0.0,0.0};
-    std::vector<double> change_2_4 = {0.0,-0.10,0.0,-0.35,0.0,0.0};
+    std::vector<double> change_2_1 = {0.05,0.10,0.0,0.35,0.0,0.0}; // Mangler Rot i x/y
+    std::vector<double> change_2_2 = {0.025,0.05,0.0,0.175,0.0,0.0}; // Mangler Rot i x/y
+    std::vector<double> change_2_3 = {-0.025,-0.05,0.0,-0.175,0.0,0.0}; // Mangler Rot i x/y
+    std::vector<double> change_2_4 = {-0.05,-0.10,0.0,-0.35,0.0,0.0}; // Mangler Rot i x/y
     std::vector<double> pose_2_1 = controller.poseTrans(change_0_0,change_2_1);
     std::vector<double> pose_2_2 = controller.poseTrans(change_0_0,change_2_2);
     std::vector<double> pose_2_3 = controller.poseTrans(change_0_0,change_2_3);
     std::vector<double> pose_2_4 = controller.poseTrans(change_0_0,change_2_4);
 
+    std::vector<double> change_3_1 = {0.10,0.05,0.0,0.35,0.0,0.0}; // Mangler Rot i x/y
+    std::vector<double> change_3_2 = {0.05,0.025,0.0,0.175,0.0,0.0}; // Mangler Rot i x/y
+    std::vector<double> change_3_3 = {-0.05,-0.025,0.0,-0.175,0.0,0.0}; // Mangler Rot i x/y
+    std::vector<double> change_3_4 = {-0.10,-0.05,0.0,-0.35,0.0,0.0}; // Mangler Rot i x/y
+    std::vector<double> pose_3_1 = controller.poseTrans(change_0_0,change_3_1);
+    std::vector<double> pose_3_2 = controller.poseTrans(change_0_0,change_3_2);
+    std::vector<double> pose_3_3 = controller.poseTrans(change_0_0,change_3_3);
+    std::vector<double> pose_3_4 = controller.poseTrans(change_0_0,change_3_4);
 
     std::vector<double> change_4_1 = {0.10,0.0,0.0,0.0,-0.35,0.0};
     std::vector<double> change_4_2 = {0.05,0.0,0.0,0.0,-0.175,0.0};
@@ -202,23 +210,55 @@ void MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECon
     std::vector<double> pose_4_3 = controller.poseTrans(change_0_0,change_4_3);
     std::vector<double> pose_4_4 = controller.poseTrans(change_0_0,change_4_4);
 
-    controller.moveL(change_0_0, velocity, acceleration);
-    controller.moveL(pose_4_1, velocity, acceleration);
-    controller.moveL(pose_4_2, velocity, acceleration);
-    controller.moveL(pose_4_3, velocity, acceleration);
-    controller.moveL(pose_4_4, velocity, acceleration);
 
-    controller.moveL(change_0_0, velocity, acceleration);
-    controller.moveL(pose_1_1, velocity, acceleration);
-    controller.moveL(pose_1_2, velocity, acceleration);
-    controller.moveL(pose_1_3, velocity, acceleration);
-    controller.moveL(pose_1_4, velocity, acceleration);
+    std::vector<double> change_5_1 = {0.10,-0.05,0.0,0.0,-0.35,0.0}; // Mangler Rot i x/y
+    std::vector<double> change_5_2 = {0.05,-0.025,0.0,0.0,-0.175,0.0}; // Mangler Rot i x/y
+    std::vector<double> change_5_3 = {-0.05,0.025,0.0,0.0,0.175,0.0}; // Mangler Rot i x/y
+    std::vector<double> change_5_4 = {-0.10,0.05,0.0,0.0,0.35,0.0}; // Mangler Rot i x/y
+    std::vector<double> pose_5_1 = controller.poseTrans(change_0_0,change_5_1);
+    std::vector<double> pose_5_2 = controller.poseTrans(change_0_0,change_5_2);
+    std::vector<double> pose_5_3 = controller.poseTrans(change_0_0,change_5_3);
+    std::vector<double> pose_5_4 = controller.poseTrans(change_0_0,change_5_4);
 
-    controller.moveL(change_0_0, velocity, acceleration);
-    controller.moveL(pose_2_1, velocity, acceleration);
-    controller.moveL(pose_2_2, velocity, acceleration);
-    controller.moveL(pose_2_3, velocity, acceleration);
-    controller.moveL(pose_2_4, velocity, acceleration);
+    std::vector<double> change_6_1 = {0.05,-0.10,0.0,0.35,0.0,0.0}; // Mangler Rot i x/y
+    std::vector<double> change_6_2 = {0.025,-0.05,0.0,0.175,0.0,0.0}; // Mangler Rot i x/y
+    std::vector<double> change_6_3 = {-0.025,0.05,0.0,-0.175,0.0,0.0}; // Mangler Rot i x/y
+    std::vector<double> change_6_4 = {-0.05,0.10,0.0,-0.35,0.0,0.0}; // Mangler Rot i x/y
+    std::vector<double> pose_6_1 = controller.poseTrans(change_0_0,change_1_1);
+    std::vector<double> pose_6_2 = controller.poseTrans(change_0_0,change_1_2);
+    std::vector<double> pose_6_3 = controller.poseTrans(change_0_0,change_1_3);
+    std::vector<double> pose_6_4 = controller.poseTrans(change_0_0,change_1_4);
+
+//    controller.moveL(change_0_0, velocity, acceleration);
+//    controller.moveL(pose_1_1, velocity, acceleration);
+//    controller.moveL(pose_1_2, velocity, acceleration);
+//    controller.moveL(pose_1_3, velocity, acceleration);
+//    controller.moveL(pose_1_4, velocity, acceleration);
+
+//    controller.moveL(pose_2_1, velocity, acceleration);
+//    controller.moveL(pose_2_2, velocity, acceleration);
+//    controller.moveL(pose_2_3, velocity, acceleration);
+//    controller.moveL(pose_2_4, velocity, acceleration);
+
+//    controller.moveL(pose_3_1, velocity, acceleration);
+//    controller.moveL(pose_3_2, velocity, acceleration);
+//    controller.moveL(pose_3_3, velocity, acceleration);
+//    controller.moveL(pose_3_4, velocity, acceleration);
+
+//    controller.moveL(pose_4_1, velocity, acceleration);
+//    controller.moveL(pose_4_2, velocity, acceleration);
+//    controller.moveL(pose_4_3, velocity, acceleration);
+//    controller.moveL(pose_4_4, velocity, acceleration);
+
+    controller.moveL(pose_5_1, velocity, acceleration);
+    controller.moveL(pose_5_2, velocity, acceleration);
+    controller.moveL(pose_5_3, velocity, acceleration);
+    controller.moveL(pose_5_4, velocity, acceleration);
+
+//    controller.moveL(pose_6_1, velocity, acceleration);
+//    controller.moveL(pose_6_2, velocity, acceleration);
+//    controller.moveL(pose_6_3, velocity, acceleration);
+//    controller.moveL(pose_6_4, velocity, acceleration);
 
 
 }
