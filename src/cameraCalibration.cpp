@@ -39,6 +39,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
     int imageNr = 1;
     int frame = 1;
     bool calibrateRunTime = false;
+    std::vector<double> initPose = {0.0,0.0,0.0,0.0,0.0,0.0};
     while ( camera.IsGrabbing())
     {
         camera.RetrieveResult( 5000, ptrGrabResult, Pylon::TimeoutHandling_ThrowException);
@@ -51,12 +52,6 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             formatConverter.Convert(pylonImage, ptrGrabResult);
             // Create an OpenCV image from a pylon image.
             openCvImage = cv::Mat(ptrGrabResult->GetHeight(), ptrGrabResult->GetWidth(), CV_8UC3, (uint8_t *) pylonImage.GetBuffer());
-
-
-            //
-
-            //
-
 
              mWidth = openCvImage.size().width * 60/100;
              mHeight = openCvImage.size().height * 60/100;
@@ -92,7 +87,8 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 cv::destroyWindow(vindue.str());
                 /* RTDE handler object */
                 MoveArm ur5arm;
-                mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
+                //mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
+                initPose = ur5arm.poseSwift(reciver,controller,0.03,0.03,imageNr, initPose);
                 imageNr++;
 
             } else if(keyPressed == 'g'|| keyPressed == 'G' ){
@@ -104,7 +100,8 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 cv::destroyWindow(vindue.str());
                 /* RTDE handler object */
                 MoveArm ur5arm;
-                mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
+                //mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
+                initPose = ur5arm.poseSwift(reciver,controller,0.05,0.05,imageNr, initPose);
                 imageNr++;
 
             } else if (keyPressed == 'q'|| keyPressed == 'Q' ) { // Quit if Q is Pressed
