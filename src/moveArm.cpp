@@ -45,7 +45,8 @@ void MoveArm::getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde:
     path_q.push_back(startPos_q1);
     controller.moveJ(path_q, false);
     std::cout << "Moving to checker postion" << std::endl;
-    std::vector<double> baseFrame = reciver.getTargetTCPPose();
+     ur_rtde::RTDEReceiveInterface receiverNew("192.168.100.50");
+    std::vector<double> baseFrame = receiverNew.getTargetTCPPose();
     std::cout << "Move frame: " << readVector(baseFrame) << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 //    position[2] = 0.0;
@@ -142,7 +143,7 @@ std::vector<double> MoveArm::receivePose(ur_rtde::RTDEReceiveInterface &reciver)
     return jointPose;
 }
 
-std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity, double acceleration, int positionStatus, std::vector<double> initPose){
+std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity, double acceleration, int positionStatus, std::vector<double> initPose, int mNumberOfCalibrationImages){
     std::cout << "Moving to checker postion" << std::endl;
 
     if(positionStatus == 1){
@@ -334,8 +335,13 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         break;
     case 25:
-        controller.moveL(pose_7_1, velocity, acceleration);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        if(mNumberOfCalibrationImages == 25){
+            controller.moveL(initPose, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }else{
+            controller.moveL(pose_7_1, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
         break;
     case 26:
         controller.moveL(pose_7_2, velocity, acceleration);

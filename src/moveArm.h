@@ -32,7 +32,7 @@ public:
     void getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6d position, int progress, double velocity, double acceleration);
 
 
-    std::vector<double> poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity, double acceleration, int positionStatus, std::vector<double> initPose);
+    std::vector<double> poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity, double acceleration, int positionStatus, std::vector<double> initPose, int mNumberOfCalibrationImages);
 
     std::vector<std::vector<double>> throwBall(ur_rtde::RTDEControlInterface &rtde_control, ur_rtde::RTDEReceiveInterface &reciver,  double velocity= 0.5, double acceleration = 0.5);
 
