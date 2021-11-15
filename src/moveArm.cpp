@@ -148,7 +148,8 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
 
     if(positionStatus == 1){
     std::vector<std::vector<double>> path_q;
-    std::vector<double> startPos_q1 = {-1.36689,-1.28005,-1.90308,-3.10318,-1.70538,1.5708, velocity, acceleration, 0.0};
+    //std::vector<double> startPos_q1 = {-1.36689,-1.28005,-1.90308,-3.10318,-1.70538,1.5708, velocity, acceleration, 0.0};
+    std::vector<double> startPos_q1 = {-0.8988,-1.3089,-1.8849,-3.0944,-1.2374,-1.5725, velocity, acceleration, 0.0};
     path_q.push_back(startPos_q1);
     controller.moveJ(path_q, false);
     }
@@ -156,7 +157,8 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
     ur_rtde::RTDEReceiveInterface receiverNew("192.168.100.50");
     std::vector<double> pose = receiverNew.getActualTCPPose();
 
-    std::vector<double> currentPose = {0.0146505+0.001518,0.0136401+0.004175,0.0,0.0,0.0,0.0};
+    //std::vector<double> currentPose = {0.0146505+0.001518,0.0136401+0.004175,0.0,0.0,0.0,0.0};
+    std::vector<double> currentPose = {0.0,0.0,0.0,0.0,0.0,0.0};
     std::vector<double> change_0_0 = controller.poseTrans(pose,currentPose);
 
     if (positionStatus == 1) {
