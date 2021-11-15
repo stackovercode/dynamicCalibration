@@ -141,16 +141,21 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             cv::Mat RRodriguesMatrix = (cv::Mat_<double>(3,3));
             cv::Mat RRodriguesMatrixTrans = (cv::Mat_<double>(3,3));
 
-            Rodrigues(mRvec, RRodriguesMatrix);
+            //Rodrigues(mRvec, RRodriguesMatrix);
 
-            transpose(RRodriguesMatrix, RRodriguesMatrixTrans);
+            Rodrigues(mRvec, RRodriguesMatrixTrans);
+
+            //std::cout << "RRodriguesMatrixTrans: " << RRodriguesMatrixTrans << std::endl;
+
+
+           //transpose(RRodriguesMatrix, RRodriguesMatrixTrans);
 
             cv::Vec3f rotation = rpy2rv(rotationMatrixToEulerAngles(RRodriguesMatrixTrans));
 
             mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
             mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
             mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
-            mRobotPoint3d[3] = rotation[0];
+            mRobotPoint3d[3] = -rotation[0];
             mRobotPoint3d[4] = rotation[1];
             mRobotPoint3d[5] = zRotation;
 
@@ -195,8 +200,8 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 runSQ = true;
                 cv::destroyWindow(vindue.str());
                 MoveArm urArm;
-                double velocity = 0.1;
-                double acceleration = 0.1;
+                double velocity = 0.02;
+                double acceleration = 0.02;
                 if(progress < 4){
                 std::cout << "Inside loop. start Progress: " << progress << std::endl;
                 urArm.getToJob(reciver, controller, mRobotPoint3d, progress, velocity, acceleration);
@@ -207,8 +212,8 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 std::cout << "Shutting down camera..." << std::endl;
                 cv::destroyWindow(vindue.str());
                 MoveArm urArm;
-                double velocity = 0.1;
-                double acceleration = 0.1;
+                double velocity = 0.02;
+                double acceleration = 0.02;
                 urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
                 imageNr++;
             } else if (keyPressed == 'q'|| keyPressed == 'Q' ) { // Quit if Q is Pressed

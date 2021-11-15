@@ -48,13 +48,9 @@ void MoveArm::getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde:
     std::vector<double> baseFrame = reciver.getTargetTCPPose();
     std::cout << "Move frame: " << readVector(baseFrame) << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//    std::cout << "pos 2: " << position[2] << std::endl;
-//    std::cout << "pos 3: " << position[3] << std::endl;
-//    std::cout << "pos 4: " << position[4] << std::endl;
-//    std::cout << "pos 5: " << position[5] << std::endl;
-    position[2] = 0.0;
-    position[3] = 0.0;
-    position[4] = 0.0;
+//    position[2] = 0.0;
+//    position[3] = 0.0;
+//    position[4] = 0.0;
 //    position[5] = 0.0;
     std::vector<double> featureFrame = {position[0],position[1],position[2],position[3],position[4],position[5]};
     std::vector<double> moveFrame = controller.poseTrans(baseFrame,featureFrame);
