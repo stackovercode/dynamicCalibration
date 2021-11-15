@@ -156,8 +156,8 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
             mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
             mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
-            mRobotPoint3d[3] = M_PI - rotation[0];
-            mRobotPoint3d[4] = rotation[1];
+            mRobotPoint3d[3] = -(M_PI - rotation[0]);
+            mRobotPoint3d[4] = -rotation[1];
             mRobotPoint3d[5] = zRotation;
 
             std::cout << "Print: " << mRobotPoint3d << std::endl;
