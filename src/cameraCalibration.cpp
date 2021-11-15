@@ -88,7 +88,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 /* RTDE handler object */
                 MoveArm ur5arm;
                 //mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
-                initPose = ur5arm.poseSwift(reciver,controller,0.02,0.02,imageNr, initPose, mNumberOfCalibrationImages);
+                initPose = ur5arm.poseSwift(reciver,controller,0.03,0.03,imageNr, initPose, mNumberOfCalibrationImages);
                 imageNr++;
 
             } else if(keyPressed == 'g'|| keyPressed == 'G' ){
@@ -101,7 +101,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 /* RTDE handler object */
                 MoveArm ur5arm;
                 //mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
-                initPose = ur5arm.poseSwift(reciver,controller,0.02,0.02,imageNr, initPose, mNumberOfCalibrationImages);
+                initPose = ur5arm.poseSwift(reciver,controller,0.03,0.03,imageNr, initPose, mNumberOfCalibrationImages);
                 imageNr++;
 
             } else if (keyPressed == 'q'|| keyPressed == 'Q' ) { // Quit if Q is Pressed
@@ -179,7 +179,7 @@ void CameraCalibration::drawChessboardCorners(std::vector<std::vector<cv::Point2
             cv::drawChessboardCorners(image, patternSize, chessboardCorners, isPatternfound );
             std::stringstream vindue;
             vindue << "Chessboard detection: Press B to Break and Not show any more images. Showing: " << file;
-            cv::namedWindow( vindue.str() , cv::WINDOW_AUTOSIZE);
+            cv::namedWindow(vindue.str() , cv::WINDOW_AUTOSIZE);
 
             //int width = image.size().width * 60/100;
             //int height = image.size().height * 60/100;
