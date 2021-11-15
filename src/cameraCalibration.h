@@ -16,7 +16,7 @@ class CameraCalibration : public Camera
 {
 public:
     CameraCalibration( CameraSettings& cameraSettings, int verticalIntersections = 5, int horizontalIntersections = 6,
-                                                       int squareSize = 10, int numberOfCalibrationImages = 17);
+                                                       int squareSize = 10, int numberOfCalibrationImages = 1);
     virtual ~CameraCalibration() = default;
 
 

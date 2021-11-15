@@ -246,8 +246,19 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
             controller.moveL(pose_1_2, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         } else {
-            controller.moveL(pose_1_2, velocity, acceleration);
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if (mNumberOfCalibrationImages == 5) {
+                //controller.moveL(pose_1_1, velocity, acceleration);
+                controller.moveL(pose_1_2, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            } else {
+                if (mNumberOfCalibrationImages == 1) {
+                    controller.moveL(initPose, velocity, acceleration);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }else{
+                    controller.moveL(pose_1_2, velocity, acceleration);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }
+            }
         }
         break;
     case 2:
@@ -255,8 +266,14 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
             controller.moveL(pose_7_2, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         } else {
-            controller.moveL(pose_2_2, velocity, acceleration);
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if (mNumberOfCalibrationImages == 5) {
+                //controller.moveL(pose_4_1, velocity, acceleration);
+                controller.moveL(pose_4_2, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            } else {
+                controller.moveL(pose_2_2, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
         }
         break;
     case 3:
@@ -264,8 +281,14 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
             controller.moveL(pose_4_2, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         } else {
-            controller.moveL(pose_3_2, velocity, acceleration);
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if (mNumberOfCalibrationImages == 5) {
+                //controller.moveL(pose_1_4, velocity, acceleration);
+                controller.moveL(pose_1_3, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            } else {
+                controller.moveL(pose_3_2, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
         }
         break;
     case 4:
@@ -273,8 +296,14 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
             controller.moveL(pose_8_2, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         } else {
-            controller.moveL(pose_4_2, velocity, acceleration);
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if (mNumberOfCalibrationImages == 5) {
+                //controller.moveL(pose_4_4, velocity, acceleration);
+                controller.moveL(pose_4_3, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            } else {
+                controller.moveL(pose_4_2, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
         }
         break;
     case 5:
@@ -282,8 +311,13 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
             controller.moveL(pose_1_3, velocity, acceleration);
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         } else {
-            controller.moveL(pose_5_2, velocity, acceleration);
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if (mNumberOfCalibrationImages == 5) {
+                controller.moveL(initPose, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            } else {
+                controller.moveL(pose_5_2, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
         }
         break;
     case 6:
