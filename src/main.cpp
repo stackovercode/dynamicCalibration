@@ -156,7 +156,7 @@ int main(int argc, char* argv[]){
 
 
 
-        // ur5arm.poseSwift(rtde_receive, rtde_control, 0.02, 0.02, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25);
+         ur5arm.poseSwift(rtde_receive, rtde_control, 0.02, 0.02, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
 //         while(true){
 //             try
 //             {

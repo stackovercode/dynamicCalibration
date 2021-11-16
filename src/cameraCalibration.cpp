@@ -274,11 +274,15 @@ void CameraCalibration::calibrate(std::vector<std::vector<cv::Point2f>> const ch
 
             if (flagShowImage) {
 
-                //cv::drawMarker(imgUndistorted, imageFramePoints[0], cv::Scalar(0,0,255), cv::MARKER_CROSS, 20, 4, 4);
-
                 std::stringstream vindue;
                 vindue << "Undistorted image: Press B to Break and Not show any more images. Image. " << file;
-                cv::namedWindow( vindue.str() , cv::WINDOW_AUTOSIZE);
+                cv::namedWindow( vindue.str(), cv::WINDOW_AUTOSIZE);
+
+                //cv::Size dimension (mWidth, mHeight);
+                //cv::resize(imgUndistorted,imgUndistorted,dimension);
+
+                mWidth = imgUndistorted.size().width * 60/100;
+                mHeight = imgUndistorted.size().height * 60/100;
 
                 cv::Size dimension (mWidth, mHeight);
                 cv::resize(imgUndistorted,imgUndistorted,dimension);

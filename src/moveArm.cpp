@@ -143,7 +143,7 @@ std::vector<double> MoveArm::receivePose(ur_rtde::RTDEReceiveInterface &reciver)
     return jointPose;
 }
 
-std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity, double acceleration, int positionStatus, std::vector<double> initPose, int mNumberOfCalibrationImages){
+std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity, double acceleration, int positionStatus, std::vector<double> initPose, int mNumberOfCalibrationImages, bool largeCheckerboardSize){
     std::cout << "Moving to checker postion" << std::endl;
 
     if(positionStatus == 1){
