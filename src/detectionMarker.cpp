@@ -133,26 +133,39 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
            char keyPressed;
 
 
-           if (flagDetect) {
-               mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
-               mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
-               mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
-               mRobotPoint3d[3] = 0.0;
-               mRobotPoint3d[4] = 0.0;
-               mRobotPoint3d[5] = zRotation;
-               keyPressed = 'c';
-           } else if (flagDetect && runSQ){
-               keyPressed = cv::waitKey(1);
-           } else {
-               mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
-               mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
-               mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
-               mRobotPoint3d[3] = -(M_PI - rotation[0]);
-               mRobotPoint3d[4] = -rotation[1];
-               mRobotPoint3d[5] = zRotation;
-               //keyPressed = 'j';
-               keyPressed = cv::waitKey(1);
-           }
+          if (flagDetect) {
+              mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
+              mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
+              mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
+              mRobotPoint3d[3] = 0.0;
+              mRobotPoint3d[4] = 0.0;
+              mRobotPoint3d[5] = zRotation;
+              keyPressed = 'c';
+          } else if (flagDetect && runSQ){
+              keyPressed = cv::waitKey(1);
+          } else {
+              mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
+              mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
+              mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
+
+
+              if(rotation[0] > 0){
+                  mRobotPoint3d[3] = -(M_PI - rotation[0]);
+
+              }else if(rotation[0] < 0){
+                  mRobotPoint3d[3] = M_PI + rotation[0];
+              }
+
+              if(rotation[1] > 0){
+                  mRobotPoint3d[4] = -rotation[1];
+
+              }else if(rotation[1] < 0){
+                  mRobotPoint3d[4] = -(rotation[1]);
+              }
+              mRobotPoint3d[5] = zRotation;
+              //keyPressed = 'j';
+              keyPressed = cv::waitKey(1);
+          }
 
 
 

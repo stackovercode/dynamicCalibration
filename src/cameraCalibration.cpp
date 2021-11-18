@@ -53,6 +53,20 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             // Create an OpenCV image from a pylon image.
             openCvImage = cv::Mat(ptrGrabResult->GetHeight(), ptrGrabResult->GetWidth(), CV_8UC3, (uint8_t *) pylonImage.GetBuffer());
 
+            bool addGausNoise;
+            double NoiseStdDev = 10; //101
+
+            if(addGausNoise == true){
+
+                cv::Mat GausNoise = cv::Mat(openCvImage.size(), CV_8UC3);
+
+                randn(GausNoise, 0, NoiseStdDev);
+                openCvImage += GausNoise;
+
+                normalize(openCvImage, openCvImage, 0 ,255, cv::NORM_MINMAX, CV_8UC3);
+            }
+
+
              mWidth = openCvImage.size().width * 60/100;
              mHeight = openCvImage.size().height * 60/100;
 
@@ -104,6 +118,14 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 initPose = ur5arm.poseSwift(reciver,controller,0.03,0.03,imageNr, initPose, mNumberOfCalibrationImages, false);
                 imageNr++;
 
+            } else if (keyPressed == 'n'|| keyPressed == 'N' ) { // Quit if Q is Pressed
+                std::cout << "Adding Gaussian noise to image." << std::endl;
+                addGausNoise = true;
+                std::cout << "Added Gaussian noise to image was succesfull." << std::endl;
+            } else if (keyPressed == 'e'|| keyPressed == 'E' ) { // Quit if Q is Pressed
+                std::cout << "Removing Gaussian noise from image." << std::endl;
+                addGausNoise = true;
+                std::cout << "Removed Gaussian noise from image was succesfull." << std::endl;
             } else if (keyPressed == 'q'|| keyPressed == 'Q' ) { // Quit if Q is Pressed
                 std::cout << "Shutting down camera..." << std::endl;
                 camera.Close();
