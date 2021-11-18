@@ -88,7 +88,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 /* RTDE handler object */
                 MoveArm ur5arm;
                 //mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
-                initPose = ur5arm.poseSwift(reciver,controller,0.03,0.03,imageNr, initPose, mNumberOfCalibrationImages);
+                initPose = ur5arm.poseSwift(reciver,controller,0.03,0.03,imageNr, initPose, mNumberOfCalibrationImages, false);
                 imageNr++;
 
             } else if(keyPressed == 'g'|| keyPressed == 'G' ){
@@ -101,7 +101,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 /* RTDE handler object */
                 MoveArm ur5arm;
                 //mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
-                initPose = ur5arm.poseSwift(reciver,controller,0.03,0.03,imageNr, initPose, mNumberOfCalibrationImages);
+                initPose = ur5arm.poseSwift(reciver,controller,0.03,0.03,imageNr, initPose, mNumberOfCalibrationImages, false);
                 imageNr++;
 
             } else if (keyPressed == 'q'|| keyPressed == 'Q' ) { // Quit if Q is Pressed
@@ -236,27 +236,27 @@ void CameraCalibration::calibrate(std::vector<std::vector<cv::Point2f>> const ch
             + cv::CALIB_FIX_PRINCIPAL_POINT;
     cv::TermCriteria term(1,100,0);
 
-    mErrorRMS = cv::calibrateCamera(checkerboardWorldArray,chessboardCornersArray,mCamerasettings.getResolution(),mCameraMatrix,mDistortionCoefficient,rvecs,tvecs,flags,term);
-    writeFileTranRot(rvecs, tvecs);
+   // mErrorRMS = cv::calibrateCamera(checkerboardWorldArray,chessboardCornersArray,mCamerasettings.getResolution(),mCameraMatrix,mDistortionCoefficient,rvecs,tvecs,flags,term);
+//    writeFileTranRot(rvecs, tvecs);
 
-        framePoints.push_back(cv::Point3f(0.0, 0.0, 0.0));
-        framePoints.push_back(cv::Point3f(2.0, 0.0, 0.0));
-        framePoints.push_back(cv::Point3f(0.0, 2.0, 0.0));
-        framePoints.push_back(cv::Point3f(0.0, 0.0, 2.0));
-        framePoints.push_back(cv::Point3f(4.0, 5.0, 0.0));
-        framePoints.push_back(cv::Point3f(4.0, 0.0, 0.0));
-        framePoints.push_back(cv::Point3f(0.0, 5.0, 0.0));
+//        framePoints.push_back(cv::Point3f(0.0, 0.0, 0.0));b
+//        framePoints.push_back(cv::Point3f(2.0, 0.0, 0.0));
+//        framePoints.push_back(cv::Point3f(0.0, 2.0, 0.0));
+//        framePoints.push_back(cv::Point3f(0.0, 0.0, 2.0));
+//        framePoints.push_back(cv::Point3f(4.0, 5.0, 0.0));
+//        framePoints.push_back(cv::Point3f(4.0, 0.0, 0.0));
+//        framePoints.push_back(cv::Point3f(0.0, 5.0, 0.0));
 
-    cv::projectPoints(framePoints, rvecs[0], tvecs[0], mCameraMatrix, mDistortionCoefficient, imageFramePoints);
+//    cv::projectPoints(framePoints, rvecs[0], tvecs[0], mCameraMatrix, mDistortionCoefficient, imageFramePoints);
 
 
-    try{
-        cv::solvePnP(checkerboardWorldArray[24], chessboardCornersArray[24], mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
-        std::cout << "SolvePNP rotation: " << mRvec << std::endl;
-        std::cout << "SolvePNP translation: " << mTvec << std::endl;
-    } catch(std::exception& e){
-        std::cout<< "Exception: " << std::endl;
-    }
+//    try{
+//        cv::solvePnP(checkerboardWorldArray[24], chessboardCornersArray[24], mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
+//        std::cout << "SolvePNP rotation: " << mRvec << std::endl;
+//        std::cout << "SolvePNP translation: " << mTvec << std::endl;
+//    } catch(std::exception& e){
+//        std::cout<< "Exception: " << std::endl;
+//    }
 
     // Display lens corrected images
     if (flagShowImage) {

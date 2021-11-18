@@ -43,9 +43,10 @@ int main(int argc, char* argv[]){
 
 
     // I made something
-    bool runCalibrateCameraSekvens = true;
+    bool runFinalSekvens = false;
+    bool runCalibrateCameraSekvens = false;
     bool runCalibrateWorkSpaceSekvens = false;
-    bool runDetectionMarker = false;
+    bool runDetectionMarker = true;
     bool runComToRobot = false;
     bool runMainSekvens = false;
     bool runTransSekvens = false;
@@ -63,6 +64,18 @@ int main(int argc, char* argv[]){
     MoveArm robotCom;
 
 
+
+    //////////// Final sekvens //////////////
+    if (runFinalSekvens){
+        std::cout << "/* Final sekvens */" << std::endl;
+        robotCom.initialize(rtde_receive, rtde_control);
+        detectMarker.initialize(rtde_receive, rtde_control, true);
+        cameraCalibrate.initialize(rtde_receive, rtde_control);
+        detectMarker.initialize(rtde_receive, rtde_control, false);
+        cv::Vec6d point = detectMarker.mRobotPoint3d;
+        std::vector<double> baseFrame = detectMarker.moveFrame;
+        robotCom.getToJob(rtde_receive, rtde_control, point, baseFrame, 0, 0.05, 0.05);
+    }
 
     //////////// Calibrate camera sekvens //////////////
     if (runCalibrateCameraSekvens)
@@ -93,7 +106,7 @@ int main(int argc, char* argv[]){
          std::cout << "/* Detection marker sekvens */" << std::endl;
 
 
-         detectMarker.initialize(rtde_receive, rtde_control);
+         detectMarker.initialize(rtde_receive, rtde_control, true);
          cv::Vec6d point = detectMarker.mRobotPoint3d;
          std::cout << "text" << point << std::endl;
 
@@ -155,23 +168,22 @@ int main(int argc, char* argv[]){
 
 
 
+       // std::cout << "test: " << ur5arm.readVector(ur5arm.receivePose(rtde_receive)) << std::endl;
 
-         ur5arm.poseSwift(rtde_receive, rtde_control, 0.02, 0.02, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
-//         while(true){
-//             try
-//             {
-//                 ur5arm.poseSwift(rtde_receive, rtde_control, 0.5, 0.5);
-//                //ur5arm.moveCalibrate(rtde_receive,rtde_control, 0.5, 0.5);
+         bool test = true;
+         char keyPressed;
+         while(test){
+             keyPressed = cv::waitKey(1);
+             if(keyPressed == 'n'|| keyPressed == 'N' ){
+                 std::cout << "N" << std::endl;
+              } else if(keyPressed == 'q'|| keyPressed == 'Q' ){
+                 std::cout << "Q" << std::endl;
+                 test = false;
+             }
 
-//             }
-//             catch (std::exception e )
-//             {
-//                 e.what();
-//                 std::cout << e.what() << " + FUUUUUUCK " << std::endl;
-//                 break;
-//             }
+            // ur5arm.poseSwift(rtde_receive, rtde_control, 0.02, 0.02, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
 
-//         }
+         }
 
 
      }

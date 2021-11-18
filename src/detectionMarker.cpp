@@ -20,12 +20,10 @@ DetectionMarker::DetectionMarker( CameraSettings& cameraSettings, int verticalIn
 
 }
 
-void DetectionMarker::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller){
-
-
-    cout<< "Insite detectionMarker!" <<endl;
+void DetectionMarker::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, bool flagDetectMarker){
+    std::cout<< "Inside detectionMarker!" << std::endl;
+    flagDetect = flagDetectMarker;
     detectImages(reciver, controller);
-
 }
 
 void DetectionMarker::detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller){
@@ -33,8 +31,7 @@ void DetectionMarker::detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rt
 }
 
 // Override
-void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller)
-{
+void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller){
     Pylon::CImageFormatConverter formatConverter;
     formatConverter.OutputPixelFormat= Pylon::PixelType_BGR8packed;
     Pylon::CGrabResultPtr ptrGrabResult;
@@ -46,13 +43,10 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
     int frame = 1;
     int progress = 1;
     bool runSQ = false;
-    while ( camera.IsGrabbing())
-    {
+    while ( camera.IsGrabbing()){
         camera.RetrieveResult( 5000, ptrGrabResult, Pylon::TimeoutHandling_ThrowException);
 
-        if (ptrGrabResult->GrabSucceeded())
-        {
-
+        if (ptrGrabResult->GrabSucceeded()){
             formatConverter.Convert(pylonImage, ptrGrabResult);
             // Create an OpenCV image from a pylon image.
             openCvImage = cv::Mat(ptrGrabResult->GetHeight(), ptrGrabResult->GetWidth(), CV_8UC3, (uint8_t *) pylonImage.GetBuffer());
@@ -94,28 +88,19 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             framePoints.push_back(Point3f(4.0, 0.0, 0.0));
             framePoints.push_back(Point3f(0.0, 5.0, 0.0));
 
-//            if (true) {
-                try{
-                    solvePnP(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
-                    //writeFileTranRot(mRvec, mTvec);
-                    cout<< "Rotation vector " << mRvec <<endl;
-                    cout<< "Translation vector " << mTvec <<endl;
-                } catch(exception& e){
-                    cout<< "Exception: " << endl;
-                }
-//                runSQ = false;
-//            }
-            projectPoints(framePoints, mRvec, mTvec, mCameraMatrix, mDistortionCoefficient, imageFramePoints);
+            try{
+                solvePnP(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
+                cout<< "Rotation vector " << mRvec <<endl;
+                cout<< "Translation vector " << mTvec <<endl;
+            } catch(exception& e){
+                cout<< "Exception: " << endl;
+            }
 
+            projectPoints(framePoints, mRvec, mTvec, mCameraMatrix, mDistortionCoefficient, imageFramePoints);
 
             line(imgUndistorted, imageFramePoints[0], imageFramePoints[1], Scalar(0,255,0), 2, LINE_AA);
             line(imgUndistorted, imageFramePoints[0], imageFramePoints[2], Scalar(255,0,0), 2, LINE_AA);
             line(imgUndistorted, imageFramePoints[0], imageFramePoints[3], Scalar(0,0,255), 2, LINE_AA);
-
-//            drawMarker(imgUndistorted, imageFramePoints[4], Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
-//            drawMarker(imgUndistorted, imageFramePoints[5], Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
-//            drawMarker(imgUndistorted, imageFramePoints[6], Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
-
 
             double focalL = 3316.188;
             double widthObj = 64.03;
@@ -136,54 +121,44 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             double zRotation = (atan(xVector.y/xVector.x));
 
-            //std::cout << "text: " << atan(xVector.y/xVector.x) << std::endl;
-
             cv::Mat RRodriguesMatrix = (cv::Mat_<double>(3,3));
             cv::Mat RRodriguesMatrixTrans = (cv::Mat_<double>(3,3));
 
             Rodrigues(mRvec, RRodriguesMatrix);
 
-            //Rodrigues(mRvec, RRodriguesMatrixTrans);
-
-            //std::cout << "RRodriguesMatrixTrans: " << RRodriguesMatrixTrans << std::endl;
-
-
            transpose(RRodriguesMatrix, RRodriguesMatrixTrans);
 
-            //cv::Vec3f rotation = rpy2rv(rotationMatrixToEulerAngles(RRodriguesMatrixTrans));
            cv::Vec3f rotation = rotationMatrixToEulerAngles(RRodriguesMatrixTrans);
 
-            mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
-            mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
-            mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
-            mRobotPoint3d[3] = -(M_PI - rotation[0]);
-            mRobotPoint3d[4] = -rotation[1];
-            mRobotPoint3d[5] = zRotation;
+           char keyPressed;
 
-            std::cout << "Print: " << mRobotPoint3d << std::endl;
+
+           if (flagDetect) {
+               mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
+               mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
+               mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
+               mRobotPoint3d[3] = 0.0;
+               mRobotPoint3d[4] = 0.0;
+               mRobotPoint3d[5] = zRotation;
+               keyPressed = 'c';
+           } else if (flagDetect && runSQ){
+               keyPressed = cv::waitKey(1);
+           } else {
+               mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
+               mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
+               mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
+               mRobotPoint3d[3] = -(M_PI - rotation[0]);
+               mRobotPoint3d[4] = -rotation[1];
+               mRobotPoint3d[5] = zRotation;
+               //keyPressed = 'j';
+               keyPressed = cv::waitKey(1);
+           }
+
 
 
             drawMarker(imgUndistorted, {frameCenter.x, frameCenter.y}, Scalar(0,0,255), MARKER_STAR, 20, 4, 4);
             drawMarker(imgUndistorted, {checkerboardCenter.x, checkerboardCenter.y}, Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
 
-//            Point2f robotPointtest = vectorBetween2Points(imageFramePoints[0], frameCenter) * pixelPmm;
-//            Point3f robotPointtest3d;
-
-//            robotPointtest3d.x = (robotPointtest.x + 16)/1000; // + 16 for translation between camera and tcp(gripper) in x axis
-//            robotPointtest3d.y = (robotPointtest.y + 43)/1000; // + 43 for translation between camera and tcp(gripper) in y axis
-//            robotPointtest3d.z = (distanceObj - 129)/1000; // - 129 for translation between camera and tcp(gripper) in z axis
-
-//            mRobotPointtest3d = robotPointtest3d;
-
-//            cout<< "Origo from pP: " << imageFramePoints[0] <<endl;
-//            cout<< "Origo from findCorners: " << corners[0] <<endl;
-//            cout<< "Origo from pP in mm: " << imageFramePoints[0].x/61.8 << ", " <<imageFramePoints[0].y/61.8 <<endl;
-//            cout<< "Origo from findCorners in mm: " << corners[0].x/61.8 << ", " <<corners[0].y/61.8 <<endl;
-//            cout<< "Point 1 " << imageFramePoints[1] <<endl;
-//            cout<< "Rotation vector " << mRvec <<endl;
-//            cout<< "Translation vector " << mTvec <<endl;
-//            cout<< "Distance to object: " << distanceObj <<endl;
-            //cout<< robotPointtest3d <<endl;
 
             openCvImage = imgUndistorted.clone();
             int width = openCvImage.size().width * 60/100;
@@ -196,27 +171,33 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             cv::namedWindow( vindue.str() , cv::WINDOW_AUTOSIZE);
             cv::imshow( vindue.str(), openCvImage);
 
-            char keyPressed = cv::waitKey(1);
+            //char keyPressed = cv::waitKey(1);
             if(keyPressed == 'j'|| keyPressed == 'J' ){
-                runSQ = true;
                 cv::destroyWindow(vindue.str());
                 MoveArm urArm;
                 double velocity = 0.02;
                 double acceleration = 0.02;
                 if(progress < 4){
                 std::cout << "Inside loop. start Progress: " << progress << std::endl;
-                urArm.getToJob(reciver, controller, mRobotPoint3d, progress, velocity, acceleration);
+                //urArm.getToJob(reciver, controller, mRobotPoint3d, progress, velocity, acceleration);
                 progress++;
                 }
                 imageNr++;
             } else if (keyPressed == 'c'|| keyPressed == 'C' ) { // Quit if Q is Pressed
+                runSQ = true;
                 std::cout << "Shutting down camera..." << std::endl;
                 cv::destroyWindow(vindue.str());
                 MoveArm urArm;
                 double velocity = 0.02;
                 double acceleration = 0.02;
-                urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
-                imageNr++;
+                moveFrame = urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
+
+                std::cout << "Shutting down camera..." << std::endl;
+                camera.Close();
+                cv::destroyWindow(vindue.str());
+                exit(0);
+
+                //imageNr++;
             } else if (keyPressed == 'q'|| keyPressed == 'Q' ) { // Quit if Q is Pressed
                 std::cout << "Shutting down camera..." << std::endl;
                 camera.Close();
@@ -231,7 +212,6 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             if (imageNr > mNumberOfCalibrationImages ) {
                 break;
             }
-            /////
 
             frame++;
         }

@@ -18,58 +18,37 @@ MoveArm::MoveArm(){
 MoveArm::~MoveArm(){}
 
 void MoveArm::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller){
-    //MoveArm process
-    //std::vector<double> hej = controller.getTCPOffset();
-    //std::cout << "text: " << readVector(hej) << std::endl;
-
-
-    //std::vector<double> featureFrame = {0.1,0.1,0.1,2.56827,-1.80924,-0.0107754};
-    //ur_rtde::RTDEControlInterface rtde_control("192.168.100.50", 30004);
-    //std::vector<double> moveFrame;
-
-    //moveFrame = controller.poseTrans(baseFrame,featureFrame);
-
-    //std::cout << "move Move: " << readVector(moveFrame) << std::endl;
-    //std::cout << controller.isConnected() << std::endl;
-    //controller.moveL(moveFrame, 0.25,1.2);
-
-    //process.receivePose(reciver);
-    //process.getPoseFile("../Detection/RobotposeData.txt");
-
-
-}
-
-void MoveArm::getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6d position, double velocity, double acceleration){
     std::vector<std::vector<double>> path_q;
-    std::vector<double> startPos_q1 = {-1.36689,-1.28005,-1.90308,-3.10318,-1.70538,1.5708, velocity, acceleration, 0.0};
+    double velocity = 0.05, acceleration = 0.05;
+    std::vector<double> startPos_q1 = {-0.896468,-1.4284,-1.2074,-3.65303,-1.2375,1.57324, velocity, acceleration, 0.0};
     path_q.push_back(startPos_q1);
     controller.moveJ(path_q, false);
+}
+
+std::vector<double> MoveArm::getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6d position, double velocity, double acceleration){
     std::cout << "Moving to checker postion" << std::endl;
-     ur_rtde::RTDEReceiveInterface receiverNew("192.168.100.50");
+    ur_rtde::RTDEReceiveInterface receiverNew("192.168.100.50");
     std::vector<double> baseFrame = receiverNew.getTargetTCPPose();
     std::cout << "Move frame: " << readVector(baseFrame) << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//    position[2] = 0.0;
-//    position[3] = 0.0;
-//    position[4] = 0.0;
-//    position[5] = 0.0;
     std::vector<double> featureFrame = {position[0],position[1],position[2],position[3],position[4],position[5]};
     std::vector<double> moveFrame = controller.poseTrans(baseFrame,featureFrame);
     std::cout << "Move frame: " << readVector(moveFrame) << std::endl;
     controller.moveL({moveFrame}, velocity, acceleration);
     std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     controller.stopL();
+    return moveFrame;
 }
 
-void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6d position, int progress, double velocity, double acceleration){
+void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6d position, std::vector<double> baseFrame, int progress, double velocity, double acceleration){
     if (progress < 4) {
         std::cout << "Moving to job postion: " << progress << std::endl;
     }
     std::vector<double> targetJobPose1 = {0.0658822,-0.363385,-0.0169811,2.56832,-1.80919,-0.0107452};
     std::vector<double> targetJobPose2 = {0.157756,-0.326576,-0.0173523,2.56832,-1.80919,-0.0107452};
     std::vector<double> targetJobPose3 = {0.250143,-0.287226,-0.0177096,2.56832,-1.80919,-0.0107452};
-    std::vector<double> baseFrame = {-0.0423311,-0.38472,0.274039,2.56832,-1.80919,-0.0107453};
-    std::vector<double> featureFrame = {position[0],position[1],0.0,0.0,0.0,position[5]};
+    //std::vector<double> baseFrame = {-0.0423311,-0.38472,0.274039,2.56832,-1.80919,-0.0107453};
+    std::vector<double> featureFrame = {position[0],position[1],position[2],position[3],position[4],position[5]};
     std::vector<double> startFrame;
     std::vector<double> endFrame;
     std::vector<double> targetEndFrame;
@@ -78,6 +57,22 @@ void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECont
         std::cout << "Done" << std::endl;
     } else {
         switch (progress) {
+        case 0:
+            std::cout << "Inside case 0. start job." << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            startFrame = controller.poseTrans(baseFrame,featureFrame);
+            std::cout << "Featureframe: " << readVector(featureFrame) << std::endl;
+            targetEndFrame = targetPointTransform(startFrame, targetJobPose1, position[5]);
+            endFrame = controller.poseTrans(startFrame, targetEndFrame);
+            controller.moveL({baseFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            controller.moveL({startFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            controller.moveL({endFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            controller.moveL({baseFrame}, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            break;
         case 1:
             std::cout << "Inside case 1. start job." << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
@@ -137,24 +132,24 @@ void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECont
 
 std::vector<double> MoveArm::receivePose(ur_rtde::RTDEReceiveInterface &reciver){
     std::vector<double> jointPose = reciver.getActualQ();
-//    for (int i = 0; i < jointPose.size(); i++) {
-//       jointPose[i] = jointPose[i]*rad2deg;
-//    }
     return jointPose;
 }
 
 std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity, double acceleration, int positionStatus, std::vector<double> initPose, int mNumberOfCalibrationImages, bool largeCheckerboardSize){
     std::cout << "Moving to checker postion" << std::endl;
-
-    if(positionStatus == 1){
+/*
+    if(positionStatus == 1 && !largeCheckerboardSize){
     std::vector<std::vector<double>> path_q;
-    //std::vector<double> startPos_q1 = {-1.36689,-1.28005,-1.90308,-3.10318,-1.70538,1.5708, velocity, acceleration, 0.0};
-    //std::vector<double> startPos_q1 = {-0.8988,-1.3089,-1.8849,-3.0944,-1.2374,-1.5725, velocity, acceleration, 0.0};
     std::vector<double> startPos_q1 = {-0.899286,-1.30822,-1.8855,-3.09498,-1.23777,1.57271, velocity, acceleration, 0.0};
     path_q.push_back(startPos_q1);
     controller.moveJ(path_q, false);
+    } else {
+        std::vector<std::vector<double>> path_q;
+        std::vector<double> startPos_q1 = {-0.896468,-1.4284,-1.2074,-3.65303,-1.2375,1.57324, velocity, acceleration, 0.0};
+        path_q.push_back(startPos_q1);
+        controller.moveJ(path_q, false);
     }
-
+*/
     ur_rtde::RTDEReceiveInterface receiverNew("192.168.100.50");
     std::vector<double> pose = receiverNew.getActualTCPPose();
 

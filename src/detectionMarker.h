@@ -17,18 +17,20 @@ public:
                                                        int squareSize = 10, int numberOfCalibrationImages = 20);
     virtual ~DetectionMarker() = default;
 
-    void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
+    void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, bool flagDetectMarker);
     void markerDet();
 
     std::string markerDetectionToString();
 
     cv::Vec6d mRobotPoint3d;
+    std::vector<double> moveFrame;
 
 private:
     int mNumberOfCalibrationImages;
     int mVerticalIntersections;
     int mHorizontalIntersections;
     int mSquareSize;
+    bool flagDetect;
 
 
     double mErrorRMS;
