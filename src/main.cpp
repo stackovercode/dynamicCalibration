@@ -44,9 +44,9 @@ int main(int argc, char* argv[]){
 
     // I made something
     bool runFinalSekvens = false;
-    bool runCalibrateCameraSekvens = false;
+    bool runCalibrateCameraSekvens = true;
     bool runCalibrateWorkSpaceSekvens = false;
-    bool runDetectionMarker = true;
+    bool runDetectionMarker = false;
     bool runComToRobot = false;
     bool runMainSekvens = false;
     bool runTransSekvens = false;
@@ -125,7 +125,7 @@ int main(int argc, char* argv[]){
          cv::Vec6d point = detectMarker.mRobotPoint3d;
          while(progress < 4 ){
              std::cout << "Inside while loop. start Progress: " << progress << std::endl;
-             robotCom.getToJob(rtde_receive, rtde_control, point, progress, velocity, acceleration);
+             //robotCom.getToJob(rtde_receive, rtde_control, point, , progress, velocity, acceleration);
              progress++;
          }
 

@@ -236,27 +236,27 @@ void CameraCalibration::calibrate(std::vector<std::vector<cv::Point2f>> const ch
             + cv::CALIB_FIX_PRINCIPAL_POINT;
     cv::TermCriteria term(1,100,0);
 
-   // mErrorRMS = cv::calibrateCamera(checkerboardWorldArray,chessboardCornersArray,mCamerasettings.getResolution(),mCameraMatrix,mDistortionCoefficient,rvecs,tvecs,flags,term);
-//    writeFileTranRot(rvecs, tvecs);
+    mErrorRMS = cv::calibrateCamera(checkerboardWorldArray,chessboardCornersArray,mCamerasettings.getResolution(),mCameraMatrix,mDistortionCoefficient,rvecs,tvecs,flags,term);
+    writeFileTranRot(rvecs, tvecs);
 
-//        framePoints.push_back(cv::Point3f(0.0, 0.0, 0.0));b
-//        framePoints.push_back(cv::Point3f(2.0, 0.0, 0.0));
-//        framePoints.push_back(cv::Point3f(0.0, 2.0, 0.0));
-//        framePoints.push_back(cv::Point3f(0.0, 0.0, 2.0));
-//        framePoints.push_back(cv::Point3f(4.0, 5.0, 0.0));
-//        framePoints.push_back(cv::Point3f(4.0, 0.0, 0.0));
-//        framePoints.push_back(cv::Point3f(0.0, 5.0, 0.0));
+        framePoints.push_back(cv::Point3f(0.0, 0.0, 0.0));
+        framePoints.push_back(cv::Point3f(2.0, 0.0, 0.0));
+        framePoints.push_back(cv::Point3f(0.0, 2.0, 0.0));
+        framePoints.push_back(cv::Point3f(0.0, 0.0, 2.0));
+        framePoints.push_back(cv::Point3f(4.0, 5.0, 0.0));
+        framePoints.push_back(cv::Point3f(4.0, 0.0, 0.0));
+        framePoints.push_back(cv::Point3f(0.0, 5.0, 0.0));
 
-//    cv::projectPoints(framePoints, rvecs[0], tvecs[0], mCameraMatrix, mDistortionCoefficient, imageFramePoints);
+    cv::projectPoints(framePoints, rvecs[0], tvecs[0], mCameraMatrix, mDistortionCoefficient, imageFramePoints);
 
 
-//    try{
-//        cv::solvePnP(checkerboardWorldArray[24], chessboardCornersArray[24], mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
-//        std::cout << "SolvePNP rotation: " << mRvec << std::endl;
-//        std::cout << "SolvePNP translation: " << mTvec << std::endl;
-//    } catch(std::exception& e){
-//        std::cout<< "Exception: " << std::endl;
-//    }
+    try{
+        cv::solvePnP(checkerboardWorldArray[24], chessboardCornersArray[24], mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
+        std::cout << "SolvePNP rotation: " << mRvec << std::endl;
+        std::cout << "SolvePNP translation: " << mTvec << std::endl;
+    } catch(std::exception& e){
+        std::cout<< "Exception: " << std::endl;
+    }
 
     // Display lens corrected images
     if (flagShowImage) {
