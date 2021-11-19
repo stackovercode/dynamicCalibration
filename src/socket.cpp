@@ -60,6 +60,9 @@ void Socket::Open() {
 
     // Load Open.urp    Message from server "..."
     Client->write("Load /usbdisk/Open.urp\r\n");
+
+    Client->write("hej");
+
     play();
 
     if (programHasBeenLoaded == false) {
@@ -143,7 +146,7 @@ void Socket::choicesProgram() {
     switch (choice) {
       case '1':
         Client->write("Load /usbdisk/poseEstimation.urp\r\n");
-
+        Client->write("addToLog Hej Anton!\n");
         play();
 
         if (programHasBeenLoaded == false) {

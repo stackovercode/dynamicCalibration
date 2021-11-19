@@ -30,6 +30,7 @@ public slots:
 private:
     QTcpSocket *Client;
 
+    std::string checkerboadPoint;
     int waitForReadyReadSec{5 * 1000}; // 6 min waiting
     bool programHasBeenLoaded{false};
 
