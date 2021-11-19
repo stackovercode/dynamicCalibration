@@ -1,6 +1,5 @@
 #include "socket.h"
 
-
 Socket::Socket(QObject *parent): QObject(parent) {
 }
 
@@ -14,9 +13,12 @@ void Socket::Running() {
     usleep(1 * mSeconds);
 
     // QString IPv4{"169.254.89.190"};  // This is the IPv4 for the UR5 robot : rasp
-    QString IPv4{"192.168.1.48"};       // This is the IPv4 for the UR5 robot : PC
-    // QString IPv4{"localhost"};       // This is the localhost which is used for testing on YAT
-    quint16 Port {29999};               // This is the dashboard servers port
+    QString IPv4{"192.168.100.50"};       // This is the IPv4 for the UR5 robot : PC
+    //QString IPv4{"localhost"};       // This is the localhost which is used for testing on YAT
+    //QString IPv4{"127.0.0.1"};
+    //quint16 Port {29999};               // This is the dashboard servers port
+
+    quint16 Port {29999};
 
     Client->connectToHost(IPv4, Port);
 
@@ -147,7 +149,7 @@ void Socket::choicesProgram() {
 
     switch (choice) {
     case '1':
-        Client->write("Load /programs/usbdisk_1/Drinks/Appelsinjuice.urp\r\n");
+        Client->write("Load /programs/usbdisk_1/Appelsinjuice.urp\r\n");
         play();
 
         if (programHasBeenLoaded == false) {

@@ -4,15 +4,15 @@
 #include <iostream>
 #include <string>
 #include <unistd.h>
-#include <Qt>
 #include <QAbstractSocket>
 #include <QDebug>
 #include <QObject>
 #include <QTcpSocket>
 
-class Socket : public QObject{
+class Socket : public QObject
+{
     Q_OBJECT
-public:
+public:    
     explicit Socket(QObject *parent = nullptr);
     void Running();
 

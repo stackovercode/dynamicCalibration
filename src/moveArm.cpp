@@ -235,6 +235,14 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
     std::vector<double> pose_8_3 = controller.poseTrans(initPose,change_8_3);
     std::vector<double> pose_8_4 = controller.poseTrans(initPose,change_8_4);
 
+//    switch (positionStatus) {
+//    case 1:
+        
+//        break;
+//    default:
+//        break;
+//    }
+    
     switch (positionStatus) {
     case 1:
         if (mNumberOfCalibrationImages == 17) {

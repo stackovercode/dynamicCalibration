@@ -14,6 +14,8 @@
 #include <ur_rtde/robot_state.h>
 #include <ur_rtde/rtde_utility.h>
 #include "myHTTPClient.h"
+#include <QtCore/QCoreApplication>
+#include "socket.h"
 //#include <rw/rw.hpp>
 
 
@@ -44,10 +46,10 @@ int main(int argc, char* argv[]){
 
     // I made something
     bool runFinalSekvens = false;
-    bool runCalibrateCameraSekvens = true;
+    bool runCalibrateCameraSekvens = false;
     bool runCalibrateWorkSpaceSekvens = false;
     bool runDetectionMarker = false;
-    bool runComToRobot = false;
+    bool runComToRobot = true;
     bool runMainSekvens = false;
     bool runTransSekvens = false;
 
@@ -112,47 +114,29 @@ int main(int argc, char* argv[]){
 
      }
      //////////// Communikation robot sekvens //////////////
-     if (runComToRobot)
-     {
+     if (runComToRobot){
 
-         std::cout << "/* Communikation robot sekvens */" << std::endl;
-         //robotCom.initialize(rtde_receive, rtde_control);
-         int progress = 1;
-         double velocity = 0.02;
-         double acceleration = 0.02;
-         //detectMarker.initialize(rtde_receive, rtde_control);
-         //cv::Point3d point = {0.0146505, 0.0136401, 0.0};
-         cv::Vec6d point = detectMarker.mRobotPoint3d;
-         while(progress < 4 ){
-             std::cout << "Inside while loop. start Progress: " << progress << std::endl;
-             //robotCom.getToJob(rtde_receive, rtde_control, point, , progress, velocity, acceleration);
-             progress++;
-         }
+         QCoreApplication a(argc, argv);
+
+         Socket Connection;
+         Connection.Running();
+
+         return a.exec();
 
 
-
-
-//         std::vector<double> baseFrame = rtde_receive.getTargetTCPPose();
-//        // std::cout << "move Base: " << ur5arm.readVector(baseFrame) << std::endl;
-//         //std::vector<double> base = {-0.0423306,-0.384721,0.27404,2.56833,-1.80919,-0.0107535};
-//         std::vector<double> featureFrame = {0.039,0.030,0.240,0.0,0.0,0.0};
-//         //ur_rtde::RTDEControlInterface rtde_control("192.168.100.50", 30004);
-//         std::vector<double> moveFrame;
-
-//         moveFrame = rtde_control.poseTrans(baseFrame,featureFrame);
-
-//         std::cout << "move Move: " << ur5arm.readVector(moveFrame) << std::endl;
-//         //std::cout << controller.isConnected() << std::endl;
-//         //base[2] += 0.1;
-//         rtde_control.moveL({moveFrame}, 0.10,0.10);
-
-         //robotCom.getToCheckerboard(rtde_receive, rtde_control);
-
-         //process.receivePose(reciver);
-         //process.getPoseFile("../Detection/RobotposeData.txt");
-
-
-
+//         std::cout << "/* Communikation robot sekvens */" << std::endl;
+//         //robotCom.initialize(rtde_receive, rtde_control);
+//         int progress = 1;
+//         double velocity = 0.02;
+//         double acceleration = 0.02;
+//         //detectMarker.initialize(rtde_receive, rtde_control);
+//         //cv::Point3d point = {0.0146505, 0.0136401, 0.0};
+//         cv::Vec6d point = detectMarker.mRobotPoint3d;
+//         while(progress < 4 ){
+//             std::cout << "Inside while loop. start Progress: " << progress << std::endl;
+//             //robotCom.getToJob(rtde_receive, rtde_control, point, , progress, velocity, acceleration);
+//             progress++;
+//         }
 
      }
 
