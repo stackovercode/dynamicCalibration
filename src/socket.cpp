@@ -59,7 +59,7 @@ void Socket::Open() {
     usleep(1 * mSeconds);
 
     // Load Open.urp    Message from server "..."
-    Client->write("Load /programs/usbdisk_1/Drinks/Open.urp\r\n");
+    Client->write("Load /usbdisk/Open.urp\r\n");
     play();
 
     if (programHasBeenLoaded == false) {
@@ -130,33 +130,26 @@ void Socket::choicesProgram() {
     qDebug() << "\n";
     qDebug() << "__________________________________________________________________________________";
     qDebug() << " -  List of drinks: "
-             << "\n" << "\t" << "Drink 1: Appelsinjuice"
-             << "\n" << "\t" << "Drink 2: Cola"
-             << "\n" << "\t" << "Drink 3: Red Bull"
-             << "\n" << "\t" << "Drink 4: Rom"
-             << "\n" << "\t" << "Drink 5: Rom og Cola"
-             << "\n" << "\t" << "Drink 6: Vodka"
-             << "\n" << "\t" << "Drink 7: Vodka og Appelsinjuice"
-             << "\n" << "\t" << "Drink 8: Vodka og Cola"
-             << "\n" << "\t" << "Drink 9: Vodka og Red Bull"
+             << "\n" << "\t" << "Number 1: pose estimation"
+             << "\n" << "\t" << "Number 2: _______________"
              << "\n"
              << "\n" << "   Else if shutdown 's'";
-    qDebug() << " -  Chose command. For drink enter the number, else enter the letter for shutdown: \n";
+    qDebug() << " -  Chose command. For command enter the number, else enter the letter for shutdown: \n";
     std::cout << " >>>  ";
     std::cin >> choice;
     qDebug() << "__________________________________________________________________________________\n";
 
 
     switch (choice) {
-    case '1':
-        Client->write("Load /programs/usbdisk_1/Appelsinjuice.urp\r\n");
+      case '1':
+        Client->write("Load /usbdisk/poseEstimation.urp\r\n");
+
         play();
 
         if (programHasBeenLoaded == false) {
-            qDebug() << " -  Program could not be loaded";
-
-            usleep(1 * mSeconds);
-            choicesProgram();
+           qDebug() << " -  Program could not be loaded";
+           usleep(1 * mSeconds);
+           choicesProgram();
         }
 
         qDebug() << "\n -  Program is running";
@@ -165,153 +158,11 @@ void Socket::choicesProgram() {
         running();
         usleep(55 * mSeconds);
         break;
-
     case '2':
-        Client->write("Load /programs/usbdisk_1/Drinks/Cola.urp\r\n");
-        play();
 
-        if (programHasBeenLoaded == false) {
-            qDebug() << " -  Program could not be loaded";
-
-            usleep(1 * mSeconds);
-            choicesProgram();
-        }
-
-        qDebug() << "\n -  Program is running";
-
-        // Done with ___.urp file
-        running();
-        usleep(55 * mSeconds);
         break;
-
-    case '3':
-        Client->write("Load /programs/usbdisk_1/Drinks/Red_Bull.urp\r\n");
-        play();
-
-        if (programHasBeenLoaded == false) {
-            qDebug() << " -  Program could not be loaded";
-
-            usleep(1 * mSeconds);
-            choicesProgram();
-        }
-
-        qDebug() << "\n -  Program is running";
-
-        // Done with ___.urp file
-        running();
-        usleep(55 * mSeconds);
-        break;
-
-    case '4':
-        Client->write("Load /programs/usbdisk_1/Drinks/Rom.urp\r\n");
-        play();
-
-        if (programHasBeenLoaded == false) {
-            qDebug() << " -  Program could not be loaded";
-
-            usleep(1 * mSeconds);
-            choicesProgram();
-        }
-
-        qDebug() << "\n -  Program is running";
-
-        // Done with ___.urp file
-        running();
-        usleep(55 * mSeconds);
-        break;
-
-    case '5':
-        Client->write("Load /programs/usbdisk_1/Drinks/Rom_og_Cola.urp\r\n");
-        play();
-
-        if (programHasBeenLoaded == false) {
-            qDebug() << " -  Program could not be loaded";
-
-            usleep(1 * mSeconds);
-            choicesProgram();
-        }
-
-        qDebug() << "\n -  Program is running";
-
-        // Done with ___.urp file
-        running();
-        usleep(85 * mSeconds);
-        break;
-
-    case '6':
-        Client->write("Load /programs/usbdisk_1/Drinks/Vodka.urp\r\n");
-        play();
-
-        if (programHasBeenLoaded == false) {
-            qDebug() << " -  Program could not be loaded";
-
-            usleep(1 * mSeconds);
-            choicesProgram();
-        }
-
-        qDebug() << "\n -  Program is running";
-
-        // Done with ___.urp file
-        running();
-        usleep(55 * mSeconds);
-        break;
-
-    case '7':
-        Client->write("Load /programs/usbdisk_1/Drinks/Vodka_og_Appelsinjuice.urp\r\n");
-        play();
-
-        if (programHasBeenLoaded == false) {
-            qDebug() << " -  Program could not be loaded";
-
-            usleep(1 * mSeconds);
-            choicesProgram();
-        }
-
-        qDebug() << "\n -  Program is running";
-
-        // Done with ___.urp file
-        running();
-        usleep(85 * mSeconds);
-        break;
-
-    case '8':
-        Client->write("Load /programs/usbdisk_1/Drinks/Vodka_og_Cola.urp\r\n");
-        play();
-
-        if (programHasBeenLoaded == false) {
-            qDebug() << " -  Program could not be loaded";
-
-            usleep(1 * mSeconds);
-            choicesProgram();
-        }
-
-        qDebug() << "\n -  Program is running";
-
-        // Done with ___.urp file
-        running();
-        usleep(85 * mSeconds);
-        break;
-
-    case '9':
-        Client->write("Load /programs/usbdisk_1/Drinks/Vodka_og_Red_Bull.urp\r\n");
-        play();
-
-        if (programHasBeenLoaded == false) {
-            qDebug() << " -  Program could not be loaded";
-
-            usleep(1 * mSeconds);
-            choicesProgram();
-        }
-
-        qDebug() << "\n -  Program is running";
-
-        // Done with ___.urp file
-        running();
-        usleep(85 * mSeconds);
-        break;
-
     case 'S': case 's':
-        Client->write("Load /programs/usbdisk_1/Drinks/Close.urp\r\n");
+        Client->write("Load /usbdisk/Close.urp\r\n");
         play();
 
         if (programHasBeenLoaded == false) {
