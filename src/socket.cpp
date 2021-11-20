@@ -146,7 +146,7 @@ void Socket::choicesProgram() {
     switch (choice) {
       case '1':
         Client->write("Load /usbdisk/poseEstimation.urp\r\n");
-        Client->write("addToLog Hej Anton!\n");
+        Client->write("popup Hej Anton!\n");
         play();
 
         if (programHasBeenLoaded == false) {
@@ -188,7 +188,7 @@ void Socket::choicesProgram() {
         choicesProgram();
 
         break;
-    }
+}
 
     qDebug() << " -  Program has been executed\n\n\n";
 
