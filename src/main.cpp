@@ -66,7 +66,6 @@ int main(int argc, char* argv[]){
     MoveArm robotCom;
 
 
-
     //////////// Final sekvens //////////////
     if (runFinalSekvens){
         std::cout << "/* Final sekvens */" << std::endl;
@@ -110,7 +109,7 @@ int main(int argc, char* argv[]){
 
          detectMarker.initialize(rtde_receive, rtde_control, true);
          cv::Vec6d point = detectMarker.mRobotPoint3d;
-         std::cout << "text" << point << std::endl;
+         std::cout << "featureFrame: " << point << std::endl;
 
      }
      //////////// Communikation robot sekvens //////////////
@@ -145,6 +144,36 @@ int main(int argc, char* argv[]){
      if (runMainSekvens){
          std::cout << "/* Main robot sekvens */" << std::endl;
 
+
+         const std::string my_script =
+                 "def script_test():\n"
+                    "\tglobal featureFrame=p[-0.00417425,-0.00252985,0,0,0,-0.0371178]\n"
+                 "end\n";
+         bool my_result = rtde_control.sendCustomScript(my_script);
+
+         std::cout << "Result: " << my_result << std::endl;
+
+
+
+
+
+//         const std::string inline_script =
+//                    "def script_test():\n"
+//                            "\tdef test():\n"
+//                                    "textmsg(\"test1\")\n"
+//                                    "textmsg(\"test2\")\n"
+//                            "\tend\n"
+//                            "\twrite_output_integer_register(0, 1)\n"
+//                            "\ttest()\n"
+//                            "\ttest()\n"
+//                            "\twrite_output_integer_register(0, 2)\n"
+//                    "end\n"
+//                    "run program\n";
+//              bool result = rtde_control.sendCustomScript(inline_script);
+
+//              std::cout << "Result: " << result << std::endl;
+
+
          // 1. Move to Checkerboard Via workspace vector point to center
          // 2. Run Calibrate
          // 3. Run Workspace that get origo point fra vector
@@ -154,20 +183,20 @@ int main(int argc, char* argv[]){
 
        // std::cout << "test: " << ur5arm.readVector(ur5arm.receivePose(rtde_receive)) << std::endl;
 
-         bool test = true;
-         char keyPressed;
-         while(test){
-             keyPressed = cv::waitKey(1);
-             if(keyPressed == 'n'|| keyPressed == 'N' ){
-                 std::cout << "N" << std::endl;
-              } else if(keyPressed == 'q'|| keyPressed == 'Q' ){
-                 std::cout << "Q" << std::endl;
-                 test = false;
-             }
+//         bool test = true;
+//         char keyPressed;
+//         while(test){
+//             keyPressed = cv::waitKey(1);
+//             if(keyPressed == 'n'|| keyPressed == 'N' ){
+//                 std::cout << "N" << std::endl;
+//              } else if(keyPressed == 'q'|| keyPressed == 'Q' ){
+//                 std::cout << "Q" << std::endl;
+//                 test = false;
+//             }
 
-            // ur5arm.poseSwift(rtde_receive, rtde_control, 0.02, 0.02, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
+//            // ur5arm.poseSwift(rtde_receive, rtde_control, 0.02, 0.02, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
 
-         }
+//         }
 
 
      }
