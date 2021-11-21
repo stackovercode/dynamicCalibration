@@ -16,6 +16,7 @@
 #include "myHTTPClient.h"
 #include <QtCore/QCoreApplication>
 #include "socket.h"
+#include "mytcpserver.h"
 //#include <rw/rw.hpp>
 
 
@@ -118,9 +119,11 @@ int main(int argc, char* argv[]){
          QCoreApplication a(argc, argv);
 
          Socket Connection;
+         MyTcpServer server;
          Connection.Running();
 
          return a.exec();
+
 
 
 //         std::cout << "/* Communikation robot sekvens */" << std::endl;

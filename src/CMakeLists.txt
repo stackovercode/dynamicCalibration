@@ -67,7 +67,7 @@ set(QT_LIBRARIES Qt5::Widgets)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 
-add_executable( main main.cpp camera.cpp camera.h cameraSettings.h cameraCalibration.cpp cameraCalibration.h detectionObject.cpp detectionObject.h workspaceCalibration.cpp workspaceCalibration.h detectionMarker.cpp detectionMarker.h moveArm.cpp moveArm.h myHTTPClient.cpp myHTTPClient.h socket.cpp socket.h)
+add_executable( main main.cpp camera.cpp camera.h cameraSettings.h cameraCalibration.cpp cameraCalibration.h detectionObject.cpp detectionObject.h workspaceCalibration.cpp workspaceCalibration.h detectionMarker.cpp detectionMarker.h moveArm.cpp moveArm.h myHTTPClient.cpp myHTTPClient.h socket.cpp socket.h mytcpserver.cpp mytcpserver.h)
 target_link_libraries( main 
 	${OpenCV_LIBS} 
 	${Pylon_LIBRARIES} 
