@@ -39,6 +39,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
     int imageNr = 1;
     int frame = 1;
     bool calibrateRunTime = false;
+    bool addGausNoise = false;
     std::vector<double> initPose = {0.0,0.0,0.0,0.0,0.0,0.0};
     while ( camera.IsGrabbing())
     {
@@ -53,10 +54,10 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             // Create an OpenCV image from a pylon image.
             openCvImage = cv::Mat(ptrGrabResult->GetHeight(), ptrGrabResult->GetWidth(), CV_8UC3, (uint8_t *) pylonImage.GetBuffer());
 
-            bool addGausNoise;
-            double NoiseStdDev = 10; //101
 
-            if(addGausNoise == true){
+            double NoiseStdDev = 50; //65
+
+            if(addGausNoise){
 
                 cv::Mat GausNoise = cv::Mat(openCvImage.size(), CV_8UC3);
 
@@ -124,7 +125,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 std::cout << "Added Gaussian noise to image was succesfull." << std::endl;
             } else if (keyPressed == 'e'|| keyPressed == 'E' ) { // Quit if Q is Pressed
                 std::cout << "Removing Gaussian noise from image." << std::endl;
-                addGausNoise = true;
+                addGausNoise = false;
                 std::cout << "Removed Gaussian noise from image was succesfull." << std::endl;
             } else if (keyPressed == 'q'|| keyPressed == 'Q' ) { // Quit if Q is Pressed
                 std::cout << "Shutting down camera..." << std::endl;
@@ -303,12 +304,11 @@ void CameraCalibration::calibrate(std::vector<std::vector<cv::Point2f>> const ch
                 //cv::Size dimension (mWidth, mHeight);
                 //cv::resize(imgUndistorted,imgUndistorted,dimension);
 
-                mWidth = imgUndistorted.size().width * 60/100;
-                mHeight = imgUndistorted.size().height * 60/100;
+//                mWidth = imgUndistorted.size().width * 60/100;
+//                mHeight = imgUndistorted.size().height * 60/100;
 
                 cv::Size dimension (mWidth, mHeight);
                 cv::resize(imgUndistorted,imgUndistorted,dimension);
-
 
 
                 cv::imshow( vindue.str(), imgUndistorted);
