@@ -14,6 +14,9 @@
 #include <ur_rtde/robot_state.h>
 #include <ur_rtde/rtde_utility.h>
 #include "myHTTPClient.h"
+#include <QtCore/QCoreApplication>
+#include "socket.h"
+#include "mytcpserver.h"
 //#include <rw/rw.hpp>
 
 
@@ -44,10 +47,10 @@ int main(int argc, char* argv[]){
 
     // I made something
     bool runFinalSekvens = false;
-    bool runCalibrateCameraSekvens = true;
+    bool runCalibrateCameraSekvens = false;
     bool runCalibrateWorkSpaceSekvens = false;
     bool runDetectionMarker = false;
-    bool runComToRobot = false;
+    bool runComToRobot = true;
     bool runMainSekvens = false;
     bool runTransSekvens = false;
 
@@ -62,7 +65,6 @@ int main(int argc, char* argv[]){
     WorkspaceCalibration workspaceCalibrate(cameraSettings, checkerboard);
     DetectionMarker detectMarker(cameraSettings);
     MoveArm robotCom;
-
 
 
     //////////// Final sekvens //////////////
@@ -108,51 +110,35 @@ int main(int argc, char* argv[]){
 
          detectMarker.initialize(rtde_receive, rtde_control, true);
          cv::Vec6d point = detectMarker.mRobotPoint3d;
-         std::cout << "text" << point << std::endl;
+         std::cout << "featureFrame: " << point << std::endl;
 
      }
      //////////// Communikation robot sekvens //////////////
-     if (runComToRobot)
-     {
+     if (runComToRobot){
 
-         std::cout << "/* Communikation robot sekvens */" << std::endl;
-         //robotCom.initialize(rtde_receive, rtde_control);
-         int progress = 1;
-         double velocity = 0.02;
-         double acceleration = 0.02;
-         //detectMarker.initialize(rtde_receive, rtde_control);
-         //cv::Point3d point = {0.0146505, 0.0136401, 0.0};
-         cv::Vec6d point = detectMarker.mRobotPoint3d;
-         while(progress < 4 ){
-             std::cout << "Inside while loop. start Progress: " << progress << std::endl;
-             //robotCom.getToJob(rtde_receive, rtde_control, point, , progress, velocity, acceleration);
-             progress++;
-         }
+         QCoreApplication a(argc, argv);
+
+         Socket Connection;
+         MyTcpServer server;
+         Connection.Running();
+
+         return a.exec();
 
 
 
-
-//         std::vector<double> baseFrame = rtde_receive.getTargetTCPPose();
-//        // std::cout << "move Base: " << ur5arm.readVector(baseFrame) << std::endl;
-//         //std::vector<double> base = {-0.0423306,-0.384721,0.27404,2.56833,-1.80919,-0.0107535};
-//         std::vector<double> featureFrame = {0.039,0.030,0.240,0.0,0.0,0.0};
-//         //ur_rtde::RTDEControlInterface rtde_control("192.168.100.50", 30004);
-//         std::vector<double> moveFrame;
-
-//         moveFrame = rtde_control.poseTrans(baseFrame,featureFrame);
-
-//         std::cout << "move Move: " << ur5arm.readVector(moveFrame) << std::endl;
-//         //std::cout << controller.isConnected() << std::endl;
-//         //base[2] += 0.1;
-//         rtde_control.moveL({moveFrame}, 0.10,0.10);
-
-         //robotCom.getToCheckerboard(rtde_receive, rtde_control);
-
-         //process.receivePose(reciver);
-         //process.getPoseFile("../Detection/RobotposeData.txt");
-
-
-
+//         std::cout << "/* Communikation robot sekvens */" << std::endl;
+//         //robotCom.initialize(rtde_receive, rtde_control);
+//         int progress = 1;
+//         double velocity = 0.02;
+//         double acceleration = 0.02;
+//         //detectMarker.initialize(rtde_receive, rtde_control);
+//         //cv::Point3d point = {0.0146505, 0.0136401, 0.0};
+//         cv::Vec6d point = detectMarker.mRobotPoint3d;
+//         while(progress < 4 ){
+//             std::cout << "Inside while loop. start Progress: " << progress << std::endl;
+//             //robotCom.getToJob(rtde_receive, rtde_control, point, , progress, velocity, acceleration);
+//             progress++;
+//         }
 
      }
 
@@ -160,6 +146,36 @@ int main(int argc, char* argv[]){
      //////////// Main robot sekvens //////////////
      if (runMainSekvens){
          std::cout << "/* Main robot sekvens */" << std::endl;
+
+
+         const std::string my_script =
+                 "def script_test():\n"
+                    "\tglobal featureFrame=p[-0.00417425,-0.00252985,0,0,0,-0.0371178]\n"
+                 "end\n";
+         bool my_result = rtde_control.sendCustomScript(my_script);
+
+         std::cout << "Result: " << my_result << std::endl;
+
+
+
+
+
+//         const std::string inline_script =
+//                    "def script_test():\n"
+//                            "\tdef test():\n"
+//                                    "textmsg(\"test1\")\n"
+//                                    "textmsg(\"test2\")\n"
+//                            "\tend\n"
+//                            "\twrite_output_integer_register(0, 1)\n"
+//                            "\ttest()\n"
+//                            "\ttest()\n"
+//                            "\twrite_output_integer_register(0, 2)\n"
+//                    "end\n"
+//                    "run program\n";
+//              bool result = rtde_control.sendCustomScript(inline_script);
+
+//              std::cout << "Result: " << result << std::endl;
+
 
          // 1. Move to Checkerboard Via workspace vector point to center
          // 2. Run Calibrate
@@ -170,20 +186,20 @@ int main(int argc, char* argv[]){
 
        // std::cout << "test: " << ur5arm.readVector(ur5arm.receivePose(rtde_receive)) << std::endl;
 
-         bool test = true;
-         char keyPressed;
-         while(test){
-             keyPressed = cv::waitKey(1);
-             if(keyPressed == 'n'|| keyPressed == 'N' ){
-                 std::cout << "N" << std::endl;
-              } else if(keyPressed == 'q'|| keyPressed == 'Q' ){
-                 std::cout << "Q" << std::endl;
-                 test = false;
-             }
+//         bool test = true;
+//         char keyPressed;
+//         while(test){
+//             keyPressed = cv::waitKey(1);
+//             if(keyPressed == 'n'|| keyPressed == 'N' ){
+//                 std::cout << "N" << std::endl;
+//              } else if(keyPressed == 'q'|| keyPressed == 'Q' ){
+//                 std::cout << "Q" << std::endl;
+//                 test = false;
+//             }
 
-            // ur5arm.poseSwift(rtde_receive, rtde_control, 0.02, 0.02, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
+//            // ur5arm.poseSwift(rtde_receive, rtde_control, 0.02, 0.02, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
 
-         }
+//         }
 
 
      }
