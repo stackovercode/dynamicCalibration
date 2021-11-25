@@ -21,24 +21,28 @@ WorkspaceCalibration::WorkspaceCalibration(CameraSettings& cameraSetting, Detect
     cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, mCamerasettings.getResolution(), CV_32FC1, mMapX, mMapY);
 }
 
-void WorkspaceCalibration::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, double lengthXmm, double lengthYmm){
+void WorkspaceCalibration::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, double lengthXmm, double lengthYmm, cv::Vec6f robotJointAngels){
     //cv::Vec6f robotJointAngles = {-1.36689,-1.28005,-1.90308,-3.10318,-1.70538,1.5708};
-    cv::Vec6f robotJointAngles = mJointPose[24];
-    cv::Mat testMatrix = getTransformationMatrixBase2Cam(robotJointAngles);
+//    cv::Vec6f robotJointAngles = mJointPose[24];
+//    cv::Mat testMatrix = getTransformationMatrixBase2Cam(robotJointAngles);
 
-    cv::Point2f centerPoint = mCenterPoint;
-    cv::Point2f diaPoint = mDiaPoint;
+//    cv::Point2f centerPoint = mCenterPoint;
+//    cv::Point2f diaPoint = mDiaPoint;
 
-    cv::Mat OrigoMat = (cv::Mat_<double>(4, 1) << centerPoint.x, centerPoint.y, getDistance2Object(centerPoint, diaPoint)/getPixelPermm(centerPoint, diaPoint), 1);
-    cv::Mat OrigoPoint = getTransformationMatrixImage2Camera(mR_target2cam[0], mT_target2cam[0]) * OrigoMat;
-    OrigoPoint.at<double>(0,0) = (OrigoMat.at<double>(0,0) * getPixelPermm(centerPoint, diaPoint))/1000;
-    OrigoPoint.at<double>(1,0) = (OrigoMat.at<double>(1,0) * getPixelPermm(centerPoint, diaPoint))/1000;
-    OrigoPoint.at<double>(2,0) = (OrigoMat.at<double>(2,0) * getPixelPermm(centerPoint, diaPoint))/1000;
+//    cv::Point2i frameCenter = {1920/2, 1200/2};
 
-    cv::Mat robotPoint = testMatrix * OrigoPoint;
+//    cv::Mat OrigoMat = (cv::Mat_<double>(4, 1) << vectorBetween2Points(imageFramePoints[0],frameCenter).x, vectorBetween2Points(imageFramePoints[0],frameCenter).y, getDistance2Object(centerPoint, diaPoint)/getPixelPermm(centerPoint, diaPoint), 1);
+//    cv::Mat OrigoPoint = getTransformationMatrixImage2Camera(mR_target2cam[0], mT_target2cam[0]) * OrigoMat;
+//    OrigoPoint.at<double>(0,0) = (OrigoMat.at<double>(0,0) * getPixelPermm(centerPoint, diaPoint))/1000;
+//    OrigoPoint.at<double>(1,0) = (OrigoMat.at<double>(1,0) * getPixelPermm(centerPoint, diaPoint))/1000;
+//    OrigoPoint.at<double>(2,0) = (OrigoMat.at<double>(2,0) * getPixelPermm(centerPoint, diaPoint))/1000;
 
-    std::cout << "Point: " << robotPoint << std::endl;
-    std::cout << "Transformation: " << testMatrix << std::endl;
+//    cv::Mat robotPoint = testMatrix * OrigoPoint;
+
+//    std::cout << "Point: " << robotPoint << std::endl;
+//    std::cout << "Transformation: " << testMatrix << std::endl;
+
+
 }
 
 void WorkspaceCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller)
@@ -583,6 +587,13 @@ void WorkspaceCalibration::loadFileImagePoints(std::string fileLocation){
             ifs >> trashString;
         }
     }
+}
+
+cv::Point2f WorkspaceCalibration::vectorBetween2Points(cv::Point2f startPoint, cv::Point2f endPoint){
+
+    cv::Point2f pointVector = {(endPoint.x - startPoint.x), (endPoint.y - startPoint.y)};
+
+    return pointVector;
 }
 
 //std::vector<double> WorkspaceCalibration::targetPointTransform(std::vector<double> startPoint, std::vector<double> targetPoint){

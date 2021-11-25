@@ -20,7 +20,7 @@ public:
 
     WorkspaceCalibration(CameraSettings& cameraSettings, DetectionObject& detectionObject);
 
-    void initialize(ur_rtde::RTDEReceiveInterface &reciver,ur_rtde::RTDEControlInterface &controller, double lengthXmm, double lengthYmm);
+    void initialize(ur_rtde::RTDEReceiveInterface &reciver,ur_rtde::RTDEControlInterface &controller, double lengthXmm, double lengthYmm, cv::Vec6f robotJointAngels);
 
 
     std::string transformationMatrixToString();
@@ -33,6 +33,7 @@ public:
     double lineLength(double sX, double sY, double eX, double eY);
     double getDistance2Object(cv::Point2f origo, cv::Point2f dia);
     double getPixelPermm(cv::Point2f origo, cv::Point2f dia);
+    cv::Point2f vectorBetween2Points(cv::Point2f startPoint, cv::Point2f endPoint);
     void writeFileTranRot(std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec);
     void loadFileTranRot(std::string fileLocation);
     void loadFileRobotJoint(std::string fileLocation);

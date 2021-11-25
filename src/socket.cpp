@@ -85,13 +85,18 @@ void Socket::running() {
 
         QByteArray qByteArray = Client->readAll();
         std::string message{static_cast<std::string>(qByteArray)};
+        std::cout << "Message 1: " << message <<std::endl;
+
 
         size_t found;
         if ((found = message.find("Program running: false")) != std::string::npos) {
             running = false;
         }
         usleep(1 * mSeconds);
+        std::cout << "Message 2: " << message <<std::endl;
+
     }
+
 }
 
 
@@ -105,6 +110,8 @@ void Socket::play() {
     QByteArray qByteArray = Client->readAll();
 
     std::string message{static_cast<std::string>(qByteArray)};
+    std::cout << "Message 3: " << message <<std::endl;
+
 
     size_t found;
     if ((found = message.find("File not found")) != std::string::npos) {
@@ -138,7 +145,8 @@ void Socket::choicesProgram() {
 
     switch (choice) {
       case '1':
-        Client->write("Load /usbdisk/poseEstimation.urp\r\n");
+        //Client->write("Load /usbdisk/poseEstimation.urp\r\n");
+        Client->write("Load /usbdisk/testCom.urp\r\n");
         Client->write("popup Hej Anton!\n");
         play();
 
