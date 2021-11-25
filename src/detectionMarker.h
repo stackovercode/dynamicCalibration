@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "moveArm.h"
 #include "cameraSettings.h"
+#include "workspaceCalibration.h"
 #include <fstream>
 
 

@@ -21,7 +21,7 @@ WorkspaceCalibration::WorkspaceCalibration(CameraSettings& cameraSetting, Detect
     cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, mCamerasettings.getResolution(), CV_32FC1, mMapX, mMapY);
 }
 
-void WorkspaceCalibration::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, double lengthXmm, double lengthYmm, cv::Vec6f robotJointAngels){
+cv::Mat WorkspaceCalibration::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, double lengthXmm, double lengthYmm, cv::Vec6f robotJointAngels){
     //cv::Vec6f robotJointAngles = {-1.36689,-1.28005,-1.90308,-3.10318,-1.70538,1.5708};
 //    cv::Vec6f robotJointAngles = mJointPose[24];
 //    cv::Mat testMatrix = getTransformationMatrixBase2Cam(robotJointAngles);
@@ -42,6 +42,10 @@ void WorkspaceCalibration::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur
 //    std::cout << "Point: " << robotPoint << std::endl;
 //    std::cout << "Transformation: " << testMatrix << std::endl;
 
+    cv::Mat robotTransformationMatrix = getRobotTransformationMatrix(robotJointAngels) * getTransformationFlange2EndEffector() * getTransformationEndEffector2Camera();
+
+
+    return robotTransformationMatrix;
 
 }
 

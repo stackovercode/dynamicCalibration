@@ -16,11 +16,14 @@ class WorkspaceCalibration : public Camera
 {
 public:
 
-    //WorkspaceCalibration();
+
+    WorkspaceCalibration();
+
+    ~WorkspaceCalibration();
 
     WorkspaceCalibration(CameraSettings& cameraSettings, DetectionObject& detectionObject);
 
-    void initialize(ur_rtde::RTDEReceiveInterface &reciver,ur_rtde::RTDEControlInterface &controller, double lengthXmm, double lengthYmm, cv::Vec6f robotJointAngels);
+    cv::Mat initialize(ur_rtde::RTDEReceiveInterface &reciver,ur_rtde::RTDEControlInterface &controller, double lengthXmm, double lengthYmm, cv::Vec6f robotJointAngels);
 
 
     std::string transformationMatrixToString();

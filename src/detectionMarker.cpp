@@ -196,7 +196,14 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 progress++;
                 }
                 imageNr++;
-            } else if (keyPressed == 'c'|| keyPressed == 'C' ) { // Quit if Q is Pressed
+            } else if (keyPressed == 't'|| keyPressed == 'T' ) { // Quit if Q is Pressed
+
+                MoveArm urArm;
+                WorkspaceCalibration transMatrix;
+                transMatrix.getRobotTransformationMatrix(urArm.receivePose())
+
+                //imageNr++;
+            }else if (keyPressed == 'c'|| keyPressed == 'C' ) { // Quit if Q is Pressed
                 runSQ = true;
                 std::cout << "Shutting down camera..." << std::endl;
                 cv::destroyWindow(vindue.str());
@@ -211,7 +218,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 exit(0);
 
                 //imageNr++;
-            } else if (keyPressed == 'q'|| keyPressed == 'Q' ) { // Quit if Q is Pressed
+            }else if (keyPressed == 'q'|| keyPressed == 'Q' ) { // Quit if Q is Pressed
                 std::cout << "Shutting down camera..." << std::endl;
                 camera.Close();
                 cv::destroyWindow(vindue.str());
