@@ -233,7 +233,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 robotPoint[0] = robotTvec.at<double>(0,0);
                 robotPoint[1] = robotTvec.at<double>(0,1);
                 robotPoint[2] = robotTvec.at<double>(0,2);
-                robotPoint[3] = robotRvec[0];
+                robotPoint[3] = mRvec.at<>;
                 robotPoint[4] = robotRvec[1];
                 robotPoint[5] = robotRvec[2];
 
