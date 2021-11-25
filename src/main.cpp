@@ -50,8 +50,8 @@ int main(int argc, char* argv[]){
     bool runCalibrateCameraSekvens = false;
     bool runCalibrateWorkSpaceSekvens = false;
     bool runDetectionMarker = false;
-    bool runComToRobot = true;
-    bool runMainSekvens = false;
+    bool runComToRobot = false;
+    bool runMainSekvens = true;
     bool runTransSekvens = false;
 
     /* Camera variabler */
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]){
     if (runTransSekvens)
     {
         std::cout << "/* Transformation sekvens */" << std::endl;
-        workspaceCalibrate.initialize(rtde_receive, rtde_control, lengthXROImm, lengthYROImm);
+        //workspaceCalibrate.initialize(rtde_receive, rtde_control, lengthXROImm, lengthYROImm);
 
     }
 
@@ -100,7 +100,7 @@ int main(int argc, char* argv[]){
      if (runCalibrateWorkSpaceSekvens)
      {
          std::cout << "/* Calibrate workspace sekvens */" << std::endl;
-         workspaceCalibrate.initialize(rtde_receive,rtde_control,lengthXROImm, lengthYROImm);
+         //workspaceCalibrate.initialize(rtde_receive,rtde_control,lengthXROImm, lengthYROImm);
      }
      //////////// Detection marker sekvens //////////////
      if (runDetectionMarker)
@@ -148,13 +148,13 @@ int main(int argc, char* argv[]){
          std::cout << "/* Main robot sekvens */" << std::endl;
 
 
-         const std::string my_script =
-                 "def script_test():\n"
-                    "\tglobal featureFrame=p[-0.00417425,-0.00252985,0,0,0,-0.0371178]\n"
-                 "end\n";
-         bool my_result = rtde_control.sendCustomScript(my_script);
+//         const std::string my_script =
+//                 "def script_test():\n"
+//                    "\tglobal featureFrame=p[-0.00417425,-0.00252985,0,0,0,-0.0371178]\n"
+//                 "end\n";
+//         bool my_result = rtde_control.sendCustomScript(my_script);
 
-         std::cout << "Result: " << my_result << std::endl;
+//         std::cout << "Result: " << my_result << std::endl;
 
 
 
@@ -197,7 +197,7 @@ int main(int argc, char* argv[]){
 //                 test = false;
 //             }
 
-//            // ur5arm.poseSwift(rtde_receive, rtde_control, 0.02, 0.02, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
+            ur5arm.poseSwift(rtde_receive, rtde_control, 0.02, 0.02, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
 
 //         }
 
