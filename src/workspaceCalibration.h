@@ -12,7 +12,7 @@
 
 
 // Not done or in use
-class WorkspaceCalibration : public Camera
+class WorkspaceCalibration
 {
 public:
 
@@ -21,7 +21,7 @@ public:
 
     ~WorkspaceCalibration();
 
-    WorkspaceCalibration(CameraSettings& cameraSettings, DetectionObject& detectionObject);
+//    WorkspaceCalibration(CameraSettings& cameraSettings, DetectionObject& detectionObject);
 
     cv::Mat initialize(ur_rtde::RTDEReceiveInterface &reciver,ur_rtde::RTDEControlInterface &controller, double lengthXmm, double lengthYmm, cv::Vec6f robotJointAngels);
 
@@ -33,6 +33,7 @@ public:
     cv::Mat getRobotTransformationMatrix(cv::Vec6f robotJointAngles);
     cv::Mat getTransformationMatrixBase2Cam(cv::Vec6f robotJointAngles);
     cv::Mat getTransformationMatrixImage2Camera(cv::Mat rvec, cv::Mat tvec);
+    cv::Mat getTransformationEndEffector2CameraHandEye();
     double lineLength(double sX, double sY, double eX, double eY);
     double getDistance2Object(cv::Point2f origo, cv::Point2f dia);
     double getPixelPermm(cv::Point2f origo, cv::Point2f dia);
@@ -46,7 +47,7 @@ public:
     void loadFileImagePoints(std::string filepath);
 
 protected:
-    DetectionObject mDetectionObject;
+    //DetectionObject mDetectionObject;
 
     double mErrorRMS;
     cv::Matx33f mCameraMatrix;

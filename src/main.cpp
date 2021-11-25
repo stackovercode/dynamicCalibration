@@ -62,7 +62,7 @@ int main(int argc, char* argv[]){
     CameraSettings cameraSettings; /* Width default parameter*/
     DetectionObject checkerboard(cameraSettings); /* Width default parameter*/
     CameraCalibration cameraCalibrate(cameraSettings); /* Width default parameter*/
-    WorkspaceCalibration workspaceCalibrate(cameraSettings, checkerboard);
+    WorkspaceCalibration workspaceCalibrate;
     DetectionMarker detectMarker(cameraSettings);
     MoveArm robotCom;
 

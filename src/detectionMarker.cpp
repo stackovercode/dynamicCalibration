@@ -249,7 +249,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 MoveArm urArm;
                 double velocity = 0.02;
                 double acceleration = 0.02;
-                moveFrame = urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
+                //moveFrame = urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
 
                 std::cout << "Shutting down camera..." << std::endl;
                 camera.Close();
