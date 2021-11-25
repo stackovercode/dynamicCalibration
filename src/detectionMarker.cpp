@@ -227,19 +227,19 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
                 MoveArm urArm;
                 WorkspaceCalibration transMatrix;
-                cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receivePose()) * transMatrix.getTransformationFlange2EndEffector() * transMatrix.getTransformationEndEffector2Camera();
+                cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) * transMatrix.getTransformationFlange2EndEffector() * transMatrix.getTransformationEndEffector2Camera();
                 cv::Mat robotTvec = robotTransMatrix * OrigoPoint;
                 cv::Vec6f robotPoint;
                 robotPoint[0] = robotTvec.at<double>(0,0);
                 robotPoint[1] = robotTvec.at<double>(0,1);
                 robotPoint[2] = robotTvec.at<double>(0,2);
-                robotPoint[3] = mRvec.at<>;
-                robotPoint[4] = robotRvec[1];
-                robotPoint[5] = robotRvec[2];
+                robotPoint[3] = mRvec.at<double>(0,0);
+                robotPoint[4] = mRvec.at<double>(0,1);
+                robotPoint[5] = mRvec.at<double>(0,2);
 
                 double velocity = 0.02;
                 double acceleration = 0.02;
-                moveFrame = urArm.getToCheckerboard(reciver, controller, robotPoint, velocity, acceleration);
+                moveFrame = urArm.getToCheckerboard(reciver, controller, 0, robotPoint, velocity, acceleration);
 
                 //imageNr++;
             }else if (keyPressed == 'c'|| keyPressed == 'C' ) { // Quit if Q is Pressed
