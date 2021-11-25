@@ -26,9 +26,12 @@ public:
 
     std::vector<double> receivePose(ur_rtde::RTDEReceiveInterface& reciver);
 
+    cv::Vec6f receiveJPose(ur_rtde::RTDEReceiveInterface &reciver);
+
+
     std::vector<double> moveCalibrate(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity = 0.5, double acceleration = 0.5, int positionStatus = 0);
 
-    std::vector<double> getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, cv::Vec6d position, double velocity, double acceleration);
+    std::vector<double> getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, int type, cv::Vec6d position, double velocity, double acceleration);
     void getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6d position, std::vector<double> baseFrame, int progress, double velocity, double acceleration);
 
 
@@ -37,6 +40,7 @@ public:
     std::vector<std::vector<double>> throwBall(ur_rtde::RTDEControlInterface &rtde_control, ur_rtde::RTDEReceiveInterface &reciver,  double velocity= 0.5, double acceleration = 0.5);
 
     std::string readVector(std::vector<double> result);
+
 
     void writeFileRobotPoses(std::vector<double> robotPoses);
 

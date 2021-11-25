@@ -25,7 +25,7 @@ void MoveArm::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECo
     controller.moveJ(path_q, false);
 }
 
-std::vector<double> MoveArm::getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6d position, double velocity, double acceleration){
+std::vector<double> MoveArm::getToCheckerboard(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, int type, cv::Vec6d position, double velocity, double acceleration){
     std::cout << "Moving to checker postion" << std::endl;
     ur_rtde::RTDEReceiveInterface receiverNew("192.168.100.50");
     std::vector<double> baseFrame = receiverNew.getTargetTCPPose();
@@ -133,6 +133,15 @@ void MoveArm::getToJob(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECont
 std::vector<double> MoveArm::receivePose(ur_rtde::RTDEReceiveInterface &reciver){
     std::vector<double> jointPose = reciver.getActualQ();
     return jointPose;
+}
+
+cv::Vec6f MoveArm::receiveJPose(ur_rtde::RTDEReceiveInterface &reciver){
+    std::vector<double> jointPose = reciver.getActualQ();
+    cv::Vec6f jPose;
+    for (size_t i = 0; i < jointPose.size(); i++) {
+        jPose[i] = jointPose[i];
+    }
+    return jPose;
 }
 
 std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity, double acceleration, int positionStatus, std::vector<double> initPose, int mNumberOfCalibrationImages, bool largeCheckerboardSize){
