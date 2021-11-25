@@ -117,6 +117,17 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             Point2i checkerboardCenter = centerPoint(checkerboardLine1, checkerboardLine2);
             Point2i frameCenter = {imgUndistorted.size().width/2, imgUndistorted.size().height/2};
 
+
+
+            cv::Mat Origo = (cv::Mat_<double>(4, 1) << vectorBetween2Points(imageFramePoints[0],frameCenter).x, vectorBetween2Points(imageFramePoints[0],frameCenter).y, (distanceObj/pixelPmm), 1);
+
+            cv::Mat OrigoPoint = Origo;
+            OrigoPoint.at<double>(0,0) = (OrigoPoint.at<double>(0,0) * pixelPmm)/1000;
+            OrigoPoint.at<double>(1,0) = (OrigoPoint.at<double>(1,0) * pixelPmm)/1000;
+            OrigoPoint.at<double>(2,0) = (OrigoPoint.at<double>(2,0) * pixelPmm)/1000;
+            OrigoPoint.at<double>(3,0) = 1;
+
+
             cv::Point2f xVector = vectorBetween2Points(imageFramePoints[0], imageFramePoints[2]);
 
             double zRotation = (atan(xVector.y/xVector.x));
@@ -126,46 +137,62 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             Rodrigues(mRvec, RRodriguesMatrix);
 
-           transpose(RRodriguesMatrix, RRodriguesMatrixTrans);
+            transpose(RRodriguesMatrix, RRodriguesMatrixTrans);
 
-           cv::Vec3f rotation = rotationMatrixToEulerAngles(RRodriguesMatrixTrans);
+            cv::Vec3f rotation = rotationMatrixToEulerAngles(RRodriguesMatrixTrans);
+            cv::Vec3f robotRvec;
+
+            if(rotation[0] > 0){
+                robotRvec[0] = -(M_PI - rotation[0]);
+
+            }else if(rotation[0] < 0){
+                robotRvec[0] = M_PI + rotation[0];
+            }
+
+            if(rotation[1] > 0){
+                 robotRvec[1] = -rotation[1];
+
+            }else if(rotation[1] < 0){
+                 robotRvec[1] = -(rotation[1]);
+            }
+            robotRvec[2] = zRotation;
 
            char keyPressed;
 
 
-          if (flagDetect) {
-              mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
-              mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
-              mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
-              mRobotPoint3d[3] = 0.0;
-              mRobotPoint3d[4] = 0.0;
-              mRobotPoint3d[5] = zRotation;
-              keyPressed = 'c';
-          } else if (flagDetect && runSQ){
-              keyPressed = cv::waitKey(1);
-          } else {
-              mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
-              mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
-              mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
+//          if (flagDetect) {
+//              mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
+//              mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
+//              mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
+//              mRobotPoint3d[3] = 0.0;
+//              mRobotPoint3d[4] = 0.0;
+//              mRobotPoint3d[5] = zRotation;
+//              keyPressed = 'c';
+//          } else if (flagDetect && runSQ){
+//              keyPressed = cv::waitKey(1);
+//          } else {
+//              mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
+//              mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
+//              mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
 
 
-              if(rotation[0] > 0){
-                  mRobotPoint3d[3] = -(M_PI - rotation[0]);
+//              if(rotation[0] > 0){
+//                  mRobotPoint3d[3] = -(M_PI - rotation[0]);
 
-              }else if(rotation[0] < 0){
-                  mRobotPoint3d[3] = M_PI + rotation[0];
-              }
+//              }else if(rotation[0] < 0){
+//                  mRobotPoint3d[3] = M_PI + rotation[0];
+//              }
 
-              if(rotation[1] > 0){
-                  mRobotPoint3d[4] = -rotation[1];
+//              if(rotation[1] > 0){
+//                  mRobotPoint3d[4] = -rotation[1];
 
-              }else if(rotation[1] < 0){
-                  mRobotPoint3d[4] = -(rotation[1]);
-              }
-              mRobotPoint3d[5] = zRotation;
-              //keyPressed = 'j';
-              keyPressed = cv::waitKey(1);
-          }
+//              }else if(rotation[1] < 0){
+//                  mRobotPoint3d[4] = -(rotation[1]);
+//              }
+//              mRobotPoint3d[5] = zRotation;
+//              //keyPressed = 'j';
+//              keyPressed = cv::waitKey(1);
+//          }
 
 
 
@@ -200,7 +227,19 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
                 MoveArm urArm;
                 WorkspaceCalibration transMatrix;
-                transMatrix.getRobotTransformationMatrix(urArm.receivePose())
+                cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receivePose()) * transMatrix.getTransformationFlange2EndEffector() * transMatrix.getTransformationEndEffector2Camera();
+                cv::Mat robotTvec = robotTransMatrix * OrigoPoint;
+                cv::Vec6f robotPoint;
+                robotPoint[0] = robotTvec.at<double>(0,0);
+                robotPoint[1] = robotTvec.at<double>(0,1);
+                robotPoint[2] = robotTvec.at<double>(0,2);
+                robotPoint[3] = robotRvec[0];
+                robotPoint[4] = robotRvec[1];
+                robotPoint[5] = robotRvec[2];
+
+                double velocity = 0.02;
+                double acceleration = 0.02;
+                moveFrame = urArm.getToCheckerboard(reciver, controller, robotPoint, velocity, acceleration);
 
                 //imageNr++;
             }else if (keyPressed == 'c'|| keyPressed == 'C' ) { // Quit if Q is Pressed
