@@ -145,7 +145,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                           << "Breaking out and continueing program with calibration." << std::endl;
                 break;
 
-            }else if (keyPressed == 'n'|| keyPressed == 'N' ) { // regrab N image.
+            }else if (keyPressed == 'x'|| keyPressed == 'X' ) { // regrab N image.
                 cv::destroyWindow(vindue.str());
                 imageNr++;
 

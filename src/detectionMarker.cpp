@@ -1,5 +1,8 @@
 #include "detectionMarker.h"
 #include <cstddef>
+#include<iostream>
+#include<fstream>
+#include<stdlib.h>
 
 using namespace cv;
 using namespace std;
@@ -90,8 +93,8 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             try{
                 solvePnP(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
-                cout<< "Rotation vector " << mRvec <<endl;
-                cout<< "Translation vector " << mTvec <<endl;
+                //cout<< "Rotation vector " << mRvec <<endl;
+                //cout<< "Translation vector " << mTvec <<endl;
             } catch(exception& e){
                 cout<< "Exception: " << endl;
             }
@@ -157,7 +160,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             }
             robotRvec[2] = zRotation;
 
-           char keyPressed;
+           //char keyPressed;
 
 
 //          if (flagDetect) {
@@ -211,7 +214,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             cv::namedWindow( vindue.str() , cv::WINDOW_AUTOSIZE);
             cv::imshow( vindue.str(), openCvImage);
 
-            //char keyPressed = cv::waitKey(1);
+            char keyPressed = cv::waitKey(1);
             if(keyPressed == 'j'|| keyPressed == 'J' ){
                 cv::destroyWindow(vindue.str());
                 MoveArm urArm;
@@ -225,10 +228,16 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 imageNr++;
             } else if (keyPressed == 't'|| keyPressed == 'T' ) { // Quit if Q is Pressed
 
+                cv::destroyWindow(vindue.str());
+
+                //getSolvepnpRvecTvec();
+
                 MoveArm urArm;
                 WorkspaceCalibration transMatrix;
-                cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) * transMatrix.getTransformationFlange2EndEffector() * transMatrix.getTransformationEndEffector2Camera();
+                cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) * transMatrix.getTransformationFlange2EndEffector() * transMatrix.getTransformationEndEffector2CameraHandEye();
+                //* transMatrix.getTransformationEndEffector2Camera();
                 cv::Mat robotTvec = robotTransMatrix * OrigoPoint;
+                std::cout << "Hand eye trans" << transMatrix.getTransformationEndEffector2CameraHandEye() << std::endl;
 
                 cv::Mat cameraTCPRM = (cv::Mat_<double>(3, 3) <<
                                         robotTransMatrix.at<double>(0,0), robotTransMatrix.at<double>(0,1), robotTransMatrix.at<double>(0,2),
@@ -243,13 +252,17 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 robotPoint[0] = robotTvec.at<double>(0,0);
                 robotPoint[1] = robotTvec.at<double>(0,1);
                 robotPoint[2] = robotTvec.at<double>(0,2);
-                robotPoint[3] = robotRvec.at<double>(0,0);
-                robotPoint[4] = robotRvec.at<double>(0,1);
-                robotPoint[5] = robotRvec.at<double>(0,2);
+                robotPoint[3] = 0;//robotRvec.at<double>(0,0);
+                robotPoint[4] = 0;//robotRvec.at<double>(0,1);
+                robotPoint[5] = 0;//robotRvec.at<double>(0,2);
+
+                std::cout << robotPoint << std::endl;
+
+
 
                 double velocity = 0.02;
                 double acceleration = 0.02;
-                moveFrame = urArm.getToCheckerboard(reciver, controller, 0, robotPoint, velocity, acceleration);
+                //moveFrame = urArm.getToCheckerboard(reciver, controller, 0, robotPoint, velocity, acceleration);
 
                 //imageNr++;
             }else if (keyPressed == 'c'|| keyPressed == 'C' ) { // Quit if Q is Pressed
@@ -552,8 +565,8 @@ bool DetectionMarker::writeFileTranRot (Mat tempRvec, Mat tempTvec){
 
 void DetectionMarker::writeFileTranRot2 (std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec){
     std::ofstream myfile;
-    myfile.open ("../Detection/MarkertransposeData.txt");
-    for (int i = 0; i < tempRvec.size(); i++) {
+    myfile.open ("../Detection/MarkertransposeData.txt", std::ios::app);
+    for (size_t i = 0; i < tempRvec.size(); i++) {
         myfile << "Rvec: " << i+1 << " = \n" << tempRvec[i] << std::endl
                   << "Tvec: " << i+1 << " = \n" << tempTvec[i] << std::endl;
     }
@@ -568,7 +581,6 @@ void DetectionMarker::getSolvepnpRvecTvec(){
     cv::Mat mRvec = cv::Mat(cv::Size(3, 1), CV_64F);
     cv::Mat mTvec = cv::Mat(cv::Size(3, 1), CV_64F);
     cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, mCamerasettings.getResolution(), CV_32FC1, mapX, mapY);
-    std::vector<cv::Mat> rvecs, tvecs;
 
 
     std::vector<cv::String> fileNames;
@@ -602,16 +614,17 @@ void DetectionMarker::getSolvepnpRvecTvec(){
 
         try{
             solvePnP(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
-            cout<< "Rotation vector " << mRvec <<endl;
-            cout<< "Translation vector " << mTvec <<endl;
+            //cout<< "Rotation vector " << mRvec <<endl;
+            //cout<< "Translation vector " << mTvec <<endl;
             rvecs.push_back(mRvec);
             tvecs.push_back(mTvec);
+            writeFileTranRot2(rvecs, tvecs);
+
         } catch(exception& e){
             cout<< "Exception: " << endl;
         }
 
     }
 
-    writeFileTranRot2(rvecs, tvecs);
 }
 

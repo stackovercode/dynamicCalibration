@@ -26,6 +26,9 @@ public:
     cv::Vec6d mRobotPoint3d;
     std::vector<double> moveFrame;
 
+    std::vector<cv::Mat> rvecs, tvecs;
+
+
 private:
     int mNumberOfCalibrationImages;
     int mVerticalIntersections;

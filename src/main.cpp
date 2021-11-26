@@ -48,12 +48,12 @@ int main(int argc, char* argv[]){
 
     // I made something
     bool runFinalSekvens = false;
-    bool runCalibrateCameraSekvens = false;
+    bool runCalibrateCameraSekvens = true;
     bool runCalibrateWorkSpaceSekvens = false;
     bool runDetectionMarker = false;
     bool runComToRobot = false;
     bool runMainSekvens = false;
-    bool runTransSekvens = true;
+    bool runTransSekvens = false;
 
     /* Camera variabler */
     int lengthXROImm     = 599;  // Lengt of width in cammera region of interrest in [mm] on tabele
@@ -111,8 +111,8 @@ int main(int argc, char* argv[]){
 
 
          detectMarker.initialize(rtde_receive, rtde_control, true);
-         cv::Vec6d point = detectMarker.mRobotPoint3d;
-         std::cout << "featureFrame: " << point << std::endl;
+         //cv::Vec6d point = detectMarker.mRobotPoint3d;
+         //std::cout << "featureFrame: " << point << std::endl;
 
      }
      //////////// Communikation robot sekvens //////////////
