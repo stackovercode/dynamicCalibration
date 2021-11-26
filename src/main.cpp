@@ -17,6 +17,7 @@
 #include <QtCore/QCoreApplication>
 #include "socket.h"
 #include "mytcpserver.h"
+#include <math.h>
 //#include <rw/rw.hpp>
 
 
@@ -47,12 +48,12 @@ int main(int argc, char* argv[]){
 
     // I made something
     bool runFinalSekvens = false;
-    bool runCalibrateCameraSekvens = true;
+    bool runCalibrateCameraSekvens = false;
     bool runCalibrateWorkSpaceSekvens = false;
     bool runDetectionMarker = false;
     bool runComToRobot = false;
     bool runMainSekvens = false;
-    bool runTransSekvens = false;
+    bool runTransSekvens = true;
 
     /* Camera variabler */
     int lengthXROImm     = 599;  // Lengt of width in cammera region of interrest in [mm] on tabele
@@ -93,6 +94,7 @@ int main(int argc, char* argv[]){
     {
         std::cout << "/* Transformation sekvens */" << std::endl;
         //workspaceCalibrate.initialize(rtde_receive, rtde_control, lengthXROImm, lengthYROImm);
+        std::cout << "HandEye: " <<  workspaceCalibrate.getTransformationEndEffector2CameraHandEye() << std::endl;
 
     }
 

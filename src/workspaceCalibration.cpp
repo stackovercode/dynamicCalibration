@@ -622,12 +622,12 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
     cv::Mat T_gripper2cam = (cv::Mat_<float>(3, 1));
 
     //Load TCP poses from file
-    std::string fileLocationRobotTcp = ("../TCPposesData.txt");
+    std::string fileLocationRobotTcp = ("../Detection/RobotposeData.txt");
 
     loadFileRobotTCP(fileLocationRobotTcp);
 
     //Load Rvec and Tvec from camera from file
-    std::string fileLocation = ("../MarkertransposeData.txt");
+    std::string fileLocation = ("../Detection/MarkertransposeData.txt");
 
     loadFileTranRot(fileLocation);
 
@@ -680,6 +680,8 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
 
 
     calibrateHandEye(R_gripper2baseRM, T_gripper2base, R_target2camRM, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_ANDREFF);
+    std::cout << R_cam2gripper << std::endl;
+    std::cout << T_cam2gripper << std::endl;
 //CALIB_HAND_EYE_TSAI, CALIB_HAND_EYE_PARK, CALIB_HAND_EYE_HORAUD, CALIB_HAND_EYE_ANDREFF, CALIB_HAND_EYE_DANIILIDIS ////// Andreff
 
 
