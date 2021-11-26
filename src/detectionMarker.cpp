@@ -229,13 +229,23 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 WorkspaceCalibration transMatrix;
                 cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) * transMatrix.getTransformationFlange2EndEffector() * transMatrix.getTransformationEndEffector2Camera();
                 cv::Mat robotTvec = robotTransMatrix * OrigoPoint;
+
+                cv::Mat cameraTCPRM = (cv::Mat_<double>(3, 3) <<
+                                        robotTransMatrix.at<double>(0,0), robotTransMatrix.at<double>(0,1), robotTransMatrix.at<double>(0,2),
+                                        robotTransMatrix.at<double>(1,0), robotTransMatrix.at<double>(1,1), robotTransMatrix.at<double>(1,2),
+                                        robotTransMatrix.at<double>(2,0), robotTransMatrix.at<double>(2,1), robotTransMatrix.at<double>(2,2));
+
+                Vec3f camerarvecRotation = ToRotVector(rotationMatrixToEulerAngles(cameraTCPRM));
+
+                Mat robotRvec = (cv::Mat_<double>(3, 1) << camerarvecRotation[0] + (camerarvecRotation[0]-mRvec.at<double>(0,0)), camerarvecRotation[1] + (camerarvecRotation[1]-(-mRvec.at<double>(0,1))), camerarvecRotation[2] + (camerarvecRotation[2]-mRvec.at<double>(0,2)));
                 cv::Vec6f robotPoint;
+
                 robotPoint[0] = robotTvec.at<double>(0,0);
                 robotPoint[1] = robotTvec.at<double>(0,1);
                 robotPoint[2] = robotTvec.at<double>(0,2);
-                robotPoint[3] = mRvec.at<double>(0,0);
-                robotPoint[4] = mRvec.at<double>(0,1);
-                robotPoint[5] = mRvec.at<double>(0,2);
+                robotPoint[3] = robotRvec.at<double>(0,0);
+                robotPoint[4] = robotRvec.at<double>(0,1);
+                robotPoint[5] = robotRvec.at<double>(0,2);
 
                 double velocity = 0.02;
                 double acceleration = 0.02;
@@ -468,6 +478,62 @@ cv::Vec3f DetectionMarker::rpy2rv(cv::Vec3f rpy){
     rvec[2] = (theta*kz);
 
     return rvec;
+}
+
+cv::Vec3f DetectionMarker::ToRotVector(cv::Vec3f rpy)
+{
+     float roll = rpy[0];
+     float pitch = rpy[1];
+     float yaw = rpy[2];
+
+     if (roll == 0 && pitch == 0 && yaw == 0){
+        cv::Vec3f rotVec(0,0,0);
+        return rotVec;
+     }
+
+
+     Matx33f RollM;
+     RollM.val[0] = 1; RollM.val[1] = 0; RollM.val[2] = 0;
+     RollM.val[3] = 0; RollM.val[4] = cos(roll); RollM.val[5] = -sin(roll);
+     RollM.val[6] = 0; RollM.val[7] = sin(roll); RollM.val[8] = cos(roll);
+
+     Matx33f PitchM;
+     PitchM.val[0] = cos(pitch); PitchM.val[1] = 0; PitchM.val[2] = sin(pitch);
+     PitchM.val[3] = 0; PitchM.val[4] = 1; PitchM.val[5] = 0;
+     PitchM.val[6] = -sin(pitch); PitchM.val[7] = 0; PitchM.val[8] = cos(pitch);
+
+     Matx33f YawM;
+     YawM.val[0] = cos(yaw); YawM.val[1] = -sin(yaw); YawM.val[2] = 0;
+     YawM.val[3] = sin(yaw); YawM.val[4] = cos(yaw); YawM.val[5] = 0;
+     YawM.val[6] = 0; YawM.val[7] = 0; YawM.val[8] = 1;
+
+     Matx33f Rot;
+
+     Rot = (YawM * PitchM * RollM);
+
+     double rotSum = Rot.val[0] + Rot.val[4] + Rot.val[8] - 1;
+     double alpha = acos(rotSum / 2);
+     double theta = 0;
+     if (roll >= 0){
+
+        theta = alpha;
+     }else
+        theta = 2 * M_PI - alpha;
+
+
+     //double my = 1d / (2 * sin(theta));
+     double my = 1 / (2 * sin(theta));
+
+     double rx = my * (Rot.val[7] - Rot.val[5]) * theta;
+     double ry = my * (Rot.val[2] - Rot.val[6]) * theta;
+     double rz = my * (Rot.val[3] - Rot.val[1]) * theta;
+
+     cv::Vec3f rotationVector;
+     rotationVector[0] = (float)rx;
+     rotationVector[1] = (float)ry;
+     rotationVector[2] = (float)rz;
+
+     return rotationVector;
 }
 
 bool DetectionMarker::writeFileTranRot (Mat tempRvec, Mat tempTvec){
