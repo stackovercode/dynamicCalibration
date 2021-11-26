@@ -66,6 +66,8 @@ private:
     cv::Vec3f rotationMatrixToEulerAngles(cv::Mat &R);
     cv::Vec3f rpy2rv(cv::Vec3f rpy);
     cv::Vec3f ToRotVector(cv::Vec3f rpy);
+    void getSolvepnpRvecTvec();
+    void writeFileTranRot2 (std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec);
 
     bool writeFileTranRot (cv::Mat tempRvec, cv::Mat tempTvec);
     void detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);

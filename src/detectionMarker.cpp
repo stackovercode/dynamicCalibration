@@ -549,3 +549,69 @@ bool DetectionMarker::writeFileTranRot (Mat tempRvec, Mat tempTvec){
     return 0;
 
 }
+
+void DetectionMarker::writeFileTranRot2 (std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec){
+    std::ofstream myfile;
+    myfile.open ("../Detection/MarkertransposeData.txt");
+    for (int i = 0; i < tempRvec.size(); i++) {
+        myfile << "Rvec: " << i+1 << " = \n" << tempRvec[i] << std::endl
+                  << "Tvec: " << i+1 << " = \n" << tempTvec[i] << std::endl;
+    }
+    myfile.close();
+
+}
+
+void DetectionMarker::getSolvepnpRvecTvec(){
+
+    cv::Mat mapX, mapY;
+    cv::Size patternSize(7 - 1, 6 - 1);
+    cv::Mat mRvec = cv::Mat(cv::Size(3, 1), CV_64F);
+    cv::Mat mTvec = cv::Mat(cv::Size(3, 1), CV_64F);
+    cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, mCamerasettings.getResolution(), CV_32FC1, mapX, mapY);
+    std::vector<cv::Mat> rvecs, tvecs;
+
+
+    std::vector<cv::String> fileNames;
+    cv::glob("../imageResources/Image*.png", fileNames, false); // Generate a list of all files that match the globbing pattern.
+
+    for (auto const &file : fileNames) {
+
+        cv::Mat image = cv::imread(file, cv::IMREAD_COLOR);
+        cv::Mat imgUndistorted, gray;
+        vector<Point2f> corners;
+        cv::remap(image, imgUndistorted, mapX, mapY, cv::INTER_LINEAR, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
+        vector<Point3f> boardPoints;
+        std::vector<cv::Mat> rvecs, tvecs;
+
+        cvtColor(imgUndistorted,gray,COLOR_BGR2GRAY);
+
+        bool patternfound = cv::findChessboardCorners(imgUndistorted, patternSize, corners, cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK);
+
+        if(patternfound){
+        cv::cornerSubPix(gray,corners,cv::Size(4,4), cv::Size(-1, -1), cv::TermCriteria(TermCriteria::EPS + TermCriteria::MAX_ITER, 30, 0.1));
+
+        }
+
+
+        for (int i = 0; i < patternSize.height; i++){
+            for (int j = 0; j < patternSize.width; j++){
+                boardPoints.push_back(Point3f(float(i), float(j), 0.0));
+            }
+        }
+
+
+        try{
+            solvePnP(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
+            cout<< "Rotation vector " << mRvec <<endl;
+            cout<< "Translation vector " << mTvec <<endl;
+            rvecs.push_back(mRvec);
+            tvecs.push_back(mTvec);
+        } catch(exception& e){
+            cout<< "Exception: " << endl;
+        }
+
+    }
+
+    writeFileTranRot2(rvecs, tvecs);
+}
+
