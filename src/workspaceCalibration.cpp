@@ -638,7 +638,9 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
 
 
     for(size_t i = 0; i < mTcpPose.size()-1;i++){
-        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
+        float rv_len = sqrt(pow(mTcpPose[i].at<float>(0,3), 2) + pow(mTcpPose[i].at<float>(0,4), 2) + pow(mTcpPose[i].at<float>(0,5), 2));
+        float scale = 1 - 2 * M_PI / rv_len;
+        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3) * scale,mTcpPose[i].at<float>(0,4) * scale,mTcpPose[i].at<float>(0,5) * scale};
         cv::Mat robotPoseRM;
         Rodrigues(robotPoseRVec, robotPoseRM);
         R_gripper2baseRM.push_back(robotPoseRM);
@@ -682,6 +684,7 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
 
 
     calibrateHandEye(R_gripper2baseRM, T_gripper2base, R_target2camRM, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_ANDREFF);
+    //CALIB_HAND_EYE_TSAI, CALIB_HAND_EYE_PARK, CALIB_HAND_EYE_HORAUD, CALIB_HAND_EYE_ANDREFF, CALIB_HAND_EYE_DANIILIDIS ////// Andreff
 
 
     cv::Mat TEECAMHANDEYE = (cv::Mat_<double>(4, 4) <<
