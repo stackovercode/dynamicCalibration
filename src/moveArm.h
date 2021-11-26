@@ -43,6 +43,9 @@ public:
     void closeURConnection(ur_rtde::RTDEControlInterface controller);
     std::vector<double> targetPointTransform(std::vector<double> startPoint, std::vector<double> targetPoint, double zRotation);
 
+    std::vector<std::vector<double>> mRobotTCPPoses;
+
+
 private:
     char mPoseTemp;
     bool lastPose;

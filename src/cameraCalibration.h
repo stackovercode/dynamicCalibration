@@ -16,7 +16,7 @@ class CameraCalibration : public Camera
 {
 public:
     CameraCalibration( CameraSettings& cameraSettings, int verticalIntersections = 5, int horizontalIntersections = 6,
-                                                       int squareSize = 10, int numberOfCalibrationImages = 65);
+                                                       int squareSize = 10, int numberOfCalibrationImages = 5);
     virtual ~CameraCalibration() = default;
 
 
@@ -29,8 +29,8 @@ public:
 
 
 private:
-    std::vector<std::vector<double>> mRobotPose;
 
+    std::vector<std::vector<double>> mRobotPose;
     int mNumberOfCalibrationImages;
     int mVerticalIntersections;
     int mHorizontalIntersections;

@@ -163,6 +163,8 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
     ur_rtde::RTDEReceiveInterface receiverNew("192.168.100.50");
     std::vector<double> pose = receiverNew.getActualTCPPose();
 
+    mRobotTCPPoses.push_back(pose);
+
     //std::vector<double> currentPose = {0.0146505+0.001518,0.0136401+0.004175,0.0,0.0,0.0,0.0};
     std::vector<double> currentPose = {0.0,0.0,0.0,0.0,0.0,0.0};
     std::vector<double> change_0_0 = controller.poseTrans(pose,currentPose);
@@ -854,10 +856,6 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         break;
     case 65:
-        controller.moveL(pose_1_4, velocity, acceleration);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        break;
-    case 66:
         controller.moveL(initPose, velocity, acceleration);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         break;
