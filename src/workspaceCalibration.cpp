@@ -396,6 +396,7 @@ void WorkspaceCalibration::loadFileTranRot(std::string fileLocation){
     cv::Mat rvecMat;
     cv::Mat tvecMat;
 
+
     std::vector<cv::Mat> R_target2cam;
     std::vector<cv::Mat> T_target2cam;
 
@@ -480,6 +481,7 @@ void WorkspaceCalibration::loadFileRobotJoint(std::string fileLocation){
 
 void WorkspaceCalibration::loadFileRobotTCP(std::string fileLocation){
 
+    //vector<Mat> mTcpPose;
     cv::Matx61f tcpPose;
 
     cv::Mat tcpPoseMat;
@@ -515,6 +517,7 @@ void WorkspaceCalibration::loadFileRobotTCP(std::string fileLocation){
         }
     }
     mTcpPose = tcpPoseVec;
+    //return mTcpPose;
 }
 
 void WorkspaceCalibration::loadFileImagePoints(std::string fileLocation){
