@@ -634,55 +634,51 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
 
 
 
-    //Robot Rvec pushback
     for(size_t i = 0; i < mTcpPose.size()-1;i++){
         cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
         cv::Mat robotPoseRM;
         Rodrigues(robotPoseRVec, robotPoseRM);
         R_gripper2baseRM.push_back(robotPoseRM);
+//        R_gripper2baseRM.push_back(eulerAnglesToRotationMatrix(robotPoseRVec));
     }
 
-//    for(int i = 0; i < R_gripper2baseRM.size(); i++){
+//    for(size_t i = 0; i < R_gripper2baseRM.size(); i++){
 //        std::cout<< "Test af R_gripper2baseRM " << i << ": " << R_gripper2baseRM[i] <<std::endl;
 //    }
 
-    //Robot Tvec pushback
     for(size_t i = 0; i < mTcpPose.size()-1; i++){
         const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
         T_gripper2base.push_back(robotPoseTVec);
     }
 
-//    for(int i = 0; i < T_gripper2base.size(); i++){
+//    for(size_t i = 0; i < T_gripper2base.size(); i++){
 //        std::cout<< "Test af robotPoseTVec " << i << ": " << T_gripper2base[i] <<std::endl;
 //    }
 
-    //Camera Rvec pushback
+
     for(size_t i = 0; i < mR_target2cam.size()-1;i++){
         cv::Vec3d camImgPoseRVec{mR_target2cam[i].at<double>(0,0), mR_target2cam[i].at<double>(0,1), mR_target2cam[i].at<double>(0,2)};
         cv::Mat camImgPoseRM;
         Rodrigues(camImgPoseRVec, camImgPoseRM);
         R_target2camRM.push_back(camImgPoseRM);
+//        R_target2camRM.push_back(eulerAnglesToRotationMatrix(camImgPoseRVec));
     }
 
-//    for(int i = 0; i < R_target2camRM.size(); i++){
+//    for(size_t i = 0; i < R_target2camRM.size(); i++){
 //        std::cout<< "Test af R_target2cam " << i << ": " << R_target2camRM[i] <<std::endl;
 //    }
 
-    //Camera Tvec pushback
     for(size_t i = 0; i < mT_target2cam.size()-1; i++){
         const cv::Mat camImgPose = (cv::Mat_<double>(3, 1) << mT_target2cam[i].at<double>(0,0), mT_target2cam[i].at<double>(0,1), mT_target2cam[i].at<double>(0,2));
         T_target2cam.push_back(camImgPose);
     }
 
-//    for(int i = 0; i < T_target2cam.size(); i++){
+//    for(size_t i = 0; i < T_target2cam.size(); i++){
 //        std::cout<< "Test af T_target2cam " << i << ": " << T_target2cam[i] <<std::endl;
 //    }
 
 
     calibrateHandEye(R_gripper2baseRM, T_gripper2base, R_target2camRM, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_ANDREFF);
-    std::cout << R_cam2gripper << std::endl;
-    std::cout << T_cam2gripper << std::endl;
-//CALIB_HAND_EYE_TSAI, CALIB_HAND_EYE_PARK, CALIB_HAND_EYE_HORAUD, CALIB_HAND_EYE_ANDREFF, CALIB_HAND_EYE_DANIILIDIS ////// Andreff
 
 
     cv::Mat TEECAMHANDEYE = (cv::Mat_<double>(4, 4) <<
