@@ -65,6 +65,7 @@ private:
     bool isRotationMatrix(cv::Mat &R);
     cv::Vec3f rotationMatrixToEulerAngles(cv::Mat &R);
     cv::Vec3f rpy2rv(cv::Vec3f rpy);
+    cv::Vec3f ToRotVector(cv::Vec3f rpy);
 
     bool writeFileTranRot (cv::Mat tempRvec, cv::Mat tempTvec);
     void detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
