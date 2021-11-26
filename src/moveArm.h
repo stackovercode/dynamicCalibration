@@ -45,6 +45,7 @@ public:
 
     std::vector<std::vector<double>> mRobotTCPPoses;
 
+    void writeFileRobotTCPPoses(std::vector<std::vector<double>> robotPoses);
 
 private:
     char mPoseTemp;

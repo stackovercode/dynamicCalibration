@@ -165,6 +165,8 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
 
     mRobotTCPPoses.push_back(pose);
 
+    writeFileRobotTCPPoses(mRobotTCPPoses);
+
     //std::vector<double> currentPose = {0.0146505+0.001518,0.0136401+0.004175,0.0,0.0,0.0,0.0};
     std::vector<double> currentPose = {0.0,0.0,0.0,0.0,0.0,0.0};
     std::vector<double> change_0_0 = controller.poseTrans(pose,currentPose);
@@ -1192,3 +1194,13 @@ std::vector<double> MoveArm::targetPointTransform(std::vector<double> startPoint
 
     return endPoint;
 }
+
+void MoveArm::writeFileRobotTCPPoses(std::vector<std::vector<double>> robotPoses){
+    std::ofstream myfile;
+    myfile.open ("../Detection/RobotposeData.txt", std::ios::app);
+    for (int i = 0; i < robotPoses.size(); i++) {
+        myfile << readVector(robotPoses[i]) << std::endl;
+    }
+    myfile.close();
+}
+

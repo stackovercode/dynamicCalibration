@@ -117,7 +117,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 MoveArm ur5arm;
                 //mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
                 initPose = ur5arm.poseSwift(reciver,controller,0.15,0.15,imageNr, initPose, mNumberOfCalibrationImages, false);
-                mRobotPose.push_back(initPose);
+                //mRobotPose.push_back(initPose);
                 imageNr++;
 
             } else if (keyPressed == 'n'|| keyPressed == 'N' ) { // Quit if Q is Pressed
@@ -152,7 +152,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             }
 
             if (imageNr > mNumberOfCalibrationImages ) {
-                writeFileRobotPoses(mRobotPose);
+                //writeFileRobotPoses(mRobotPose);
 
                 break;
             }
@@ -389,14 +389,7 @@ void CameraCalibration::writeFileTranRot (std::vector<cv::Mat> tempRvec, std::ve
 
 }
 
-void CameraCalibration::writeFileRobotPoses(std::vector<std::vector<double>> robotPoses){
-    std::ofstream myfile;
-    myfile.open ("../Detection/RobotposeData.txt");
-    for (int i = 0; i < robotPoses.size(); i++) {
-        myfile << "robotPoses: " << i+1 << " = \n" << readVector(robotPoses[i]) << std::endl;
-    }
-    myfile.close();
-}
+
 
 
 void CameraCalibration::loadFileTranRot(std::string fileLocation){
