@@ -47,11 +47,11 @@ int main(int argc, char* argv[]){
 
     // I made something
     bool runFinalSekvens = false;
-    bool runCalibrateCameraSekvens = false;
+    bool runCalibrateCameraSekvens = true;
     bool runCalibrateWorkSpaceSekvens = false;
     bool runDetectionMarker = false;
     bool runComToRobot = false;
-    bool runMainSekvens = true;
+    bool runMainSekvens = false;
     bool runTransSekvens = false;
 
     /* Camera variabler */
@@ -197,7 +197,7 @@ int main(int argc, char* argv[]){
 //                 test = false;
 //             }
 
-            ur5arm.poseSwift(rtde_receive, rtde_control, 0.02, 0.02, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
+            ur5arm.poseSwift(rtde_receive, rtde_control, 0.1, 0.1, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
 
 //         }
 
