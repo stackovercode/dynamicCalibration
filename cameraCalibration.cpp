@@ -1,6 +1,7 @@
 ﻿#include "cameraCalibration.h"
 #include <cstddef>
 
+
 CameraCalibration::CameraCalibration(CameraSettings& cameraSettings, int verticalIntersections, int horizontalIntersections, int squareSize, int numberOfCalibrationImages)
     : Camera(cameraSettings),
       mVerticalIntersections(verticalIntersections),

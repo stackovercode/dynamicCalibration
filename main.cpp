@@ -18,6 +18,8 @@
 #include "socket.h"
 #include "mytcpserver.h"
 #include <math.h>
+#include <visp3/vision/vpHandEyeCalibration.h>
+
 //#include <rw/rw.hpp>
 
 
