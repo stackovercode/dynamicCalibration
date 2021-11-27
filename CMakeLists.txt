@@ -27,6 +27,8 @@ find_package(Qt5PrintSupport REQUIRED)
 
 find_package(Qt5Network REQUIRED)
 
+find_package(VISP REQUIRED)
+
 #UR_RTDE
 FIND_PACKAGE( ur_rtde REQUIRED COMPONENTS
 	spin_msgs
@@ -54,7 +56,8 @@ include_directories(
 	${CURL_INCLUDE_DIR}
         ${ROBWORK_INCLUDE_DIRS}
         ${Qt5Widgets_INCLUDE_DIRS}
-        ${Qt5Core_INCLUDE_DIRS})
+        ${Qt5Core_INCLUDE_DIRS}
+        ${VISP_INCLUDE_DIRS})
 
 
 add_definitions(${Qt5Widgets_DEFINITIONS})
@@ -76,6 +79,7 @@ target_link_libraries( main
         ${Boost_FILESYSTEM_LIBRARY}
         ${CURLPP_LDFLAGS}
         ${ROBWORK_LIBRARIES}
+        ${VISP_LIBRARIES}
         #${Qt5::Core}
         #${CURL_LIBRARIES}
         )
