@@ -80,6 +80,7 @@ protected:
     cv::Mat_<double> mRotationMatrix{cv::Mat_<double>::zeros(3,3)};
     cv::Mat_<double> mTranslationMatrix{cv::Mat_<double>::zeros(1,3)};
     cv::Mat_<double> mTransformationMatrix{cv::Mat_<double>::zeros(4,4)};
+    cv::Mat eulerAnglesToRotationMatrix(cv::Vec3f &theta);
 
     void getCalibrationData(std::string fileLocation);
     void action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);

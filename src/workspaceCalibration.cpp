@@ -608,6 +608,36 @@ cv::Point2f WorkspaceCalibration::vectorBetween2Points(cv::Point2f startPoint, c
     return pointVector;
 }
 
+cv::Mat WorkspaceCalibration::eulerAnglesToRotationMatrix(cv::Vec3f &theta)
+{
+    // Calculate rotation about x axis
+    cv::Mat R_x = (cv::Mat_<double>(3, 3) <<
+        1, 0, 0,
+        0, cos(theta[0]), -sin(theta[0]),
+        0, sin(theta[0]), cos(theta[0])
+        );
+
+    // Calculate rotation about y axis
+    cv::Mat R_y = (cv::Mat_<double>(3, 3) <<
+        cos(theta[1]), 0, sin(theta[1]),
+        0, 1, 0,
+        -sin(theta[1]), 0, cos(theta[1])
+        );
+
+    // Calculate rotation about z axis
+    cv::Mat R_z = (cv::Mat_<double>(3, 3) <<
+        cos(theta[2]), -sin(theta[2]), 0,
+        sin(theta[2]), cos(theta[2]), 0,
+        0, 0, 1);
+
+
+    // Combined rotation matrix
+    cv::Mat R = R_z * R_y * R_x;
+
+    return R;
+
+}
+
 cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
 
     std::vector<cv::Mat> R_gripper2baseRM;
@@ -638,14 +668,14 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
 
 
     for(size_t i = 0; i < mTcpPose.size()-1;i++){
-        //float rv_len = sqrt(pow(mTcpPose[i].at<float>(0,3), 2) + pow(mTcpPose[i].at<float>(0,4), 2) + pow(mTcpPose[i].at<float>(0,5), 2));
-        //float scale = 1 - 2 * M_PI / rv_len;
-        //cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3) * scale,mTcpPose[i].at<float>(0,4) * scale,mTcpPose[i].at<float>(0,5) * scale};
-        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
-        cv::Mat robotPoseRM;
-        Rodrigues(robotPoseRVec, robotPoseRM);
-        R_gripper2baseRM.push_back(robotPoseRM);
-//        R_gripper2baseRM.push_back(eulerAnglesToRotationMatrix(robotPoseRVec));
+        float rv_len = sqrt(pow(mTcpPose[i].at<float>(0,3), 2) + pow(mTcpPose[i].at<float>(0,4), 2) + pow(mTcpPose[i].at<float>(0,5), 2));
+        float scale = 1 - 2 * M_PI / rv_len;
+        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3) * scale,mTcpPose[i].at<float>(0,4) * scale,mTcpPose[i].at<float>(0,5) * scale};
+//        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
+//        cv::Mat robotPoseRM;
+//        Rodrigues(robotPoseRVec, robotPoseRM);
+//        R_gripper2baseRM.push_back(robotPoseRM);
+        R_gripper2baseRM.push_back(eulerAnglesToRotationMatrix(robotPoseRVec));
     }
 
 //    for(size_t i = 0; i < R_gripper2baseRM.size(); i++){
@@ -693,14 +723,20 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
 
 
 
-    cv::Mat TEECAMHANDEYE = (cv::Mat_<double>(4, 4) <<
-            R_cam2gripper.at<double>(0,0), R_cam2gripper.at<double>(0,1), R_cam2gripper.at<double>(0,2), T_cam2gripper.at<double>(0,0)/1000,
-            R_cam2gripper.at<double>(1,0), R_cam2gripper.at<double>(1,1), R_cam2gripper.at<double>(1,2), T_cam2gripper.at<double>(0,1)/1000,
-            R_cam2gripper.at<double>(2,0), R_cam2gripper.at<double>(2,1), R_cam2gripper.at<double>(2,2), T_cam2gripper.at<double>(0,2)/1000,
+    cv::Mat TEECAMHANDEYE_ORIGINAL = (cv::Mat_<double>(4, 4) <<
+            R_cam2gripper.at<double>(0,0), R_cam2gripper.at<double>(0,1), R_cam2gripper.at<double>(0,2), T_cam2gripper.at<double>(0,0)/100,
+            R_cam2gripper.at<double>(1,0), R_cam2gripper.at<double>(1,1), R_cam2gripper.at<double>(1,2), T_cam2gripper.at<double>(0,1)/100,
+            R_cam2gripper.at<double>(2,0), R_cam2gripper.at<double>(2,1), R_cam2gripper.at<double>(2,2), T_cam2gripper.at<double>(0,2)/100,
+            0, 0, 0, 1);
+
+    cv::Mat TEECAMHANDEYE_TEST = (cv::Mat_<double>(4, 4) <<
+            1, 0, 0, -(T_cam2gripper.at<double>(0,0)/100),
+            0, 1, 0, T_cam2gripper.at<double>(0,1)/100,
+            0, 0, 1, -T_cam2gripper.at<double>(0,2)/100,
             0, 0, 0, 1);
 
 
-    return TEECAMHANDEYE;
+    return TEECAMHANDEYE_ORIGINAL;
 
 }
 

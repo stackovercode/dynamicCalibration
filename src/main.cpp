@@ -48,9 +48,9 @@ int main(int argc, char* argv[]){
 
     // I made something
     bool runFinalSekvens = false;
-    bool runCalibrateCameraSekvens = true;
+    bool runCalibrateCameraSekvens = false;
     bool runCalibrateWorkSpaceSekvens = false;
-    bool runDetectionMarker = false;
+    bool runDetectionMarker = true;
     bool runComToRobot = false;
     bool runMainSekvens = false;
     bool runTransSekvens = false;

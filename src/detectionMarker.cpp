@@ -235,7 +235,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 MoveArm urArm;
                 WorkspaceCalibration transMatrix;
                 cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) * transMatrix.getTransformationFlange2EndEffector() * transMatrix.getTransformationEndEffector2CameraHandEye();
-                //* transMatrix.getTransformationEndEffector2Camera();
+                //* transMatrix.getTransformationEndEffector2Camera(); * transMatrix.getTransformationEndEffector2CameraHandEye();
                 cv::Mat robotTvec = robotTransMatrix * OrigoPoint;
                 std::cout << "Hand eye trans" << transMatrix.getTransformationEndEffector2CameraHandEye() << std::endl;
 
