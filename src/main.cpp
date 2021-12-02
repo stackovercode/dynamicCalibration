@@ -49,9 +49,9 @@ int main(int argc, char* argv[]){
 
     // I made something
     bool runFinalSekvens = false;
-    bool runCalibrateCameraSekvens = true;
+    bool runCalibrateCameraSekvens = false;
     bool runCalibrateWorkSpaceSekvens = false;
-    bool runDetectionMarker = false;
+    bool runDetectionMarker = true;
     bool runComToRobot = false;
     bool runMainSekvens = false;
     bool runTransSekvens = false;
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]){
     {
         std::cout << "/* Transformation sekvens */" << std::endl;
         //workspaceCalibrate.initialize(rtde_receive, rtde_control, lengthXROImm, lengthYROImm);
-        std::cout << "HandEye: " <<  workspaceCalibrate.getTransformationFlange2CameraHandEye(65,1) << std::endl;
+        std::cout << "HandEye: " <<  workspaceCalibrate.getTransformationFlange2CameraHandEye(23,1) << std::endl;
 
     }
 

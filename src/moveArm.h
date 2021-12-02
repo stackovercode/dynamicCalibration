@@ -47,6 +47,8 @@ public:
 
     void writeFileRobotTCPPoses(std::vector<std::vector<double>> robotPoses);
 
+    bool change;
+
 private:
     char mPoseTemp;
     bool lastPose;

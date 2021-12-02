@@ -113,7 +113,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             } else if(keyPressed == 'g'|| keyPressed == 'G' ){
                 std::cout << "Grabbing and saving imge" << imageNr << ". to folder \"imageResources\"..." << std::endl;
                 std::stringstream fileName;
-                fileName<< "../imageResources/" << "Image" << imageNr << ".png";
+                fileName<< "../imageResources/" << "Image00" << imageNr << ".png";
                 cv::imwrite( fileName.str(), openCvImage );
                 std::cout << "Grabing and saving image to lacation was succesfull" << std::endl;
                 cv::destroyWindow(vindue.str());

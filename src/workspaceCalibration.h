@@ -11,6 +11,7 @@
 #include "cameraCalibration.h"
 #include <visp3/vision/vpHandEyeCalibration.h>
 #include <visp3/core/vpHomogeneousMatrix.h>
+#include <opencv2/calib3d.hpp>
 
 
 // Not done or in use
@@ -37,6 +38,7 @@ public:
     cv::Mat getTransformationMatrixBase2Cam(cv::Vec6f robotJointAngles);
     cv::Mat getTransformationMatrixImage2Camera(cv::Mat rvec, cv::Mat tvec);
     cv::Mat getTransformationFlange2CameraHandEye(int numbOfPose, int method);
+    cv::Mat getInversMatrix(cv::Mat);
     vpHomogeneousMatrix vispHandEyeCalibration();
     double lineLength(double sX, double sY, double eX, double eY);
     double getDistance2Object(cv::Point2f origo, cv::Point2f dia);
@@ -85,6 +87,7 @@ protected:
     cv::Mat_<double> mTranslationMatrix{cv::Mat_<double>::zeros(1,3)};
     cv::Mat_<double> mTransformationMatrix{cv::Mat_<double>::zeros(4,4)};
     cv::Mat eulerAnglesToRotationMatrix(cv::Vec3f &theta);
+    cv::Mat rvec2RotationMatrix(cv::Vec3f theta);
 
     void getCalibrationData(std::string fileLocation);
     void action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
