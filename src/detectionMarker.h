@@ -8,6 +8,7 @@
 #include "cameraSettings.h"
 #include "workspaceCalibration.h"
 #include <fstream>
+#include <opencv2/videoio.hpp>
 
 
 class DetectionMarker : public Camera

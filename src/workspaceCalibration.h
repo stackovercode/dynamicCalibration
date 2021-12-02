@@ -9,6 +9,8 @@
 #include "camera.h"
 #include "detectionObject.h"
 #include "cameraCalibration.h"
+#include <visp3/vision/vpHandEyeCalibration.h>
+#include <visp3/core/vpHomogeneousMatrix.h>
 
 
 // Not done or in use
@@ -30,10 +32,12 @@ public:
 
     cv::Mat getTransformationFlange2EndEffector();
     cv::Mat getTransformationEndEffector2Camera();
+    cv::Mat getTransformationCamera2EndEffector(int numbOfPose, int method);
     cv::Mat getRobotTransformationMatrix(cv::Vec6f robotJointAngles);
     cv::Mat getTransformationMatrixBase2Cam(cv::Vec6f robotJointAngles);
     cv::Mat getTransformationMatrixImage2Camera(cv::Mat rvec, cv::Mat tvec);
-    cv::Mat getTransformationEndEffector2CameraHandEye();
+    cv::Mat getTransformationFlange2CameraHandEye(int numbOfPose, int method);
+    vpHomogeneousMatrix vispHandEyeCalibration();
     double lineLength(double sX, double sY, double eX, double eY);
     double getDistance2Object(cv::Point2f origo, cv::Point2f dia);
     double getPixelPermm(cv::Point2f origo, cv::Point2f dia);

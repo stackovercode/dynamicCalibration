@@ -234,10 +234,16 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
                 MoveArm urArm;
                 WorkspaceCalibration transMatrix;
-                cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) * transMatrix.getTransformationFlange2EndEffector() * transMatrix.getTransformationEndEffector2CameraHandEye();
+//                cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) * transMatrix.getTransformationFlange2EndEffector() * transMatrix.getTransformationEndEffector2Camera();
+                cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver));
                 //* transMatrix.getTransformationEndEffector2Camera(); * transMatrix.getTransformationEndEffector2CameraHandEye();
+                //CALIB_HAND_EYE_TSAI, CALIB_HAND_EYE_PARK, CALIB_HAND_EYE_HORAUD, CALIB_HAND_EYE_ANDREFF, CALIB_HAND_EYE_DANIILIDIS
                 cv::Mat robotTvec = robotTransMatrix * OrigoPoint;
-                std::cout << "Hand eye trans" << transMatrix.getTransformationEndEffector2CameraHandEye() << std::endl;
+                //std::cout << "Flange coor: " << transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) <<std::endl;
+                std::cout<< "RobotPoint: " << "\n" << robotTransMatrix <<endl;
+                std::cout << "Hand eye trans: " << "\n" << transMatrix.getTransformationFlange2CameraHandEye(30, 1) << std::endl;
+                //std::cout << "Cam to end effector: " << "\n" << transMatrix.getTransformationCamera2EndEffector(30, 1) << std::endl;
+                std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration() <<std::endl;
 
                 cv::Mat cameraTCPRM = (cv::Mat_<double>(3, 3) <<
                                         robotTransMatrix.at<double>(0,0), robotTransMatrix.at<double>(0,1), robotTransMatrix.at<double>(0,2),
@@ -584,9 +590,17 @@ void DetectionMarker::getSolvepnpRvecTvec(){
 
 
     std::vector<cv::String> fileNames;
+
+    cv::VideoCapture videoCap;
+
+    //videoCap = cv::VideoCapture("../imageResources/Image*.png", cv::CAP_IMAGES);
+
+
     cv::glob("../imageResources/Image*.png", fileNames, false); // Generate a list of all files that match the globbing pattern.
 
     for (auto const &file : fileNames) {
+
+        std::cout<< "Image name: " << file <<std::endl;
 
         cv::Mat image = cv::imread(file, cv::IMREAD_COLOR);
         cv::Mat imgUndistorted, gray;

@@ -19,7 +19,6 @@
 #include "mytcpserver.h"
 #include <math.h>
 #include <visp3/vision/vpHandEyeCalibration.h>
-//HEj
 //#include <rw/rw.hpp>
 
 
@@ -96,7 +95,7 @@ int main(int argc, char* argv[]){
     {
         std::cout << "/* Transformation sekvens */" << std::endl;
         //workspaceCalibrate.initialize(rtde_receive, rtde_control, lengthXROImm, lengthYROImm);
-        std::cout << "HandEye: " <<  workspaceCalibrate.getTransformationEndEffector2CameraHandEye() << std::endl;
+        std::cout << "HandEye: " <<  workspaceCalibrate.getTransformationFlange2CameraHandEye(65,1) << std::endl;
 
     }
 

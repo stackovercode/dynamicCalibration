@@ -333,7 +333,26 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2Camera(){
         0, 0, 1, -0.129,
         0, 0, 0, 1);
 
+//    cv::Mat TEECAM = (cv::Mat_<double>(4, 4) <<
+//        1, 0, 0, 0.0261,
+//        0, 1, 0, 0.0347,
+//        0, 0, 1, -0.139,
+//        0, 0, 0, 1);
+
     return TEECAM;
+}
+
+cv::Mat WorkspaceCalibration::getTransformationCamera2EndEffector(int numbOfPose, int method){
+
+    cv::Mat TTFCAM = getTransformationFlange2CameraHandEye(numbOfPose, method);
+
+    cv::Mat TCAMEE = (cv::Mat_<double>(4, 4) <<
+        1, 0, 0, -TTFCAM.at<double>(0,3),
+        0, 1, 0, -TTFCAM.at<double>(1,3),
+        0, 0, 1,  (0.18 + TTFCAM.at<double>(2,3)),
+        0, 0, 0, 1);
+
+    return TCAMEE;
 }
 
 cv::Mat WorkspaceCalibration::getTransformationMatrixImage2Camera(cv::Mat rvec, cv::Mat tvec){
@@ -638,21 +657,19 @@ cv::Mat WorkspaceCalibration::eulerAnglesToRotationMatrix(cv::Vec3f &theta)
 
 }
 
-cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
+cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPose, int method){
 
-    std::vector<cv::Mat> R_gripper2baseRM;
-    std::vector<cv::Mat> R_gripper2baseRV;
+    std::vector<cv::Mat> R_gripper2base;
     std::vector<cv::Mat> T_gripper2base;
-    std::vector<cv::Mat> R_target2camRM;
-    std::vector<cv::Mat> R_target2camRV;
+    std::vector<cv::Mat> R_target2cam;
     std::vector<cv::Mat> T_target2cam;
     cv::Mat R_cam2gripper = (cv::Mat_<float>(3, 3));
     cv::Mat T_cam2gripper = (cv::Mat_<float>(3, 1));
 
-    cv::Mat R_base2world = (cv::Mat_<float>(3, 3));
-    cv::Mat T_base2world = (cv::Mat_<float>(3, 1));
-    cv::Mat R_gripper2cam = (cv::Mat_<float>(3, 3));
-    cv::Mat T_gripper2cam = (cv::Mat_<float>(3, 1));
+    //cv::Mat R_base2world = (cv::Mat_<float>(3, 3));
+    //cv::Mat T_base2world = (cv::Mat_<float>(3, 1));
+    //cv::Mat R_gripper2cam = (cv::Mat_<float>(3, 3));
+    //cv::Mat T_gripper2cam = (cv::Mat_<float>(3, 1));
 
     //Load TCP poses from file
     std::string fileLocationRobotTcp = ("../Detection/RobotposeData.txt");
@@ -667,22 +684,38 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
 
 
 
-    for(size_t i = 0; i < mTcpPose.size()-1;i++){
-        float rv_len = sqrt(pow(mTcpPose[i].at<float>(0,3), 2) + pow(mTcpPose[i].at<float>(0,4), 2) + pow(mTcpPose[i].at<float>(0,5), 2));
-        float scale = 1 - 2 * M_PI / rv_len;
-        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3) * scale,mTcpPose[i].at<float>(0,4) * scale,mTcpPose[i].at<float>(0,5) * scale};
-//        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
-//        cv::Mat robotPoseRM;
-//        Rodrigues(robotPoseRVec, robotPoseRM);
-//        R_gripper2baseRM.push_back(robotPoseRM);
-        R_gripper2baseRM.push_back(eulerAnglesToRotationMatrix(robotPoseRVec));
+//    for(size_t i = 0; i < mTcpPose.size()-1;i++){
+////        float rv_len = sqrt(pow(mTcpPose[i].at<float>(0,3), 2) + pow(mTcpPose[i].at<float>(0,4), 2) + pow(mTcpPose[i].at<float>(0,5), 2));
+////        float scale = 1 - 2 * M_PI / rv_len;
+////        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3) * scale,mTcpPose[i].at<float>(0,4) * scale,mTcpPose[i].at<float>(0,5) * scale};
+////        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
+////        cv::Mat robotPoseRM;
+////        Rodrigues(robotPoseRVec, robotPoseRM);
+////        R_gripper2baseRM.push_back(robotPoseRM);
+//        cv::Vec3f theta{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
+//        float factor = sqrt(pow(theta[0], 2) + pow(theta[1], 2) + pow(theta[2], 2));
+//        cv::Vec3f robotUnitVector{theta[0]/factor, theta[1]/factor, theta[2]/factor};
+//        cv::Mat robotRm = eulerAnglesToRotationMatrix(robotUnitVector);
+//        R_gripper2base.push_back(robotRm);
+//    }
+
+    for(int i = 0; i < numbOfPose;i++){
+        cv::Vec3f theta{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
+        float factor = sqrt(pow(theta[0], 2) + pow(theta[1], 2) + pow(theta[2], 2));
+        cv::Vec3f robotUnitVector{theta[0]/factor, theta[1]/factor, theta[2]/factor};
+        cv::Mat robotRm = eulerAnglesToRotationMatrix(robotUnitVector);
+        R_gripper2base.push_back(robotRm);
     }
 
 //    for(size_t i = 0; i < R_gripper2baseRM.size(); i++){
 //        std::cout<< "Test af R_gripper2baseRM " << i << ": " << R_gripper2baseRM[i] <<std::endl;
 //    }
 
-    for(size_t i = 0; i < mTcpPose.size()-1; i++){
+//    for(size_t i = 0; i < mTcpPose.size()-1; i++){
+//        const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
+//        T_gripper2base.push_back(robotPoseTVec);
+//    }
+    for(int i = 0; i < numbOfPose; i++){
         const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
         T_gripper2base.push_back(robotPoseTVec);
     }
@@ -692,11 +725,11 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
 //    }
 
 
-    for(size_t i = 0; i < mR_target2cam.size()-1;i++){
-        cv::Vec3d camImgPoseRVec{mR_target2cam[i].at<double>(0,0), mR_target2cam[i].at<double>(0,1), mR_target2cam[i].at<double>(0,2)};
+    for(int i = 0; i < numbOfPose;i++){
+        cv::Mat camImgPoseRVec = (cv::Mat_<double>(3, 1) << mR_target2cam[i].at<double>(0,0), mR_target2cam[i].at<double>(0,1), mR_target2cam[i].at<double>(0,2));
         cv::Mat camImgPoseRM;
         Rodrigues(camImgPoseRVec, camImgPoseRM);
-        R_target2camRM.push_back(camImgPoseRM);
+        R_target2cam.push_back(camImgPoseRM);
 //        R_target2camRM.push_back(eulerAnglesToRotationMatrix(camImgPoseRVec));
     }
 
@@ -704,7 +737,7 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
 //        std::cout<< "Test af R_target2cam " << i << ": " << R_target2camRM[i] <<std::endl;
 //    }
 
-    for(size_t i = 0; i < mT_target2cam.size()-1; i++){
+    for(int i = 0; i < numbOfPose; i++){
         const cv::Mat camImgPose = (cv::Mat_<double>(3, 1) << mT_target2cam[i].at<double>(0,0), mT_target2cam[i].at<double>(0,1), mT_target2cam[i].at<double>(0,2));
         T_target2cam.push_back(camImgPose);
     }
@@ -718,25 +751,121 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2CameraHandEye(){
 //    calibrateHandEye(R_gripper2baseRM, T_gripper2base, R_target2camRM, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_ANDREFF);
     //CALIB_HAND_EYE_TSAI, CALIB_HAND_EYE_PARK, CALIB_HAND_EYE_HORAUD, CALIB_HAND_EYE_ANDREFF, CALIB_HAND_EYE_DANIILIDIS ////// Andreff
 
-    calibrateHandEye(R_gripper2baseRM, T_gripper2base, R_target2camRM, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);// cv::CALIB_HAND_EYE_ANDREFF);
+
+    if(method == 0){
+        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);
+    } else if (method == 1) {
+        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_PARK);
+    }else if (method == 2) {
+        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_HORAUD);
+    }else if (method == 3) {
+        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_ANDREFF);
+    }else if (method == 4) {
+        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_DANIILIDIS);
+    }else {
+        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);
+    }
+
+
+//    calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_PARK);// cv::CALIB_HAND_EYE_ANDREFF);
 //    std::cout << R_cam2gripper << std::endl;
 
 
 
     cv::Mat TEECAMHANDEYE_ORIGINAL = (cv::Mat_<double>(4, 4) <<
-            R_cam2gripper.at<double>(0,0), R_cam2gripper.at<double>(0,1), R_cam2gripper.at<double>(0,2), T_cam2gripper.at<double>(0,0)/1000,
-            R_cam2gripper.at<double>(1,0), R_cam2gripper.at<double>(1,1), R_cam2gripper.at<double>(1,2), T_cam2gripper.at<double>(0,1)/1000,
-            R_cam2gripper.at<double>(2,0), R_cam2gripper.at<double>(2,1), R_cam2gripper.at<double>(2,2), T_cam2gripper.at<double>(0,2)/1000,
+            R_cam2gripper.at<double>(0,0), R_cam2gripper.at<double>(0,1), R_cam2gripper.at<double>(0,2), T_cam2gripper.at<double>(0,0),
+            R_cam2gripper.at<double>(1,0), R_cam2gripper.at<double>(1,1), R_cam2gripper.at<double>(1,2), T_cam2gripper.at<double>(0,1),
+            R_cam2gripper.at<double>(2,0), R_cam2gripper.at<double>(2,1), R_cam2gripper.at<double>(2,2), T_cam2gripper.at<double>(0,2),
             0, 0, 0, 1);
 
     cv::Mat TEECAMHANDEYE_TEST = (cv::Mat_<double>(4, 4) <<
-            1, 0, 0, -(T_cam2gripper.at<double>(0,0)/100),
-            0, 1, 0, T_cam2gripper.at<double>(0,1)/100,
-            0, 0, 1, -T_cam2gripper.at<double>(0,2)/100,
+            0, 0, 1, -T_cam2gripper.at<double>(0,0)/1000,
+            0, 1, 0, T_cam2gripper.at<double>(0,1)/1000,
+            1, 0, 0, -T_cam2gripper.at<double>(0,2)/1000,
             0, 0, 0, 1);
 
 
-    return TEECAMHANDEYE_ORIGINAL;
+    return TEECAMHANDEYE_TEST;
+
+}
+
+vpHomogeneousMatrix WorkspaceCalibration::vispHandEyeCalibration(){
+
+
+    std::vector<vpHomogeneousMatrix> cMo;
+    std::vector<vpHomogeneousMatrix> rMe;
+    vpHomogeneousMatrix eMc;
+
+
+    //Load TCP poses from file
+    std::string fileLocationRobotTcp = ("../Detection/RobotposeData.txt");
+
+    loadFileRobotTCP(fileLocationRobotTcp);
+
+    //Load Rvec and Tvec from camera from file
+    std::string fileLocation = ("../Detection/MarkertransposeData.txt");
+
+    loadFileTranRot(fileLocation);
+
+    for(size_t i = 0; i < mTcpPose.size()-1;i++){
+
+        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
+//        float factor = sqrt(pow(robotPoseRVec[0], 2) + pow(robotPoseRVec[1], 2) + pow(robotPoseRVec[2], 2));
+//        cv::Vec3f robotUnitVector{robotPoseRVec[0]/factor, robotPoseRVec[1]/factor, robotPoseRVec[2]/factor};
+//        cv::Mat robotPoseRM = eulerAnglesToRotationMatrix(robotUnitVector);
+        const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
+        cv::Mat robotPoseRM;
+        Rodrigues(robotPoseRVec, robotPoseRM);
+        std::vector<float> robotPoseTrans(12, 0);
+        robotPoseTrans[0] = robotPoseRM.at<float>(0,0);//r11
+        robotPoseTrans[1] = robotPoseRM.at<float>(0,1);//r12
+        robotPoseTrans[2] = robotPoseRM.at<float>(0,2);//r13
+        robotPoseTrans[3] = robotPoseTVec.at<float>(0,0);//t1
+        robotPoseTrans[4] = robotPoseRM.at<float>(1,0);//r21
+        robotPoseTrans[5] = robotPoseRM.at<float>(1,1);//r22
+        robotPoseTrans[6] = robotPoseRM.at<float>(1,2);//r23
+        robotPoseTrans[7] = robotPoseTVec.at<float>(0,1);//t2
+        robotPoseTrans[8] = robotPoseRM.at<float>(2,0);//r31
+        robotPoseTrans[9] = robotPoseRM.at<float>(2,1);//r32
+        robotPoseTrans[10] = robotPoseRM.at<float>(2,2);//r33
+        robotPoseTrans[11] = robotPoseTVec.at<float>(0,2);//t3
+
+        vpHomogeneousMatrix robotHomoTrans(robotPoseTrans);
+
+        rMe.push_back(robotHomoTrans);
+    }
+
+
+    for(size_t i = 0; i < mR_target2cam.size()-1;i++){
+
+        cv::Vec3d camImgPoseRVec{mR_target2cam[i].at<double>(0,0), mR_target2cam[i].at<double>(0,1), mR_target2cam[i].at<double>(0,2)};
+        const cv::Mat camImgPose = (cv::Mat_<double>(3, 1) << mT_target2cam[i].at<double>(0,0), mT_target2cam[i].at<double>(0,1), mT_target2cam[i].at<double>(0,2));
+        cv::Mat camImgPoseRM;
+        Rodrigues(camImgPoseRVec, camImgPoseRM);
+        std::vector<double> cameraTrans(12, 0);
+        cameraTrans[0] = camImgPoseRM.at<double>(0,0);//r11
+        cameraTrans[1] = camImgPoseRM.at<double>(0,1);//r12
+        cameraTrans[2] = camImgPoseRM.at<double>(0,2);//r13
+        cameraTrans[3] = camImgPose.at<double>(0,0);//t1
+        cameraTrans[4] = camImgPoseRM.at<double>(1,0);//r21
+        cameraTrans[5] = camImgPoseRM.at<double>(1,1);//r22
+        cameraTrans[6] = camImgPoseRM.at<double>(1,2);//r23
+        cameraTrans[7] = camImgPose.at<double>(0,1);//t2
+        cameraTrans[8] = camImgPoseRM.at<double>(2,0);//r31
+        cameraTrans[9] = camImgPoseRM.at<double>(2,1);//r32
+        cameraTrans[10] = camImgPoseRM.at<double>(2,2);//r33
+        cameraTrans[11] = camImgPose.at<double>(0,2);//t3
+
+        vpHomogeneousMatrix cameraHomoTrans(cameraTrans);
+
+        cMo.push_back(cameraHomoTrans);
+    }
+
+
+    int doneCalibration = vpHandEyeCalibration::calibrate(cMo,rMe,eMc);
+
+    return eMc;
+
 
 }
 
