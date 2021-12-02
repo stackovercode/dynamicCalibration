@@ -149,7 +149,9 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
 
     if(positionStatus == 1){// && !largeCheckerboardSize){
     std::vector<std::vector<double>> path_q;
-    std::vector<double> startPos_q1 = {-0.899286,-1.30822,-1.8855,-3.09498,-1.23777,1.57271, velocity, acceleration, 0.0};
+    //std::vector<double> startPos_q1 = {-0.899286,-1.30822,-1.8855,-3.09498,-1.23777,1.57271, velocity, acceleration, 0.0};
+    //std::vector<double> startPos_q1 = {-0.912752,-1.20274,-1.76052,-0.133582,1.31342,-1.5769, velocity, acceleration, 0.0};
+    std::vector<double> startPos_q1 = {-0.906876,-1.28316,-1.37612,-0.437507,1.30899,-1.57704, velocity, acceleration, 0.0};
     path_q.push_back(startPos_q1);
     controller.moveJ(path_q, false);
     }
@@ -175,8 +177,8 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
         initPose = change_0_0;
     }
 
-    std::vector<double> change_1_1 = {0.0,0.10,0.0,0.26,0.0,0.0};
-        //    std::vector<double> change_1_1 = {0.0,0.10,0.0,0.35,0.0,0.0};
+            std::vector<double> change_1_1 = {0.0,0.10,0.0,0.26,0.0,0.0};
+            //std::vector<double> change_1_1 = {0.0,0.10,0.0,0.35,0.0,0.0};
             std::vector<double> change_1_2 = {0.0,0.05,0.0,0.175,0.0,0.0};
             std::vector<double> change_1_3 = {0.0,-0.05,0.0,-0.175,0.0,0.0};
             std::vector<double> change_1_4 = {0.0,-0.10,0.0,-0.26,0.0,0.0};
@@ -230,12 +232,12 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
             std::vector<double> pose_7_3 = controller.poseTrans(initPose,change_7_3);
             std::vector<double> pose_7_4 = controller.poseTrans(initPose,change_7_4);
 
-            std::vector<double> change_11_1 = {0.10,0.075,0.0,0.175,-0.175,0.0};
-        //    std::vector<double> change_11_1 = {0.10,0.075,0.0,0.26,-0.35,0.0};
+        //    std::vector<double> change_11_1 = {0.10,0.075,0.0,0.175,-0.175,0.0};
+            std::vector<double> change_11_1 = {0.10,0.075,0.0,0.26,-0.35,0.0};
             std::vector<double> change_11_2 = {0.05,0.0375,0.0,0.13,-0.175,0.0};
             std::vector<double> change_11_3 = {-0.05,-0.0375,0.0,-0.13,0.175,0.0};
-        //    std::vector<double> change_11_4 = {-0.10,-0.075,0.0,-0.26,0.35,0.0};
-            std::vector<double> change_11_4 = {-0.10,-0.075,0.0,-0.175,0.175,0.0};
+            std::vector<double> change_11_4 = {-0.10,-0.075,0.0,-0.26,0.35,0.0};
+        //    std::vector<double> change_11_4 = {-0.10,-0.075,0.0,-0.175,0.175,0.0};
             std::vector<double> pose_11_1 = controller.poseTrans(initPose,change_11_1);
             std::vector<double> pose_11_2 = controller.poseTrans(initPose,change_11_2);
             std::vector<double> pose_11_3 = controller.poseTrans(initPose,change_11_3);

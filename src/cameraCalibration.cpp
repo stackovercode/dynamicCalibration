@@ -107,7 +107,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 /* RTDE handler object */
                 MoveArm ur5arm;
                 //mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
-                initPose = ur5arm.poseSwift(reciver,controller,0.15,0.15,imageNr, initPose, mNumberOfCalibrationImages, false);
+                initPose = ur5arm.poseSwift(reciver,controller,0.05,0.05,imageNr, initPose, mNumberOfCalibrationImages, false);
                 imageNr++;
 
             } else if(keyPressed == 'g'|| keyPressed == 'G' ){
@@ -120,7 +120,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 /* RTDE handler object */
                 MoveArm ur5arm;
                 //mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
-                initPose = ur5arm.poseSwift(reciver,controller,0.15,0.15,imageNr, initPose, mNumberOfCalibrationImages, false);
+                initPose = ur5arm.poseSwift(reciver,controller,0.1,0.1,imageNr, initPose, mNumberOfCalibrationImages, false);
                 //mRobotPose.push_back(initPose);
                 imageNr++;
 

@@ -187,7 +187,7 @@ int main(int argc, char* argv[]){
 
 
 
-       // std::cout << "test: " << ur5arm.readVector(ur5arm.receivePose(rtde_receive)) << std::endl;
+        std::cout << "test: " << ur5arm.readVector(ur5arm.receivePose(rtde_receive)) << std::endl;
 
 //         bool test = true;
 //         char keyPressed;
@@ -200,7 +200,7 @@ int main(int argc, char* argv[]){
 //                 test = false;
 //             }
 
-            ur5arm.poseSwift(rtde_receive, rtde_control, 0.1, 0.1, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
+            //ur5arm.poseSwift(rtde_receive, rtde_control, 0.1, 0.1, 1, {0.0,0.0,0.0,0.0,0.0,0.0}, 25, true);
 
 //         }
 
