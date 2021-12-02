@@ -102,7 +102,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 std::stringstream fileName;
                 fileName<< "../imageResources/" << "Image" << imageNr << ".png";
                 cv::imwrite( fileName.str(), openCvImage );
-                std::cout << "Grabing and saving image to lacation was succesfull" << std::endl;
+                std::cout << "Grabing and saving image to location was succesfull" << std::endl;
                 cv::destroyWindow(vindue.str());
                 /* RTDE handler object */
                 MoveArm ur5arm;
@@ -189,7 +189,7 @@ void CameraCalibration::drawChessboardCorners(std::vector<std::vector<cv::Point2
 
         // 1. Read in the image an call cv::findChessboardCorners()
         cv::Mat image = cv::imread(file);
-        bool isPatternfound = cv::findChessboardCorners(image, patternSize, chessboardCorners, 0); // 0 can also be CALIB_CB_NORMALIZE, CALIB_CB_EXHAUSTIVE, and CALIB_CB_ACURACY .
+        bool isPatternfound = cv::findChessboardCorners(image, patternSize, chessboardCorners, cv::CALIB_CB_ADAPTIVE_THRESH+cv::CALIB_CB_NORMALIZE_IMAGE); // 0 can also be CALIB_CB_NORMALIZE, CALIB_CB_EXHAUSTIVE, and CALIB_CB_ACURACY .
         std::cout << "Found Chessboard Corners: " << std::boolalpha << isPatternfound << std::endl;
 
         // 2. Use cv::cornerSubPix() to refine the found corner detections
