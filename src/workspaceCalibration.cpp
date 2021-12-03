@@ -996,6 +996,56 @@ vpHomogeneousMatrix WorkspaceCalibration::vispHandEyeCalibration(){
 
 }
 
+vpHomogeneousMatrix WorkspaceCalibration::testAfVisp(int numbOfPose){
+
+
+    std::vector<vpHomogeneousMatrix> cMo;
+    std::vector<vpHomogeneousMatrix> rMe;
+    vpHomogeneousMatrix eMc;
+
+    //Load TCP poses from file
+    std::string fileLocationRobotTcp = ("../Detection/RobotposeData.txt");
+
+    loadFileRobotTCP(fileLocationRobotTcp);
+
+    //Load Rvec and Tvec from camera from file
+    std::string fileLocation = ("../Detection/MarkertransposeData.txt");
+
+    loadFileTranRot(fileLocation);
+
+    for(size_t i = 0; i < mTcpPose.size();i++){
+
+        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
+        float factor = sqrt(pow(robotPoseRVec[0], 2) + pow(robotPoseRVec[1], 2) + pow(robotPoseRVec[2], 2));
+        cv::Vec3f robotUnitVector{robotPoseRVec[0]/factor, robotPoseRVec[1]/factor, robotPoseRVec[2]/factor};
+
+        vpThetaUVector robotRotationVector(mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5));
+        //vpThetaUVector robotRotationVector(robotUnitVector[0],robotUnitVector[1],robotUnitVector[2]);
+
+        vpTranslationVector robotTranslationVector(mTcpPose[i].at<float>(0,0),mTcpPose[i].at<float>(0,1),mTcpPose[i].at<float>(0,2));
+        //vpTranslationVector robotTranslationVector(mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
+
+        vpPoseVector robotPoseVector(robotTranslationVector,robotRotationVector);
+
+        rMe.push_back(vpHomogeneousMatrix(robotPoseVector));
+    }
+
+    for(size_t i = 0; i < mR_target2cam.size();i++){
+
+        vpThetaUVector cameraRotationVector(mR_target2cam[i].at<double>(0,0), mR_target2cam[i].at<double>(0,1), mR_target2cam[i].at<double>(0,2));
+
+        vpTranslationVector cameraTranslationVector(mT_target2cam[i].at<double>(0,0), mT_target2cam[i].at<double>(0,1), mT_target2cam[i].at<double>(0,2));
+
+        vpPoseVector cameraPoseVector(cameraTranslationVector,cameraRotationVector);
+
+        cMo.push_back(vpHomogeneousMatrix(cameraPoseVector));
+    }
+
+    int doneCalibration = vpHandEyeCalibration::calibrate(cMo,rMe,eMc);
+
+    return eMc;
+}
+
 //std::vector<double> WorkspaceCalibration::targetPointTransform(std::vector<double> startPoint, std::vector<double> targetPoint){
 
 //    cv::Mat startPointRvec = (cv::Mat_<double>(3,1) << startPoint[3], startPoint[4], startPoint[5]);
