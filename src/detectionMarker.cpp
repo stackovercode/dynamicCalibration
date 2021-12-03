@@ -627,7 +627,8 @@ void DetectionMarker::getSolvepnpRvecTvec(){
 
 
         try{
-            solvePnP(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
+            solvePnPRansac(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, true, 100, 5.0, 0.95, inlier, SOLVEPNP_ITERATIVE);
+            //solvePnP(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
             //cout<< "Rotation vector " << mRvec <<endl;
             //cout<< "Translation vector " << mTvec <<endl;
             rvecs.push_back(mRvec);

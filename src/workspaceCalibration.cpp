@@ -750,14 +750,17 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
 
     for(int i = 0; i < numbOfPose; i++){
         cv::Vec3f theta{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
-        float factor = sqrt(pow(theta[0], 2) + pow(theta[1], 2) + pow(theta[2], 2));
-        cv::Vec3f robotUnitVector{theta[0]/factor, theta[1]/factor, theta[2]/factor};
+//        float factor = sqrt(pow(theta[0], 2) + pow(theta[1], 2) + pow(theta[2], 2));
+//        cv::Vec3f robotUnitVector{theta[0]/factor, theta[1]/factor, theta[2]/factor};
+        float factor = 1/3;
+        cv::Vec3f robotUnitVector{theta[0]*factor, theta[1]*factor, theta[2]*factor};
+
         cv::Mat robotRm = rvec2RotationMatrix(robotUnitVector);
 //        cv::Mat robotPoseRVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5));
 //        cv::Mat robotRm;
 //        Rodrigues(robotPoseRVec, robotRm);
 
-        const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
+        const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0),mTcpPose[i].at<float>(0,1),mTcpPose[i].at<float>(0,2));
 
         cv::Mat Trans_robotMatrix = (cv::Mat_<double>(4, 4) <<
                 robotRm.at<double>(0,0), robotRm.at<double>(0,1), robotRm.at<double>(0,2), robotPoseTVec.at<double>(0,0),
@@ -781,9 +784,11 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
 
     for(int i = 0; i < numbOfPose; i++){
         cv::Vec3f theta{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
-        float factor = sqrt(pow(theta[0], 2) + pow(theta[1], 2) + pow(theta[2], 2));
-        cv::Vec3f robotUnitVector{theta[0]/factor, theta[1]/factor, theta[2]/factor};
-        cv::Mat robotRm = eulerAnglesToRotationMatrix(robotUnitVector);
+//        float factor = sqrt(pow(theta[0], 2) + pow(theta[1], 2) + pow(theta[2], 2));
+//        cv::Vec3f robotUnitVector{theta[0]/factor, theta[1]/factor, theta[2]/factor};
+//        cv::Mat robotRm = eulerAnglesToRotationMatrix(robotUnitVector);
+        cv::Mat robotRm;
+        Rodrigues(theta,robotRm);
         R_base2gripper.push_back(robotRm);
     }
 
@@ -796,7 +801,7 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
 //        T_gripper2base.push_back(robotPoseTVec);
 //    }
     for(int i = 0; i < numbOfPose; i++){
-        const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
+        const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0),mTcpPose[i].at<float>(0,1),mTcpPose[i].at<float>(0,2));
         T_base2gripper.push_back(robotPoseTVec);
     }
 
@@ -837,19 +842,34 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
 //            std::cout<< "Robot rotation matrix inverse: " << "\n" << R_gripper2base[0] <<std::endl;
 //            std::cout<< "Robot translation matri inverse: x" << "\n" << T_gripper2base[0] <<std::endl;
 
+//    if(method == 0){
+//        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);
+//    } else if (method == 1) {
+//        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_PARK);
+//    }else if (method == 2) {
+//        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_HORAUD);
+//    }else if (method == 3) {
+//        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_ANDREFF);
+//    }else if (method == 4) {
+//        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_DANIILIDIS);
+//    }else {
+//        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);
+//    }
+
     if(method == 0){
-        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);
+        calibrateHandEye(R_base2gripper, T_base2gripper, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);
     } else if (method == 1) {
-        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_PARK);
+        calibrateHandEye(R_base2gripper, T_base2gripper, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_PARK);
     }else if (method == 2) {
-        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_HORAUD);
+        calibrateHandEye(R_base2gripper, T_base2gripper, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_HORAUD);
     }else if (method == 3) {
-        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_ANDREFF);
+        calibrateHandEye(R_base2gripper, T_base2gripper, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_ANDREFF);
     }else if (method == 4) {
-        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_DANIILIDIS);
+        calibrateHandEye(R_base2gripper, T_base2gripper, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_DANIILIDIS);
     }else {
-        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);
+        calibrateHandEye(R_base2gripper, T_base2gripper, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);
     }
+
 
     std::cout<< "Er noget her til 3!" <<std::endl;
 
@@ -871,8 +891,8 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
             R_base2world.at<double>(2,0), R_base2world.at<double>(2,1), R_base2world.at<double>(2,2), T_base2world.at<double>(0,2),
             0, 0, 0, 1);
 
-    std::cout<< "RobotWorld gripper to camera: " << "\n" << TRANS_calibrateRobotWorldHandEye <<std::endl;
-    std::cout<< "RobotWorld base to world: " << "\n" << TRANS_calibrateRobotWorldHandEyeBase2World <<std::endl;
+//    std::cout<< "RobotWorld gripper to camera: " << "\n" << TRANS_calibrateRobotWorldHandEye <<std::endl;
+//    std::cout<< "RobotWorld base to world: " << "\n" << TRANS_calibrateRobotWorldHandEyeBase2World <<std::endl;
 
 
 

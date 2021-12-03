@@ -44,6 +44,7 @@ private:
     cv::Point mOpticalCenter;
     cv::Mat mMapX, mMapY;
     std::array<cv::Point, 4> mWorkspaceCorners;
+    cv::Mat inlier = cv::Mat(cv::Size(3, 1), CV_64F);
 
     std::vector<cv::Vec3d> mCameraPoints;
     std::vector<cv::Vec3d> mRobotPoints;
