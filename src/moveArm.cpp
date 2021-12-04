@@ -147,14 +147,14 @@ cv::Vec6f MoveArm::receiveJPose(ur_rtde::RTDEReceiveInterface &reciver){
 std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface& controller, double velocity, double acceleration, int positionStatus, std::vector<double> initPose, int mNumberOfCalibrationImages, bool largeCheckerboardSize){
     std::cout << "Moving to checker postion" << std::endl;
 
-//    if(positionStatus == 1){// && !largeCheckerboardSize){
-//    std::vector<std::vector<double>> path_q;
-//    //std::vector<double> startPos_q1 = {-0.899286,-1.30822,-1.8855,-3.09498,-1.23777,1.57271, velocity, acceleration, 0.0};
-//    //std::vector<double> startPos_q1 = {-0.912752,-1.20274,-1.76052,-0.133582,1.31342,-1.5769, velocity, acceleration, 0.0};
-//    std::vector<double> startPos_q1 = {-0.906876,-1.28316,-1.37612,-0.437507,1.30899,-1.57704, velocity, acceleration, 0.0};
-//    path_q.push_back(startPos_q1);
-//    controller.moveJ(path_q, false);
-//    }
+    if(positionStatus == 1){// && !largeCheckerboardSize){
+    std::vector<std::vector<double>> path_q;
+    std::vector<double> startPos_q1 = {-0.899286,-1.30822,-1.8855,-3.09498,-1.23777,1.57271, velocity, acceleration, 0.0};
+    //std::vector<double> startPos_q1 = {-0.912752,-1.20274,-1.76052,-0.133582,1.31342,-1.5769, velocity, acceleration, 0.0};
+    //std::vector<double> startPos_q1 = {-0.906876,-1.28316,-1.37612,-0.437507,1.30899,-1.57704, velocity, acceleration, 0.0};
+    path_q.push_back(startPos_q1);
+    controller.moveJ(path_q, false);
+    }
 //    else {
 //        std::vector<std::vector<double>> path_q;
 //        std::vector<double> startPos_q1 = {-0.896468,-1.4284,-1.2074,-3.65303,-1.2375,1.57324, velocity, acceleration, 0.0};
@@ -170,16 +170,13 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
 
     writeFileRobotTCPPoses(mRobotTCPPoses);
 
-
-    //change = controller.endTeachMode();
-
     //std::vector<double> currentPose = {0.0146505+0.001518,0.0136401+0.004175,0.0,0.0,0.0,0.0};
-//    std::vector<double> currentPose = {0.0,0.0,0.0,0.0,0.0,0.0};
-//    std::vector<double> change_0_0 = controller.poseTrans(pose,currentPose);
+    std::vector<double> currentPose = {0.0,0.0,0.0,0.0,0.0,0.0};
+    std::vector<double> change_0_0 = controller.poseTrans(pose,currentPose);
 
-//    if (positionStatus == 1) {
-//        initPose = change_0_0;
-//    }
+    if (positionStatus == 1) {
+        initPose = change_0_0;
+    }
 
 //            std::vector<double> change_1_1 = {0.0,0.10,0.0,0.26,0.0,0.0};
 //            //std::vector<double> change_1_1 = {0.0,0.10,0.0,0.35,0.0,0.0};
@@ -352,6 +349,153 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
 //            std::vector<double> pose_16_3 = controller.poseTrans(initPose,change_16_3);
 //            std::vector<double> pose_16_4 = controller.poseTrans(initPose,change_16_4);
 
+    std::vector<double> change_1_1 = {0.0,0.10,0.0,0.35,0.0,0.0};
+    std::vector<double> change_1_2 = {0.0,0.05,0.0,0.175,0.0,0.0};
+    std::vector<double> change_1_3 = {0.0,-0.05,0.0,-0.175,0.0,0.0};
+    std::vector<double> change_1_4 = {0.0,-0.10,0.0,-0.35,0.0,0.0};
+    std::vector<double> pose_1_1 = controller.poseTrans(initPose,change_1_1);
+    std::vector<double> pose_1_2 = controller.poseTrans(initPose,change_1_2);
+    std::vector<double> pose_1_3 = controller.poseTrans(initPose,change_1_3);
+    std::vector<double> pose_1_4 = controller.poseTrans(initPose,change_1_4);
+
+    std::vector<double> change_9_1 = {0.025,0.10,0.0,0.35,-0.087,0.0};
+    std::vector<double> change_9_2 = {0.0125,0.05,0.0,0.175,-0.044,0.0};
+    std::vector<double> change_9_3 = {-0.0125,-0.05,0.0,-0.175,0.044,0.0};
+    std::vector<double> change_9_4 = {-0.025,-0.10,0.0,-0.35,0.087,0.0};
+    std::vector<double> pose_9_1 = controller.poseTrans(initPose,change_9_1);
+    std::vector<double> pose_9_2 = controller.poseTrans(initPose,change_9_2);
+    std::vector<double> pose_9_3 = controller.poseTrans(initPose,change_9_3);
+    std::vector<double> pose_9_4 = controller.poseTrans(initPose,change_9_4);
+
+    std::vector<double> change_2_1 = {0.05,0.10,0.0,0.35,-0.175,0.0};
+    std::vector<double> change_2_2 = {0.025,0.05,0.0,0.175,-0.087,0.0};
+    std::vector<double> change_2_3 = {-0.025,-0.05,0.0,-0.175,0.087,0.0};
+    std::vector<double> change_2_4 = {-0.05,-0.10,0.0,-0.35,0.175,0.0};
+    std::vector<double> pose_2_1 = controller.poseTrans(initPose,change_2_1);
+    std::vector<double> pose_2_2 = controller.poseTrans(initPose,change_2_2);
+    std::vector<double> pose_2_3 = controller.poseTrans(initPose,change_2_3);
+    std::vector<double> pose_2_4 = controller.poseTrans(initPose,change_2_4);
+
+    std::vector<double> change_10_1 = {0.075,0.10,0.0,0.35,-0.26,0.0}; // Change to -0.26 from -0.13
+    std::vector<double> change_10_2 = {0.0375,0.05,0.0,0.175,-0.13,0.0}; // Change to -0.13 from -0.065
+    std::vector<double> change_10_3 = {-0.0375,-0.05,0.0,-0.175,0.13,0.0}; // Change to 0.13 from 0.065
+    std::vector<double> change_10_4 = {-0.075,-0.10,0.0,-0.35,0.26,0.0}; // Change to 0.26 from 0.13
+    std::vector<double> pose_10_1 = controller.poseTrans(initPose,change_10_1);
+    std::vector<double> pose_10_2 = controller.poseTrans(initPose,change_10_2);
+    std::vector<double> pose_10_3 = controller.poseTrans(initPose,change_10_3);
+    std::vector<double> pose_10_4 = controller.poseTrans(initPose,change_10_4);
+
+    std::vector<double> change_7_1 = {0.10,0.10,0.0,0.35,-0.35,0.0};
+    std::vector<double> change_7_2 = {0.05,0.05,0.0,0.175,-0.175,0.0};
+    std::vector<double> change_7_3 = {-0.05,-0.05,0.0,-0.175,0.175,0.0};
+    std::vector<double> change_7_4 = {-0.10,-0.10,0.0,-0.35,0.35,0.0};
+    std::vector<double> pose_7_1 = controller.poseTrans(initPose,change_7_1);
+    std::vector<double> pose_7_2 = controller.poseTrans(initPose,change_7_2);
+    std::vector<double> pose_7_3 = controller.poseTrans(initPose,change_7_3);
+    std::vector<double> pose_7_4 = controller.poseTrans(initPose,change_7_4);
+
+    std::vector<double> change_11_1 = {0.10,0.075,0.0,0.26,-0.35,0.0};
+    std::vector<double> change_11_2 = {0.05,0.0375,0.0,0.13,-0.175,0.0};
+    std::vector<double> change_11_3 = {-0.05,-0.0375,0.0,-0.13,0.175,0.0};
+    std::vector<double> change_11_4 = {-0.10,-0.075,0.0,-0.26,0.35,0.0};
+    std::vector<double> pose_11_1 = controller.poseTrans(initPose,change_11_1);
+    std::vector<double> pose_11_2 = controller.poseTrans(initPose,change_11_2);
+    std::vector<double> pose_11_3 = controller.poseTrans(initPose,change_11_3);
+    std::vector<double> pose_11_4 = controller.poseTrans(initPose,change_11_4);
+
+    std::vector<double> change_3_1 = {0.10,0.05,0.0,0.175,-0.35,0.0};
+    std::vector<double> change_3_2 = {0.05,0.025,0.0,0.087,-0.175,0.0};
+    std::vector<double> change_3_3 = {-0.05,-0.025,0.0,-0.087,0.175,0.0};
+    std::vector<double> change_3_4 = {-0.10,-0.05,0.0,-0.175,0.35,0.0};
+    std::vector<double> pose_3_1 = controller.poseTrans(initPose,change_3_1);
+    std::vector<double> pose_3_2 = controller.poseTrans(initPose,change_3_2);
+    std::vector<double> pose_3_3 = controller.poseTrans(initPose,change_3_3);
+    std::vector<double> pose_3_4 = controller.poseTrans(initPose,change_3_4);
+
+    std::vector<double> change_12_1 = {0.10,0.025,0.0,0.087,-0.35,0.0};
+    std::vector<double> change_12_2 = {0.05,0.0125,0.0,0.044,-0.175,0.0};
+    std::vector<double> change_12_3 = {-0.05,-0.0125,0.0,-0.044,0.175,0.0};
+    std::vector<double> change_12_4 = {-0.10,-0.025,0.0,-0.087,0.35,0.0};
+    std::vector<double> pose_12_1 = controller.poseTrans(initPose,change_12_1);
+    std::vector<double> pose_12_2 = controller.poseTrans(initPose,change_12_2);
+    std::vector<double> pose_12_3 = controller.poseTrans(initPose,change_12_3);
+    std::vector<double> pose_12_4 = controller.poseTrans(initPose,change_12_4);
+
+    std::vector<double> change_4_1 = {0.10,0.0,0.0,0.0,-0.35,0.0};
+    std::vector<double> change_4_2 = {0.05,0.0,0.0,0.0,-0.175,0.0};
+    std::vector<double> change_4_3 = {-0.05,0.0,0.0,0.0,0.175,0.0};
+    std::vector<double> change_4_4 = {-0.10,0.0,0.0,0.0,0.35,0.0};
+    std::vector<double> pose_4_1 = controller.poseTrans(initPose,change_4_1);
+    std::vector<double> pose_4_2 = controller.poseTrans(initPose,change_4_2);
+    std::vector<double> pose_4_3 = controller.poseTrans(initPose,change_4_3);
+    std::vector<double> pose_4_4 = controller.poseTrans(initPose,change_4_4);
+
+    std::vector<double> change_13_1 = {0.10,-0.025,0.0,-0.087,-0.35,0.0};
+    std::vector<double> change_13_2 = {0.05,-0.0125,0.0,-0.044,-0.175,0.0};
+    std::vector<double> change_13_3 = {-0.05,0.0125,0.0,0.044,0.175,0.0};
+    std::vector<double> change_13_4 = {-0.10,0.025,0.0,0.087,0.35,0.0};
+    std::vector<double> pose_13_1 = controller.poseTrans(initPose,change_13_1);
+    std::vector<double> pose_13_2 = controller.poseTrans(initPose,change_13_2);
+    std::vector<double> pose_13_3 = controller.poseTrans(initPose,change_13_3);
+    std::vector<double> pose_13_4 = controller.poseTrans(initPose,change_13_4);
+
+
+    std::vector<double> change_5_1 = {0.10,-0.05,0.0,-0.175,-0.35,0.0};
+    std::vector<double> change_5_2 = {0.05,-0.025,0.0,-0.087,-0.175,0.0};
+    std::vector<double> change_5_3 = {-0.05,0.025,0.0,0.087,0.175,0.0};
+    std::vector<double> change_5_4 = {-0.10,0.05,0.0,0.175,0.35,0.0};
+    std::vector<double> pose_5_1 = controller.poseTrans(initPose,change_5_1);
+    std::vector<double> pose_5_2 = controller.poseTrans(initPose,change_5_2);
+    std::vector<double> pose_5_3 = controller.poseTrans(initPose,change_5_3);
+    std::vector<double> pose_5_4 = controller.poseTrans(initPose,change_5_4);
+
+    std::vector<double> change_14_1 = {0.10,-0.075,0.0,-0.26,-0.35,0.0};
+    std::vector<double> change_14_2 = {0.05,-0.0375,0.0,-0.13,-0.175,0.0};
+    std::vector<double> change_14_3 = {-0.05,0.0375,0.0,0.13,0.175,0.0};
+    std::vector<double> change_14_4 = {-0.10,0.075,0.0,0.26,0.35,0.0};
+    std::vector<double> pose_14_1 = controller.poseTrans(initPose,change_14_1);
+    std::vector<double> pose_14_2 = controller.poseTrans(initPose,change_14_2);
+    std::vector<double> pose_14_3 = controller.poseTrans(initPose,change_14_3);
+    std::vector<double> pose_14_4 = controller.poseTrans(initPose,change_14_4);
+
+
+    std::vector<double> change_8_1 = {0.10,-0.10,0.0,-0.35,-0.35,0.0};
+    std::vector<double> change_8_2 = {0.05,-0.05,0.0,-0.175,-0.175,0.0};
+    std::vector<double> change_8_3 = {-0.05,0.05,0.0,0.175,0.175,0.0};
+    std::vector<double> change_8_4 = {-0.10,0.10,0.0,0.35,0.35,0.0};
+    std::vector<double> pose_8_1 = controller.poseTrans(initPose,change_8_1);
+    std::vector<double> pose_8_2 = controller.poseTrans(initPose,change_8_2);
+    std::vector<double> pose_8_3 = controller.poseTrans(initPose,change_8_3);
+    std::vector<double> pose_8_4 = controller.poseTrans(initPose,change_8_4);
+
+    std::vector<double> change_15_1 = {0.075,-0.10,0.0,-0.35,-0.26,0.0};
+    std::vector<double> change_15_2 = {0.0375,-0.05,0.0,-0.175,-0.13,0.0};
+    std::vector<double> change_15_3 = {-0.0375,0.05,0.0,0.175,0.13,0.0};
+    std::vector<double> change_15_4 = {-0.075,0.10,0.0,0.35,0.26,0.0};
+    std::vector<double> pose_15_1 = controller.poseTrans(initPose,change_15_1);
+    std::vector<double> pose_15_2 = controller.poseTrans(initPose,change_15_2);
+    std::vector<double> pose_15_3 = controller.poseTrans(initPose,change_15_3);
+    std::vector<double> pose_15_4 = controller.poseTrans(initPose,change_15_4);
+
+
+    std::vector<double> change_6_1 = {0.05,-0.10,0.0,-0.35,-0.175,0.0};
+    std::vector<double> change_6_2 = {0.025,-0.05,0.0,-0.175,-0.087,0.0};
+    std::vector<double> change_6_3 = {-0.025,0.05,0.0,0.175,0.087,0.0};
+    std::vector<double> change_6_4 = {-0.05,0.10,0.0,0.35,0.175,0.0};
+    std::vector<double> pose_6_1 = controller.poseTrans(initPose,change_6_1);
+    std::vector<double> pose_6_2 = controller.poseTrans(initPose,change_6_2);
+    std::vector<double> pose_6_3 = controller.poseTrans(initPose,change_6_3);
+    std::vector<double> pose_6_4 = controller.poseTrans(initPose,change_6_4);
+
+    std::vector<double> change_16_1 = {0.025,-0.10,0.0,-0.35,-0.087,0.0};
+    std::vector<double> change_16_2 = {0.0125,-0.05,0.0,-0.175,-0.044,0.0};
+    std::vector<double> change_16_3 = {-0.0125,0.05,0.0,0.175,0.044,0.0};
+    std::vector<double> change_16_4 = {-0.025,0.10,0.0,0.35,0.087,0.0};
+    std::vector<double> pose_16_1 = controller.poseTrans(initPose,change_16_1);
+    std::vector<double> pose_16_2 = controller.poseTrans(initPose,change_16_2);
+    std::vector<double> pose_16_3 = controller.poseTrans(initPose,change_16_3);
+    std::vector<double> pose_16_4 = controller.poseTrans(initPose,change_16_4);
+
     // Ekstra punkter
 
 //    switch (positionStatus) {
@@ -504,399 +648,399 @@ std::vector<double> MoveArm::poseSwift(ur_rtde::RTDEReceiveInterface &reciver, u
 //    }
 
 
-//    switch (positionStatus) {
-//    case 1:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_1_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            if (mNumberOfCalibrationImages == 5) {
-//                //controller.moveL(pose_1_1, velocity, acceleration);
-//                controller.moveL(pose_1_2, velocity, acceleration);
-//                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//            } else {
-//                if (mNumberOfCalibrationImages == 1) {
-//                    controller.moveL(initPose, velocity, acceleration);
-//                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//                }else{
-//                    controller.moveL(pose_1_2, velocity, acceleration);
-//                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//                }
-//            }
-//        }
-//        break;
-//    case 2:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_7_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            if (mNumberOfCalibrationImages == 5) {
-//                //controller.moveL(pose_4_1, velocity, acceleration);
-//                controller.moveL(pose_4_2, velocity, acceleration);
-//                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//            } else {
-//                controller.moveL(pose_9_2, velocity, acceleration);
-//                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//            }
-//        }
-//        break;
-//    case 3:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_4_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            if (mNumberOfCalibrationImages == 5) {
-//                //controller.moveL(pose_1_4, velocity, acceleration);
-//                controller.moveL(pose_1_3, velocity, acceleration);
-//                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//            } else {
-//                controller.moveL(pose_2_2, velocity, acceleration);
-//                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//            }
-//        }
-//        break;
-//    case 4:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_8_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            if (mNumberOfCalibrationImages == 5) {
-//                //controller.moveL(pose_4_4, velocity, acceleration);
-//                controller.moveL(pose_4_3, velocity, acceleration);
-//                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//            } else {
-//                controller.moveL(pose_10_2, velocity, acceleration);
-//                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//            }
-//        }
-//        break;
-//    case 5:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_1_3, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            if (mNumberOfCalibrationImages == 5) {
-//                controller.moveL(initPose, velocity, acceleration);
-//                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//            } else {
-//                controller.moveL(pose_7_2, velocity, acceleration);
-//                std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//            }
-//        }
-//        break;
-//    case 6:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_7_3, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            controller.moveL(pose_11_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 7:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_4_3, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            controller.moveL(pose_3_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 8:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_8_3, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            controller.moveL(pose_12_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 9:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_8_4, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            controller.moveL(pose_4_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 10:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_1_1, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            controller.moveL(pose_13_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 11:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_7_1, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            controller.moveL(pose_5_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 12:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_4_1, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            controller.moveL(pose_14_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 13:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_8_1, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            controller.moveL(pose_8_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 14:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_1_4, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            controller.moveL(pose_15_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 15:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_7_4, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            controller.moveL(pose_6_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 16:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(pose_4_4, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            controller.moveL(pose_16_2, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 17:
-//        if (mNumberOfCalibrationImages == 17) {
-//            controller.moveL(initPose, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        } else {
-//            controller.moveL(pose_1_3, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 18:
-//        controller.moveL(pose_9_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 19:
-//        controller.moveL(pose_2_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 20:
-//        controller.moveL(pose_10_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 21:
-//        controller.moveL(pose_7_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 22:
-//        controller.moveL(pose_11_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 23:
-//        controller.moveL(pose_3_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 24:
-//        controller.moveL(pose_12_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 25:
-//        if(mNumberOfCalibrationImages == 25){
-//            controller.moveL(initPose, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }else{
-//            controller.moveL(pose_4_3, velocity, acceleration);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        }
-//        break;
-//    case 26:
-//        controller.moveL(pose_13_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 27:
-//        controller.moveL(pose_5_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 28:
-//        controller.moveL(pose_14_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 29:
-//        controller.moveL(pose_8_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 30:
-//        controller.moveL(pose_15_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 31:
-//        controller.moveL(pose_6_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 32:
-//        controller.moveL(pose_16_3, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 33:
-//        controller.moveL(pose_16_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 34:
-//        controller.moveL(pose_1_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
+    switch (positionStatus) {
+    case 1:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_1_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            if (mNumberOfCalibrationImages == 5) {
+                //controller.moveL(pose_1_1, velocity, acceleration);
+                controller.moveL(pose_1_2, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            } else {
+                if (mNumberOfCalibrationImages == 1) {
+                    controller.moveL(initPose, velocity, acceleration);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }else{
+                    controller.moveL(pose_1_2, velocity, acceleration);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }
+            }
+        }
+        break;
+    case 2:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_7_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            if (mNumberOfCalibrationImages == 5) {
+                //controller.moveL(pose_4_1, velocity, acceleration);
+                controller.moveL(pose_4_2, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            } else {
+                controller.moveL(pose_9_2, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+        }
+        break;
+    case 3:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_4_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            if (mNumberOfCalibrationImages == 5) {
+                //controller.moveL(pose_1_4, velocity, acceleration);
+                controller.moveL(pose_1_3, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            } else {
+                controller.moveL(pose_2_2, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+        }
+        break;
+    case 4:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_8_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            if (mNumberOfCalibrationImages == 5) {
+                //controller.moveL(pose_4_4, velocity, acceleration);
+                controller.moveL(pose_4_3, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            } else {
+                controller.moveL(pose_10_2, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+        }
+        break;
+    case 5:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_1_3, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            if (mNumberOfCalibrationImages == 5) {
+                controller.moveL(initPose, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            } else {
+                controller.moveL(pose_7_2, velocity, acceleration);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+        }
+        break;
+    case 6:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_7_3, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            controller.moveL(pose_11_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 7:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_4_3, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            controller.moveL(pose_3_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 8:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_8_3, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            controller.moveL(pose_12_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 9:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_8_4, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            controller.moveL(pose_4_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 10:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_1_1, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            controller.moveL(pose_13_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 11:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_7_1, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            controller.moveL(pose_5_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 12:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_4_1, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            controller.moveL(pose_14_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 13:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_8_1, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            controller.moveL(pose_8_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 14:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_1_4, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            controller.moveL(pose_15_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 15:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_7_4, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            controller.moveL(pose_6_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 16:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(pose_4_4, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            controller.moveL(pose_16_2, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 17:
+        if (mNumberOfCalibrationImages == 17) {
+            controller.moveL(initPose, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        } else {
+            controller.moveL(pose_1_3, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 18:
+        controller.moveL(pose_9_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 19:
+        controller.moveL(pose_2_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 20:
+        controller.moveL(pose_10_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 21:
+        controller.moveL(pose_7_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 22:
+        controller.moveL(pose_11_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 23:
+        controller.moveL(pose_3_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 24:
+        controller.moveL(pose_12_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 25:
+        if(mNumberOfCalibrationImages == 25){
+            controller.moveL(initPose, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }else{
+            controller.moveL(pose_4_3, velocity, acceleration);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        break;
+    case 26:
+        controller.moveL(pose_13_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 27:
+        controller.moveL(pose_5_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 28:
+        controller.moveL(pose_14_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 29:
+        controller.moveL(pose_8_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 30:
+        controller.moveL(pose_15_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 31:
+        controller.moveL(pose_6_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 32:
+        controller.moveL(pose_16_3, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 33:
+        controller.moveL(pose_16_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 34:
+        controller.moveL(pose_1_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
 
-//    case 35:
-//        controller.moveL(pose_9_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
+    case 35:
+        controller.moveL(pose_9_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
 
-//    case 36:
-//        controller.moveL(pose_2_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 37:
-//        controller.moveL(pose_10_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 38:
-//        controller.moveL(pose_7_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 39:
-//        controller.moveL(pose_11_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 40:
-//        controller.moveL(pose_3_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 41:
-//        controller.moveL(pose_12_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 42:
-//        controller.moveL(pose_4_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 43:
-//        controller.moveL(pose_13_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 44:
-//        controller.moveL(pose_5_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 45:
-//        controller.moveL(pose_14_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 46:
-//        controller.moveL(pose_8_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 47:
-//        controller.moveL(pose_15_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 48:
-//        controller.moveL(pose_6_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 49:
-//        controller.moveL(pose_16_1, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 50:
-//        controller.moveL(pose_1_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 51:
-//        controller.moveL(pose_9_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 52:
-//        controller.moveL(pose_2_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 53:
-//        controller.moveL(pose_10_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 54:
-//        controller.moveL(pose_7_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 55:
-//        controller.moveL(pose_11_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 56:
-//        controller.moveL(pose_3_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 57:
-//        controller.moveL(pose_12_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 58:
-//        controller.moveL(pose_4_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 59:
-//        controller.moveL(pose_13_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 60:
-//        controller.moveL(pose_5_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 61:
-//        controller.moveL(pose_14_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 62:
-//        controller.moveL(pose_8_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 63:
-//        controller.moveL(pose_15_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 64:
-//        controller.moveL(pose_6_4, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    case 65:
-//        controller.moveL(initPose, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        break;
-//    default:
-//        controller.moveL(initPose, velocity, acceleration);
-//        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-//        std::cout << "Error: Went to default in poseswift" << std::endl;
-//        break;
-//    }
+    case 36:
+        controller.moveL(pose_2_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 37:
+        controller.moveL(pose_10_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 38:
+        controller.moveL(pose_7_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 39:
+        controller.moveL(pose_11_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 40:
+        controller.moveL(pose_3_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 41:
+        controller.moveL(pose_12_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 42:
+        controller.moveL(pose_4_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 43:
+        controller.moveL(pose_13_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 44:
+        controller.moveL(pose_5_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 45:
+        controller.moveL(pose_14_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 46:
+        controller.moveL(pose_8_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 47:
+        controller.moveL(pose_15_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 48:
+        controller.moveL(pose_6_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 49:
+        controller.moveL(pose_16_1, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 50:
+        controller.moveL(pose_1_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 51:
+        controller.moveL(pose_9_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 52:
+        controller.moveL(pose_2_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 53:
+        controller.moveL(pose_10_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 54:
+        controller.moveL(pose_7_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 55:
+        controller.moveL(pose_11_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 56:
+        controller.moveL(pose_3_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 57:
+        controller.moveL(pose_12_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 58:
+        controller.moveL(pose_4_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 59:
+        controller.moveL(pose_13_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 60:
+        controller.moveL(pose_5_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 61:
+        controller.moveL(pose_14_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 62:
+        controller.moveL(pose_8_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 63:
+        controller.moveL(pose_15_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 64:
+        controller.moveL(pose_6_4, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    case 65:
+        controller.moveL(initPose, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        break;
+    default:
+        controller.moveL(initPose, velocity, acceleration);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::cout << "Error: Went to default in poseswift" << std::endl;
+        break;
+    }
 
 
 //    controller.moveL(change_0_0, velocity, acceleration);

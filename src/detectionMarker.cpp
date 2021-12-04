@@ -55,7 +55,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             openCvImage = cv::Mat(ptrGrabResult->GetHeight(), ptrGrabResult->GetWidth(), CV_8UC3, (uint8_t *) pylonImage.GetBuffer());
 
             cv::Size frameSize(1920, 1200);
-            cv::Size patternSize(13 - 1, 10 - 1);
+            cv::Size patternSize(7 - 1, 6 - 1);//(13 - 1, 10 - 1);
             vector<Point2f> corners, imageFramePoints;
             vector<Point3f> framePoints, boardPoints;
 
@@ -241,7 +241,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 cv::Mat robotTvec = robotTransMatrix * OrigoPoint;
                 //std::cout << "Flange coor: " << transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) <<std::endl;
                 std::cout<< "RobotPoint: " << "\n" << robotTransMatrix <<endl;
-                std::cout << "Hand eye trans: " << "\n" << transMatrix.getTransformationFlange2CameraHandEye(24, 1) << std::endl;
+                std::cout << "Hand eye trans: " << "\n" << transMatrix.getTransformationFlange2CameraHandEye(65, 0) << std::endl;
                 //std::cout << "Cam to end effector: " << "\n" << transMatrix.getTransformationCamera2EndEffector(30, 1) << std::endl;
                 std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration() <<std::endl;
 
@@ -583,7 +583,7 @@ void DetectionMarker::writeFileTranRot2 (std::vector<cv::Mat> tempRvec, std::vec
 void DetectionMarker::getSolvepnpRvecTvec(){
 
     cv::Mat mapX, mapY;
-    cv::Size patternSize(13 - 1, 10 - 1);
+    cv::Size patternSize(7 - 1, 6 - 1);//(13 - 1, 10 - 1);
     cv::Mat mRvec = cv::Mat(cv::Size(3, 1), CV_64F);
     cv::Mat mTvec = cv::Mat(cv::Size(3, 1), CV_64F);
     cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, mCamerasettings.getResolution(), CV_32FC1, mapX, mapY);
@@ -627,8 +627,8 @@ void DetectionMarker::getSolvepnpRvecTvec(){
 
 
         try{
-            solvePnPRansac(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, true, 100, 5.0, 0.95, inlier, SOLVEPNP_ITERATIVE);
-            //solvePnP(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
+            //solvePnPRansac(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, true, 100, 5.0, 0.95, inlier, SOLVEPNP_ITERATIVE);
+            solvePnP(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
             //cout<< "Rotation vector " << mRvec <<endl;
             //cout<< "Translation vector " << mTvec <<endl;
             rvecs.push_back(mRvec);

@@ -15,8 +15,8 @@ class DetectionMarker : public Camera
 {
 public:
 
-    DetectionMarker( CameraSettings& cameraSettings, int verticalIntersections = 9, int horizontalIntersections = 13,
-                                                       int squareSize = 15, int numberOfCalibrationImages = 24);
+    DetectionMarker( CameraSettings& cameraSettings, int verticalIntersections = 5, int horizontalIntersections = 6,
+                                                       int squareSize = 10, int numberOfCalibrationImages = 65);
     virtual ~DetectionMarker() = default;
 
     void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, bool flagDetectMarker);
