@@ -750,13 +750,13 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
 
     for(int i = 0; i < numbOfPose; i++){
         cv::Vec3f theta{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
-//        float factor = sqrt(pow(theta[0], 2) + pow(theta[1], 2) + pow(theta[2], 2));
-//        cv::Vec3f robotUnitVector{theta[0]/factor, theta[1]/factor, theta[2]/factor};
-        float factor = 1/3;
-        cv::Vec3f robotUnitVector{theta[0]*factor, theta[1]*factor, theta[2]*factor};
+        float factor = sqrt(pow(theta[0], 2) + pow(theta[1], 2) + pow(theta[2], 2));
+        cv::Vec3f robotUnitVector{theta[0]/factor, theta[1]/factor, theta[2]/factor};
+        //float factor = 1/3;
+       // cv::Vec3f robotUnitVector{theta[0]*factor, theta[1]*factor, theta[2]*factor};
 
         cv::Mat robotRm = rvec2RotationMatrix(robotUnitVector);
-//        cv::Mat robotPoseRVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5));
+        //cv::Mat robotPoseRVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5));
 //        cv::Mat robotRm;
 //        Rodrigues(robotPoseRVec, robotRm);
 
@@ -780,7 +780,6 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
         R_gripper2base.push_back(inverseRotationMatrix);
         T_gripper2base.push_back(inverseTranslationMatrix);
     }
-        std::cout<< "Er noget her til 1!" <<std::endl;
 
     for(int i = 0; i < numbOfPose; i++){
         cv::Vec3f theta{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
@@ -870,8 +869,6 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
         calibrateHandEye(R_base2gripper, T_base2gripper, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);
     }
 
-
-    std::cout<< "Er noget her til 3!" <<std::endl;
 
 
 //    calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_PARK);// cv::CALIB_HAND_EYE_ANDREFF);

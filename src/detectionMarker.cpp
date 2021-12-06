@@ -230,7 +230,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
                 cv::destroyWindow(vindue.str());
 
-                //getSolvepnpRvecTvec();
+                getSolvepnpRvecTvec();
 
                 MoveArm urArm;
                 WorkspaceCalibration transMatrix;
@@ -240,10 +240,10 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 //CALIB_HAND_EYE_TSAI, CALIB_HAND_EYE_PARK, CALIB_HAND_EYE_HORAUD, CALIB_HAND_EYE_ANDREFF, CALIB_HAND_EYE_DANIILIDIS
                 cv::Mat robotTvec = robotTransMatrix * OrigoPoint;
                 //std::cout << "Flange coor: " << transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) <<std::endl;
-                std::cout<< "RobotPoint: " << "\n" << robotTransMatrix <<endl;
+                //std::cout<< "RobotPoint: " << "\n" << robotTransMatrix <<endl;
                 std::cout << "Hand eye trans: " << "\n" << transMatrix.getTransformationFlange2CameraHandEye(65, 0) << std::endl;
                 //std::cout << "Cam to end effector: " << "\n" << transMatrix.getTransformationCamera2EndEffector(30, 1) << std::endl;
-                std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration() <<std::endl;
+                //std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration() <<std::endl;
 
                 cv::Mat cameraTCPRM = (cv::Mat_<double>(3, 3) <<
                                         robotTransMatrix.at<double>(0,0), robotTransMatrix.at<double>(0,1), robotTransMatrix.at<double>(0,2),
