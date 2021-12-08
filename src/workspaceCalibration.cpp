@@ -933,11 +933,13 @@ vpHomogeneousMatrix WorkspaceCalibration::vispHandEyeCalibration(){
 
 
         cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
-//        float factor = sqrt(pow(robotPoseRVec[0], 2) + pow(robotPoseRVec[1], 2) + pow(robotPoseRVec[2], 2));
-//        cv::Vec3f robotUnitVector{robotPoseRVec[0]/factor, robotPoseRVec[1]/factor, robotPoseRVec[2]/factor};
-//        cv::Mat robotPoseRM = rvec2RotationMatrix(robotUnitVector);
+        //float factor = sqrt(pow(robotPoseRVec[0], 2) + pow(robotPoseRVec[1], 2) + pow(robotPoseRVec[2], 2));
+        //cv::Vec3f robotUnitVector{robotPoseRVec[0]/factor, robotPoseRVec[1]/factor, robotPoseRVec[2]/factor};
+        //cv::Mat robotPoseRM = rvec2RotationMatrix(robotUnitVector);
 
-        const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
+        //const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
+         cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0),mTcpPose[i].at<float>(0,1),mTcpPose[i].at<float>(0,2));
+
 
 //        cv::Mat Trans_robotMatrix = (cv::Mat_<double>(4, 4) <<
 //                robotPoseRM.at<double>(0,0), robotPoseRM.at<double>(0,1), robotPoseRM.at<double>(0,2), robotPoseTVec.at<double>(0,0),
@@ -1005,10 +1007,93 @@ vpHomogeneousMatrix WorkspaceCalibration::vispHandEyeCalibration(){
         cMo.push_back(cameraHomoTrans.inverse());
     }
 
+    /*
 
-    int doneCalibration = vpHandEyeCalibration::calibrate(cMo,rMe,eMc);
+      TEST
 
-    return eMc;
+    */
+    ///////////////////////////////
+    std::vector<vpHomogeneousMatrix> c2t;
+    std::vector<vpHomogeneousMatrix> r2e;
+    vpHomogeneousMatrix e2c;
+
+    ///////////////////////////////
+
+    //int doneCalibration = vpHandEyeCalibration::calibrate(cMo,rMe,eMc);
+    vpHomogeneousMatrix cam1( vpTranslationVector(-10.42132674036853,
+                                                  -6.815370978897847,
+                                                  47.54886276469742), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix cam2( vpTranslationVector(-10.27885560165879,
+                                                  -9.90229990975995,
+                                                  45.92548864739609), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix cam3( vpTranslationVector(-11.06223914775678,
+                                                  -9.855915907031962,
+                                                  45.51328691272404), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix cam4( vpTranslationVector(-11.80688933087717,
+                                                  -9.824136731537934,
+                                                  45.1758291651404), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix cam5( vpTranslationVector(-12.55818568739926,
+                                                  -9.804886574955807,
+                                                   44.87842685051832), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix cam6( vpTranslationVector(-13.40610323608032,
+                                                   -9.82852805654009,
+                                                   44.64466884600932), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix cam7( vpTranslationVector(-13.43062117507011,
+                                                   -8.995579015391197,
+                                                   44.96451074026582), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix cam8( vpTranslationVector(-13.46324794765814,
+                                                   -8.24838859200235,
+                                                   45.27254693213309), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix cam9( vpTranslationVector(-13.51063512394965,
+                                                  -7.504323096866346,
+                                                  45.61799248634797), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix cam10( vpTranslationVector(-13.5660531751234,
+                                                   -6.709594009003127,
+                                                   45.98592811340792), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix cam11( vpTranslationVector(-13.6367517904527,
+                                                   -5.913232413425681,
+                                                   46.38614950143113), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    c2t.push_back(cam1);
+    c2t.push_back(cam2);
+    c2t.push_back(cam3);
+    c2t.push_back(cam4);
+    c2t.push_back(cam5);
+    c2t.push_back(cam6);
+    c2t.push_back(cam7);
+    c2t.push_back(cam8);
+    c2t.push_back(cam9);
+    c2t.push_back(cam10);
+    c2t.push_back(cam11);
+
+    vpHomogeneousMatrix robot1( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix robot2( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix robot3( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix robot4( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix robot5( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix robot6( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix robot7( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix robot8( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix robot9( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix robot10( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpHomogeneousMatrix robot11( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    r2e.push_back(robot1);
+    r2e.push_back(robot2);
+    r2e.push_back(robot3);
+    r2e.push_back(robot4);
+    r2e.push_back(robot5);
+    r2e.push_back(robot6);
+    r2e.push_back(robot7);
+    r2e.push_back(robot8);
+    r2e.push_back(robot9);
+    r2e.push_back(robot10);
+    r2e.push_back(robot11);
+
+
+    int doneCalibration = vpHandEyeCalibration::calibrate(c2t,r2e,e2c);
+
+
+ //   return eMc;
+    return e2c;
 
 
 }

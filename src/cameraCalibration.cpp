@@ -265,7 +265,7 @@ void CameraCalibration::calibrate(std::vector<std::vector<cv::Point2f>> const ch
     cv::TermCriteria term(1,100,0);
 
     mErrorRMS = cv::calibrateCamera(checkerboardWorldArray,chessboardCornersArray,mCamerasettings.getResolution(),mCameraMatrix,mDistortionCoefficient,rvecs,tvecs,flags,term);
-    writeFileTranRot(rvecs, tvecs);
+    //writeFileTranRot(rvecs, tvecs);
 
         framePoints.push_back(cv::Point3f(0.0, 0.0, 0.0));
         framePoints.push_back(cv::Point3f(2.0, 0.0, 0.0));

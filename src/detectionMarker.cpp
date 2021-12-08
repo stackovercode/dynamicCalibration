@@ -140,6 +140,11 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             Rodrigues(mRvec, RRodriguesMatrix);
 
+            //cv::Vec3d eulerAngels;
+            //getEulerAngles(RRodriguesMatrix,eulerAngels);
+
+            //std::cout << "outPut: " << RRodriguesMatrix << std::endl;
+
             transpose(RRodriguesMatrix, RRodriguesMatrixTrans);
 
             cv::Vec3f rotation = rotationMatrixToEulerAngles(RRodriguesMatrixTrans);
@@ -230,7 +235,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
                 cv::destroyWindow(vindue.str());
 
-                getSolvepnpRvecTvec();
+                //getSolvepnpRvecTvec(false);
 
                 MoveArm urArm;
                 WorkspaceCalibration transMatrix;
@@ -241,9 +246,9 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 cv::Mat robotTvec = robotTransMatrix * OrigoPoint;
                 //std::cout << "Flange coor: " << transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) <<std::endl;
                 //std::cout<< "RobotPoint: " << "\n" << robotTransMatrix <<endl;
-                std::cout << "Hand eye trans: " << "\n" << transMatrix.getTransformationFlange2CameraHandEye(65, 0) << std::endl;
+                //std::cout << "Hand eye trans: " << "\n" << transMatrix.getTransformationFlange2CameraHandEye(65, 0) << std::endl;
                 //std::cout << "Cam to end effector: " << "\n" << transMatrix.getTransformationCamera2EndEffector(30, 1) << std::endl;
-                //std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration() <<std::endl;
+                std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration() <<std::endl;
 
                 cv::Mat cameraTCPRM = (cv::Mat_<double>(3, 3) <<
                                         robotTransMatrix.at<double>(0,0), robotTransMatrix.at<double>(0,1), robotTransMatrix.at<double>(0,2),
@@ -271,7 +276,14 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 //moveFrame = urArm.getToCheckerboard(reciver, controller, 0, robotPoint, velocity, acceleration);
 
                 //imageNr++;
-            }else if (keyPressed == 'c'|| keyPressed == 'C' ) { // Quit if Q is Pressed
+            } else if (keyPressed == 'f'|| keyPressed == 'F' ) {
+            // f/F som i fuck mit liv
+
+                cv::destroyWindow(vindue.str());
+                getSolvepnpRvecTvec(true);
+
+
+            } else if (keyPressed == 'c'|| keyPressed == 'C' ) { // Quit if Q is Pressed
                 runSQ = true;
                 std::cout << "Shutting down camera..." << std::endl;
                 cv::destroyWindow(vindue.str());
@@ -580,12 +592,21 @@ void DetectionMarker::writeFileTranRot2 (std::vector<cv::Mat> tempRvec, std::vec
 
 }
 
-void DetectionMarker::getSolvepnpRvecTvec(){
+void DetectionMarker::writeFileTranRot3 (cv::Mat tempRvec){
+    std::ofstream myfile;
+    myfile.open ("../Detection/RotationTransposeData.txt", std::ios::app);
+        myfile << "--------------------" << std::endl
+               << tempRvec << std::endl;
+    myfile.close();
+}
+
+void DetectionMarker::getSolvepnpRvecTvec(bool flagChangeInProcedureRotation){
 
     cv::Mat mapX, mapY;
     cv::Size patternSize(7 - 1, 6 - 1);//(13 - 1, 10 - 1);
     cv::Mat mRvec = cv::Mat(cv::Size(3, 1), CV_64F);
     cv::Mat mTvec = cv::Mat(cv::Size(3, 1), CV_64F);
+
     cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, mCamerasettings.getResolution(), CV_32FC1, mapX, mapY);
 
 
@@ -633,7 +654,14 @@ void DetectionMarker::getSolvepnpRvecTvec(){
             //cout<< "Translation vector " << mTvec <<endl;
             rvecs.push_back(mRvec);
             tvecs.push_back(mTvec);
-            writeFileTranRot2(rvecs, tvecs);
+            if (flagChangeInProcedureRotation){
+                Rodrigues(mRvec, myRotationMatrix);
+                //cv::Point3d translfationVec(mTvec);
+                myNewRotationMatrix = getEulerAngles(myRotationMatrix, eulerAngels);
+                writeFileTranRot3(myNewRotationMatrix);
+            } else {
+                writeFileTranRot2(rvecs, tvecs);
+            }
 
         } catch(exception& e){
             cout<< "Exception: " << endl;
@@ -643,3 +671,29 @@ void DetectionMarker::getSolvepnpRvecTvec(){
 
 }
 
+cv::Mat DetectionMarker::getEulerAngles(cv::Mat &rotCamerMatrix, cv::Vec3d &eulerAngles){
+
+    cv::Mat cameraMatrix,rotMatrix,transVect,rotMatrixX,rotMatrixY,rotMatrixZ;
+    double* _r = rotCamerMatrix.ptr<double>();
+    double projMatrix[12] = {_r[0],_r[1],_r[2],0,
+                          _r[3],_r[4],_r[5],0,
+                          _r[6],_r[7],_r[8],0};
+
+    decomposeProjectionMatrix(cv::Mat(3,4, CV_64FC1,projMatrix),
+                               cameraMatrix,
+                               rotMatrix,
+                               transVect,
+                               rotMatrixX,
+                               rotMatrixY,
+                               rotMatrixZ,
+                               eulerAngles);
+    std::cout << "rotCamerMatrix: " << "\n" << rotCamerMatrix << std::endl;
+    std::cout << "cameraMatrix: " << "\n" << cameraMatrix << std::endl;
+    std::cout << "rotMatrix: " << "\n" << rotMatrix << std::endl;
+    std::cout << "transVect: " << "\n" << transVect << std::endl;
+    std::cout << "rotMatrixX: " << "\n" << rotMatrixX << std::endl;
+    std::cout << "rotMatrixY: " << "\n" << rotMatrixY << std::endl;
+    std::cout << "rotMatrixZ: " << "\n" << rotMatrixZ << std::endl;
+    std::cout << "eulerAngles: " << "\n"  << eulerAngles << std::endl;
+    return rotMatrix;
+}

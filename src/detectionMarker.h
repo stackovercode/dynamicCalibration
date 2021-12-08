@@ -21,6 +21,7 @@ public:
 
     void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, bool flagDetectMarker);
     void markerDet();
+    cv::Mat getEulerAngles(cv::Mat &rotCamerMatrix, cv::Vec3d &eulerAngles);
 
     std::string markerDetectionToString();
 
@@ -58,6 +59,10 @@ private:
     cv::Mat_<double> mTranslationMatrix{cv::Mat_<double>::zeros(1,3)};
     cv::Mat_<double> mTransformationMatrix{cv::Mat_<double>::zeros(4,4)};
 
+    cv::Mat myRotationMatrix = (cv::Mat_<double>(3,3));
+    cv::Mat myNewRotationMatrix = (cv::Mat_<double>(3,3));
+    cv::Vec3d eulerAngels;
+
     void getCalibrationData(std::string fileLocation);
     void action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
 
@@ -71,8 +76,9 @@ private:
     cv::Vec3f rotationMatrixToEulerAngles(cv::Mat &R);
     cv::Vec3f rpy2rv(cv::Vec3f rpy);
     cv::Vec3f ToRotVector(cv::Vec3f rpy);
-    void getSolvepnpRvecTvec();
+    void getSolvepnpRvecTvec(bool flagChangeInProcedureRotation);
     void writeFileTranRot2 (std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec);
+    void writeFileTranRot3 (cv::Mat tempRvec);
 
     bool writeFileTranRot (cv::Mat tempRvec, cv::Mat tempTvec);
     void detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
