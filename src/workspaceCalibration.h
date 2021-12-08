@@ -12,6 +12,9 @@
 #include <visp3/vision/vpHandEyeCalibration.h>
 #include <visp3/core/vpHomogeneousMatrix.h>
 #include <opencv2/calib3d.hpp>
+#include <visp3/core/vpRxyzVector.h>
+#include <visp3/core/vpMath.h>
+#include <visp3/core/vpRotationMatrix.h>
 
 
 // Not done or in use
@@ -39,7 +42,7 @@ public:
     cv::Mat getTransformationMatrixImage2Camera(cv::Mat rvec, cv::Mat tvec);
     cv::Mat getTransformationFlange2CameraHandEye(int numbOfPose, int method);
     cv::Mat getInversMatrix(cv::Mat);
-    vpHomogeneousMatrix vispHandEyeCalibration();
+    vpHomogeneousMatrix vispHandEyeCalibration(bool flagChoice);
     vpHomogeneousMatrix testAfVisp(int numbOfPose);
     double lineLength(double sX, double sY, double eX, double eY);
     double getDistance2Object(cv::Point2f origo, cv::Point2f dia);

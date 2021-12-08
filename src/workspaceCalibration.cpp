@@ -911,8 +911,9 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
 
 }
 
-vpHomogeneousMatrix WorkspaceCalibration::vispHandEyeCalibration(){
+vpHomogeneousMatrix WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice){
 
+    if (flagChoice){
 
     std::vector<vpHomogeneousMatrix> cMo;
     std::vector<vpHomogeneousMatrix> rMe;
@@ -1012,6 +1013,10 @@ vpHomogeneousMatrix WorkspaceCalibration::vispHandEyeCalibration(){
       TEST
 
     */
+    int doneCalibrationas = vpHandEyeCalibration::calibrate(cMo,rMe,eMc);
+    return eMc;
+
+    } else {
     ///////////////////////////////
     std::vector<vpHomogeneousMatrix> c2t;
     std::vector<vpHomogeneousMatrix> r2e;
@@ -1020,36 +1025,80 @@ vpHomogeneousMatrix WorkspaceCalibration::vispHandEyeCalibration(){
     ///////////////////////////////
 
     //int doneCalibration = vpHandEyeCalibration::calibrate(cMo,rMe,eMc);
+    vpRxyzVector rxyzCam1;
+    rxyzCam1[0] = vpMath::rad(163.642), rxyzCam1[1]  = vpMath::rad(4.49577), rxyzCam1[2] = vpMath::rad(86.1222);
+    vpRotationMatrix R1(rxyzCam1);
+    std::cout << "R1: \n" << R1 << std::endl;
     vpHomogeneousMatrix cam1( vpTranslationVector(-10.42132674036853,
                                                   -6.815370978897847,
                                                   47.54886276469742), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpRxyzVector rxyzCam2;
+    rxyzCam2[0] = vpMath::rad(-179.633), rxyzCam2[1]  = vpMath::rad(-21.4717), rxyzCam2[2] = vpMath::rad(89.8091);
+    vpRotationMatrix R2(rxyzCam2);
+    std::cout << "R2: \n" << R2 << std::endl;
     vpHomogeneousMatrix cam2( vpTranslationVector(-10.27885560165879,
                                                   -9.90229990975995,
                                                   45.92548864739609), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpRxyzVector rxyzCam3;
+    rxyzCam3[0] = vpMath::rad(178.827), rxyzCam3[1]  = vpMath::rad(-22.0406), rxyzCam3[2] = vpMath::rad(90.20422);
+    vpRotationMatrix R3(rxyzCam3);
+    std::cout << "R3: \n" << R3 << std::endl;
     vpHomogeneousMatrix cam3( vpTranslationVector(-11.06223914775678,
                                                   -9.855915907031962,
                                                   45.51328691272404), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpRxyzVector rxyzCam4;
+    rxyzCam4[0] = vpMath::rad(177.346), rxyzCam4[1]  = vpMath::rad(-22.4574), rxyzCam4[2] = vpMath::rad(90.5839);
+    vpRotationMatrix R4(rxyzCam4);
+    std::cout << "R4: \n" << R4 << std::endl;
     vpHomogeneousMatrix cam4( vpTranslationVector(-11.80688933087717,
                                                   -9.824136731537934,
                                                   45.1758291651404), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpRxyzVector rxyzCam5;
+    rxyzCam5[0] = vpMath::rad(175.932), rxyzCam5[1]  = vpMath::rad(-22.7201), rxyzCam5[2] = vpMath::rad(90.9703);
+    vpRotationMatrix R5(rxyzCam5);
+    std::cout << "R5: \n" << R5 << std::endl;
     vpHomogeneousMatrix cam5( vpTranslationVector(-12.55818568739926,
                                                   -9.804886574955807,
                                                    44.87842685051832), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpRxyzVector rxyzCam6;
+    rxyzCam6[0] = vpMath::rad(157.702), rxyzCam6[1]  = vpMath::rad(1.52976), rxyzCam6[2] = vpMath::rad(85.4246);
+    vpRotationMatrix R6(rxyzCam6);
+    std::cout << "R6: \n" << R6 << std::endl;
     vpHomogeneousMatrix cam6( vpTranslationVector(-13.40610323608032,
                                                    -9.82852805654009,
                                                    44.64466884600932), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpRxyzVector rxyzCam7;
+    rxyzCam7[0] = vpMath::rad(157.971), rxyzCam7[1]  = vpMath::rad(2.85607), rxyzCam7[2] = vpMath::rad(85.2288);
+    vpRotationMatrix R7(rxyzCam7);
+    std::cout << "R7: \n" << R7 << std::endl;
     vpHomogeneousMatrix cam7( vpTranslationVector(-13.43062117507011,
                                                    -8.995579015391197,
                                                    44.96451074026582), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpRxyzVector rxyzCam8;
+    rxyzCam8[0] = vpMath::rad(158.221), rxyzCam8[1]  = vpMath::rad(4.10538), rxyzCam8[2] = vpMath::rad(85.0424);
+    vpRotationMatrix R8(rxyzCam8);
+    std::cout << "R8: \n" << R8 << std::endl;
     vpHomogeneousMatrix cam8( vpTranslationVector(-13.46324794765814,
                                                    -8.24838859200235,
                                                    45.27254693213309), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpRxyzVector rxyzCam9;
+    rxyzCam9[0] = vpMath::rad(158.603), rxyzCam9[1]  = vpMath::rad(5.37897), rxyzCam9[2] = vpMath::rad(84.8538);
+    vpRotationMatrix R9(rxyzCam9);
+    std::cout << "R9: \n" << R9 << std::endl;
     vpHomogeneousMatrix cam9( vpTranslationVector(-13.51063512394965,
                                                   -7.504323096866346,
                                                   45.61799248634797), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpRxyzVector rxyzCam10;
+    rxyzCam10[0] = vpMath::rad(158.934), rxyzCam10[1]  = vpMath::rad(6.69487), rxyzCam10[2] = vpMath::rad(84.6597);
+    vpRotationMatrix R10(rxyzCam10);
+    std::cout << "R10: \n" << R10 << std::endl;
     vpHomogeneousMatrix cam10( vpTranslationVector(-13.5660531751234,
                                                    -6.709594009003127,
                                                    45.98592811340792), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
+    vpRxyzVector rxyzCam11;
+    rxyzCam11[0] = vpMath::rad(159.431), rxyzCam11[1]  = vpMath::rad(8.08444), rxyzCam11[2] = vpMath::rad(84.4737);
+    vpRotationMatrix R11(rxyzCam11);
+    std::cout << "R11: \n" << R11 << std::endl;
     vpHomogeneousMatrix cam11( vpTranslationVector(-13.6367517904527,
                                                    -5.913232413425681,
                                                    46.38614950143113), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
@@ -1089,12 +1138,12 @@ vpHomogeneousMatrix WorkspaceCalibration::vispHandEyeCalibration(){
     r2e.push_back(robot11);
 
 
-    int doneCalibration = vpHandEyeCalibration::calibrate(c2t,r2e,e2c);
+    //int doneCalibration = vpHandEyeCalibration::calibrate(c2t,r2e,e2c);
 
 
  //   return eMc;
     return e2c;
-
+    }
 
 }
 

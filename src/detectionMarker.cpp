@@ -4,6 +4,7 @@
 #include<fstream>
 #include<stdlib.h>
 
+
 using namespace cv;
 using namespace std;
 
@@ -140,14 +141,21 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             Rodrigues(mRvec, RRodriguesMatrix);
 
-            //cv::Vec3d eulerAngels;
-            //getEulerAngles(RRodriguesMatrix,eulerAngels);
+            cv::Vec3d eulerAngels;
+            getEulerAngles(RRodriguesMatrix,eulerAngels);
 
-            //std::cout << "outPut: " << RRodriguesMatrix << std::endl;
+            cv::Point3d p{eulerAngels};
+            p.x = vpMath::rad(p.x);
+            p.y = vpMath::rad(p.y);
+            p.z = vpMath::rad(p.z);
+
+            std::cout << "1: " << p << std::endl;
 
             transpose(RRodriguesMatrix, RRodriguesMatrixTrans);
 
             cv::Vec3f rotation = rotationMatrixToEulerAngles(RRodriguesMatrixTrans);
+            std::cout << "2: " << rotation << std::endl;
+            std::cout << "1: " << p << std::endl;
             cv::Vec3f robotRvec;
 
             if(rotation[0] > 0){
@@ -248,7 +256,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 //std::cout<< "RobotPoint: " << "\n" << robotTransMatrix <<endl;
                 //std::cout << "Hand eye trans: " << "\n" << transMatrix.getTransformationFlange2CameraHandEye(65, 0) << std::endl;
                 //std::cout << "Cam to end effector: " << "\n" << transMatrix.getTransformationCamera2EndEffector(30, 1) << std::endl;
-                std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration() <<std::endl;
+                std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration(true) <<std::endl;
 
                 cv::Mat cameraTCPRM = (cv::Mat_<double>(3, 3) <<
                                         robotTransMatrix.at<double>(0,0), robotTransMatrix.at<double>(0,1), robotTransMatrix.at<double>(0,2),
@@ -281,6 +289,9 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
                 cv::destroyWindow(vindue.str());
                 getSolvepnpRvecTvec(true);
+                WorkspaceCalibration transMatrix;
+                //std::cout << "Hand eye trans form visp New: \n" << transMatrix.vispHandEyeCalibration(false) << std::endl;
+
 
 
             } else if (keyPressed == 'c'|| keyPressed == 'C' ) { // Quit if Q is Pressed
@@ -629,6 +640,7 @@ void DetectionMarker::getSolvepnpRvecTvec(bool flagChangeInProcedureRotation){
         cv::remap(image, imgUndistorted, mapX, mapY, cv::INTER_LINEAR, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
         vector<Point3f> boardPoints;
         std::vector<cv::Mat> rvecs, tvecs;
+        cv::Mat RRodrssssiguesMatrixTrans = (cv::Mat_<double>(3,3));
 
         cvtColor(imgUndistorted,gray,COLOR_BGR2GRAY);
 
@@ -656,8 +668,17 @@ void DetectionMarker::getSolvepnpRvecTvec(bool flagChangeInProcedureRotation){
             tvecs.push_back(mTvec);
             if (flagChangeInProcedureRotation){
                 Rodrigues(mRvec, myRotationMatrix);
+                transpose(myRotationMatrix, RRodrssssiguesMatrixTrans);
+                cv::Vec3f rotatiaaaon = rotationMatrixToEulerAngles(RRodrssssiguesMatrixTrans);
+                std::cout << "1: " << rotatiaaaon << std::endl;
                 //cv::Point3d translfationVec(mTvec);
                 myNewRotationMatrix = getEulerAngles(myRotationMatrix, eulerAngels);
+                cv::Point3d pa{eulerAngels};
+                pa.x = vpMath::rad(pa.x);
+                pa.y = vpMath::rad(pa.y);
+                pa.z = vpMath::rad(pa.z);
+                std::cout << "2: " << pa << std::endl;
+                //std::cout << "Euler angles: \n" << eulerAngels << std::endl;
                 writeFileTranRot3(myNewRotationMatrix);
             } else {
                 writeFileTranRot2(rvecs, tvecs);
@@ -687,13 +708,13 @@ cv::Mat DetectionMarker::getEulerAngles(cv::Mat &rotCamerMatrix, cv::Vec3d &eule
                                rotMatrixY,
                                rotMatrixZ,
                                eulerAngles);
-    std::cout << "rotCamerMatrix: " << "\n" << rotCamerMatrix << std::endl;
-    std::cout << "cameraMatrix: " << "\n" << cameraMatrix << std::endl;
-    std::cout << "rotMatrix: " << "\n" << rotMatrix << std::endl;
-    std::cout << "transVect: " << "\n" << transVect << std::endl;
-    std::cout << "rotMatrixX: " << "\n" << rotMatrixX << std::endl;
-    std::cout << "rotMatrixY: " << "\n" << rotMatrixY << std::endl;
-    std::cout << "rotMatrixZ: " << "\n" << rotMatrixZ << std::endl;
-    std::cout << "eulerAngles: " << "\n"  << eulerAngles << std::endl;
+//    std::cout << "rotCamerMatrix: " << "\n" << rotCamerMatrix << std::endl;
+//    std::cout << "cameraMatrix: " << "\n" << cameraMatrix << std::endl;
+//    std::cout << "rotMatrix: " << "\n" << rotMatrix << std::endl;
+//    std::cout << "transVect: " << "\n" << transVect << std::endl;
+//    std::cout << "rotMatrixX: " << "\n" << rotMatrixX << std::endl;
+//    std::cout << "rotMatrixY: " << "\n" << rotMatrixY << std::endl;
+//    std::cout << "rotMatrixZ: " << "\n" << rotMatrixZ << std::endl;
+//    std::cout << "eulerAngles: " << "\n"  << eulerAngles << std::endl;
     return rotMatrix;
 }
