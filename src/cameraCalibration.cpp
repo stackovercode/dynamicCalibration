@@ -120,10 +120,11 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             cv::initUndistortRectifyMap(newCameraMatrix, mNewDistortionCoefficient, cv::Matx33f::eye(), newCameraMatrix, newFrameSize, CV_32FC1, newMapX, newMapY);
             cv::remap(openCvImage,newImgUndistorted,newMapX,newMapY,1);
 
-            bool patternfound = cv::findChessboardCorners(newImgUndistorted, patternSize, corners, cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK);
-
             cv::Mat gray;
             cvtColor(newImgUndistorted,gray,cv::COLOR_BGR2GRAY);
+
+            bool patternfound = cv::findChessboardCorners(newImgUndistorted, patternSize, corners, cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK);
+
 
             if(patternfound){
               cv::cornerSubPix(gray,corners,cv::Size(4,4), cv::Size(-1, -1), cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 30, 0.1));
@@ -136,7 +137,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             }
 
             try{
-                solvePnP(cv::Mat(boardPoints), cv::Mat(corners), newCameraMatrix, newImgUndistorted, mNewRvec, mNewTvec);
+                solvePnP(cv::Mat(boardPoints), cv::Mat(corners), newCameraMatrix, mNewDistortionCoefficient, mNewRvec, mNewTvec);
             } catch(std::exception& e){
                 std::cout<< "Exception: " << std::endl;
             }
