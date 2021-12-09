@@ -36,6 +36,7 @@ public:
 
     cv::Mat getAngles(cv::Mat &rotCamerMatrix, cv::Vec3d &eulerAngles);
     void writeFileTranRot4 (cv::Mat tempRvec);
+    void writeFileTranRot5 (std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec);
 
 private:
 

@@ -43,27 +43,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
     bool addGausNoise = false;
     std::vector<double> initPose = {0.0,0.0,0.0,0.0,0.0,0.0};
 
-    /*SolveVaribales*/
-    cv::Mat newMapX, newMapY, newImgUndistorted;
-    cv::Size newFrameSize(1920, 1200);
-    cv::Size patternSize(7 - 1, 6 - 1);
-    std::vector<cv::Point2f> corners, imageFramePoints;
-    std::vector<cv::Point3f> framePoints, boardPoints;
-    cv::Mat newRotationMatrix = (cv::Mat_<double>(3,3));
-    cv::Vec3d eulerAngels;
-    cv::Mat newTMethoedRotationMatrix = (cv::Mat_<double>(3,3));
 
-    cv::Matx33f newCameraMatrix(cv::Matx33f::eye());
-        newCameraMatrix = {2261.2676, 0, 959.5,
-        0, 2261.2676, 599.5,
-        0, 0, 1};
-
-    cv::Vec<float, 5> mNewDistortionCoefficient(0, 0, 0, 0, 0);
-        mNewDistortionCoefficient = {-0.141533, -1.23625, 0, 0, 0};
-
-    cv::Mat mNewRvec = cv::Mat(cv::Size(3, 1), CV_64F);
-    cv::Mat mNewTvec = cv::Mat(cv::Size(3, 1), CV_64F);
-    /*END*/
 
 
     while ( camera.IsGrabbing())
@@ -79,7 +59,27 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             // Create an OpenCV image from a pylon image.
             openCvImage = cv::Mat(ptrGrabResult->GetHeight(), ptrGrabResult->GetWidth(), CV_8UC3, (uint8_t *) pylonImage.GetBuffer());
 
+            /*SolveVaribales*/
+            cv::Mat newMapX, newMapY, newImgUndistorted;
+            cv::Size newFrameSize(1920, 1200);
+            cv::Size patternSize(7 - 1, 6 - 1);
+            std::vector<cv::Point2f> corners, imageFramePoints;
+            std::vector<cv::Point3f> framePoints, boardPoints;
+            cv::Mat newRotationMatrix = (cv::Mat_<double>(3,3));
+            cv::Vec3d eulerAngels;
+            cv::Mat newTMethoedRotationMatrix = (cv::Mat_<double>(3,3));
 
+            cv::Matx33f newCameraMatrix(cv::Matx33f::eye());
+                newCameraMatrix = {2476.3694, 0, 959.5,
+                                   0, 2476.3694, 599.5,
+                                   0, 0, 1};
+
+            cv::Vec<float, 5> mNewDistortionCoefficient(0, 0, 0, 0, 0);
+                mNewDistortionCoefficient = {-0.0656526, -2.14544, 0, 0, 0};
+
+            cv::Mat mNewRvec = cv::Mat(cv::Size(3, 1), CV_64F);
+            cv::Mat mNewTvec = cv::Mat(cv::Size(3, 1), CV_64F);
+            /*END*/
 
 
 
@@ -138,12 +138,12 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             framePoints.push_back(cv::Point3f(4.0, 0.0, 0.0));
             framePoints.push_back(cv::Point3f(0.0, 5.0, 0.0));
 
-            solvePnP(cv::Mat(boardPoints), cv::Mat(corners), newCameraMatrix, mNewDistortionCoefficient, mNewRvec, mNewTvec, false);
-//            try{
-//                solvePnP(cv::Mat(boardPoints), cv::Mat(corners), newCameraMatrix, mNewDistortionCoefficient, mNewRvec, mNewTvec, cv::SOLVEPNP_ITERATIVE);
-//            } catch(std::exception& e){
-//                std::cout<< "Exception: " << std::endl;
-//            }
+
+            try{
+                solvePnP(cv::Mat(boardPoints), cv::Mat(corners), newCameraMatrix, mNewDistortionCoefficient, mNewRvec, mNewTvec, false);
+            } catch(std::exception& e){
+                std::cout<< "Exception: " << std::endl;
+            }
 
             projectPoints(framePoints, mNewRvec, mNewTvec, newCameraMatrix, mNewDistortionCoefficient, imageFramePoints);
 
@@ -242,6 +242,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
 
             if (imageNr > mNumberOfCalibrationImages ) {
                 WorkspaceCalibration transMatrix;
+                writeFileTranRot(tempRvec, tempTvec);
                 transMatrix.vispHandEyeCalibration(true, tempRvec, tempTvec);
                 //std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration(true, tempRvec, tempTvec) <<std::endl;
                 //writeFileRobotPoses(mRobotPose);
@@ -562,4 +563,15 @@ void CameraCalibration::writeFileTranRot4 (cv::Mat tempRvec){
         myfile << "--------------------" << std::endl
                << tempRvec << std::endl;
     myfile.close();
+}
+
+void CameraCalibration::writeFileTranRot5 (std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec){
+    std::ofstream myfile;
+    myfile.open ("../Detection/MarkertransposeData.txt", std::ios::app);
+    for (size_t i = 0; i < tempRvec.size(); i++) {
+        myfile << "Rvec: " << i+1 << " = \n" << tempRvec[i] << std::endl
+                  << "Tvec: " << i+1 << " = \n" << tempTvec[i] << std::endl;
+    }
+    myfile.close();
+
 }

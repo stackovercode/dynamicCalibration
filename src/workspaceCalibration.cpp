@@ -914,12 +914,7 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
 void WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice, std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec){
 
     if (flagChoice){
-        for (int i = 0; i < tempRvec.size(); i++) {
-            std::cout << "tempRvec: \n " << tempRvec[i] << std::endl;
-            std::cout << "tempTvec: \n " << tempTvec[i] << std::endl;
-        }
-    }
-/*
+
     std::vector<vpHomogeneousMatrix> cMo;
     std::vector<vpHomogeneousMatrix> rMe;
     vpHomogeneousMatrix eMc;
@@ -1015,9 +1010,108 @@ void WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice, std::vector<c
 
 
     int doneCalibrationas = vpHandEyeCalibration::calibrate(cMo,rMe,eMc);
-    return eMc;
 
-    } else {
+    std::cout << "Hand: \n" << eMc << std::endl;
+
+    } else if (!flagChoice){
+        std::vector<vpHomogeneousMatrix> cMo;
+        std::vector<vpHomogeneousMatrix> rMe;
+        vpHomogeneousMatrix eMc;
+
+
+        //Load TCP poses from file
+        std::string fileLocationRobotTcp = ("../Detection/RobotposeData.txt");
+
+        loadFileRobotTCP(fileLocationRobotTcp);
+
+        //Load Rvec and Tvec from camera from file
+        std::string fileLocation = ("../Detection/MarkertransposeData.txt");
+
+        loadFileTranRot(fileLocation);
+
+        for(size_t i = 0; i < mTcpPose.size()-1;i++){
+
+
+            cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
+            //float factor = sqrt(pow(robotPoseRVec[0], 2) + pow(robotPoseRVec[1], 2) + pow(robotPoseRVec[2], 2));
+            //cv::Vec3f robotUnitVector{robotPoseRVec[0]/factor, robotPoseRVec[1]/factor, robotPoseRVec[2]/factor};
+            //cv::Mat robotPoseRM = rvec2RotationMatrix(robotUnitVector);
+
+            //const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
+             cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0),mTcpPose[i].at<float>(0,1),mTcpPose[i].at<float>(0,2));
+
+
+    //        cv::Mat Trans_robotMatrix = (cv::Mat_<double>(4, 4) <<
+    //                robotPoseRM.at<double>(0,0), robotPoseRM.at<double>(0,1), robotPoseRM.at<double>(0,2), robotPoseTVec.at<double>(0,0),
+    //                robotPoseRM.at<double>(1,0), robotPoseRM.at<double>(1,1), robotPoseRM.at<double>(1,2), robotPoseTVec.at<double>(0,1),
+    //                robotPoseRM.at<double>(2,0), robotPoseRM.at<double>(2,1), robotPoseRM.at<double>(2,2), robotPoseTVec.at<double>(0,2),
+    //                0, 0, 0, 1);
+
+
+
+    //        cv::Mat inverseRobotMatrix = getInversMatrix(Trans_robotMatrix);
+
+    //        cv::Mat inverseRotationMatrix = (cv::Mat_<double>(3, 3) <<
+    //                inverseRobotMatrix.at<double>(0,0), inverseRobotMatrix.at<double>(0,1), inverseRobotMatrix.at<double>(0,2),
+    //                inverseRobotMatrix.at<double>(1,0), inverseRobotMatrix.at<double>(1,1), inverseRobotMatrix.at<double>(1,2),
+    //                inverseRobotMatrix.at<double>(2,0), inverseRobotMatrix.at<double>(2,1), inverseRobotMatrix.at<double>(2,2));
+
+    //        cv::Mat inverseTranslationMatrix = (cv::Mat_<float>(3, 1) << inverseRobotMatrix.at<float>(0,3),inverseRobotMatrix.at<float>(1,3),inverseRobotMatrix.at<float>(2,3));
+
+
+            cv::Mat robotPoseRM;
+            Rodrigues(robotPoseRVec, robotPoseRM);
+            std::vector<float> robotPoseTrans(12, 0);
+            robotPoseTrans[0] = robotPoseRM.at<float>(0,0);//r11
+            robotPoseTrans[1] = robotPoseRM.at<float>(0,1);//r12
+            robotPoseTrans[2] = robotPoseRM.at<float>(0,2);//r13
+            robotPoseTrans[3] = robotPoseTVec.at<float>(0,0);//t1
+            robotPoseTrans[4] = robotPoseRM.at<float>(1,0);//r21
+            robotPoseTrans[5] = robotPoseRM.at<float>(1,1);//r22
+            robotPoseTrans[6] = robotPoseRM.at<float>(1,2);//r23
+            robotPoseTrans[7] = robotPoseTVec.at<float>(0,1);//t2
+            robotPoseTrans[8] = robotPoseRM.at<float>(2,0);//r31
+            robotPoseTrans[9] = robotPoseRM.at<float>(2,1);//r32
+            robotPoseTrans[10] = robotPoseRM.at<float>(2,2);//r33
+            robotPoseTrans[11] = robotPoseTVec.at<float>(0,2);//t3
+
+            vpHomogeneousMatrix robotHomoTrans(robotPoseTrans);
+
+
+            rMe.push_back(robotHomoTrans.inverse());
+        }
+
+
+        for(size_t i = 0; i < mR_target2cam.size()-1;i++){
+
+            cv::Vec3d camImgPoseRVec{mR_target2cam[i].at<double>(0,0), mR_target2cam[i].at<double>(0,1), mR_target2cam[i].at<double>(0,2)};
+            const cv::Mat camImgPose = (cv::Mat_<double>(3, 1) << mT_target2cam[i].at<double>(0,0), mT_target2cam[i].at<double>(0,1), mT_target2cam[i].at<double>(0,2));
+            cv::Mat camImgPoseRM;
+            Rodrigues(camImgPoseRVec, camImgPoseRM);
+            std::vector<double> cameraTrans(12, 0);
+            cameraTrans[0] = camImgPoseRM.at<double>(0,0);//r11
+            cameraTrans[1] = camImgPoseRM.at<double>(0,1);//r12
+            cameraTrans[2] = camImgPoseRM.at<double>(0,2);//r13
+            cameraTrans[3] = camImgPose.at<double>(0,0);//t1
+            cameraTrans[4] = camImgPoseRM.at<double>(1,0);//r21
+            cameraTrans[5] = camImgPoseRM.at<double>(1,1);//r22
+            cameraTrans[6] = camImgPoseRM.at<double>(1,2);//r23
+            cameraTrans[7] = camImgPose.at<double>(0,1);//t2
+            cameraTrans[8] = camImgPoseRM.at<double>(2,0);//r31
+            cameraTrans[9] = camImgPoseRM.at<double>(2,1);//r32
+            cameraTrans[10] = camImgPoseRM.at<double>(2,2);//r33
+            cameraTrans[11] = camImgPose.at<double>(0,2);//t3
+
+            vpHomogeneousMatrix cameraHomoTrans(cameraTrans);
+
+            cMo.push_back(cameraHomoTrans.inverse());
+        }
+
+
+        int doneCalibrationas = vpHandEyeCalibration::calibrate(cMo,rMe,eMc);
+
+        std::cout << eMc << std::endl;
+    }else{
     ///////////////////////////////
     std::vector<vpHomogeneousMatrix> c2t;
     std::vector<vpHomogeneousMatrix> r2e;
@@ -1143,9 +1237,9 @@ void WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice, std::vector<c
 
 
  //   return eMc;
-    return e2c;
+    std::cout << e2c << std::endl;
     }
-*/
+
 }
 
 vpHomogeneousMatrix WorkspaceCalibration::testAfVisp(int numbOfPose){
