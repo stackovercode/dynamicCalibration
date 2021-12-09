@@ -16,11 +16,11 @@ void CameraCalibration::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rt
 
     collectCalibratingImages(reciver, controller);
 
-    drawChessboardCorners(chessboardCornersArray, true);
+    drawChessboardCorners(chessboardCornersArray, false);
 
     generateCheckerboardWorld(checkerboardWorldArray);
 
-    calibrate(chessboardCornersArray,checkerboardWorldArray, true);
+    calibrate(chessboardCornersArray,checkerboardWorldArray, false);
 }
 
 void CameraCalibration::collectCalibratingImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller){
@@ -173,11 +173,11 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
 
             if(keyPressed == 'a'|| keyPressed == 'A' ){
                 calibrateRunTime = true;
-                std::cout << "Grabbing and saving imge" << imageNr << ". to folder \"imageResources\"..." << std::endl;
+                //std::cout << "Grabbing and saving imge" << imageNr << ". to folder \"imageResources\"..." << std::endl;
                 std::stringstream fileName;
                 fileName<< "../imageResources/" << "Image" << imageNr << ".png";
                 cv::imwrite( fileName.str(), openCvImage );
-                std::cout << "Grabing and saving image to location was succesfull" << std::endl;
+                //std::cout << "Grabing and saving image to location was succesfull" << std::endl;
                 cv::destroyWindow(vindue.str());
                 /* RTDE handler object */
                 MoveArm ur5arm;
@@ -192,7 +192,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 //mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
                 tempRvec.push_back(mNewRvec);
                 tempTvec.push_back(mNewTvec);
-                initPose = ur5arm.poseSwift(reciver,controller,0.10,0.10,imageNr, initPose, mNumberOfCalibrationImages, false);
+                initPose = ur5arm.poseSwift(reciver,controller,0.15,0.15,imageNr, initPose, mNumberOfCalibrationImages, false);
                 imageNr++;
 
             } else if(keyPressed == 'g'|| keyPressed == 'G' ){
@@ -232,6 +232,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 std::cout << "Camera successfully closed." << std::endl
                           << "The Grapping Proces was terminated." << std::endl
                           << "Breaking out and continueing program with calibration." << std::endl;
+
                 break;
 
             }else if (keyPressed == 'x'|| keyPressed == 'X' ) { // regrab N image.
@@ -243,10 +244,10 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             if (imageNr > mNumberOfCalibrationImages ) {
                 WorkspaceCalibration transMatrix;
                 writeFileTranRot(tempRvec, tempTvec);
-                std::cout << "Hand Eye: \n" << transMatrix.getTransformationFlange2CameraHandEye(25, 0) << std::endl;
-                //transMatrix.vispHandEyeCalibration(true, tempRvec, tempTvec);
-                //std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration(true, tempRvec, tempTvec) <<std::endl;
-                //writeFileRobotPoses(mRobotPose);
+                //std::cout << "Hand Eye: \n" << transMatrix.getTransformationFlange2CameraHandEye(33, 0) << std::endl;
+                 transMatrix.vispHandEyeCalibration(true);
+                 //std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration(true, tempRvec, tempTvec) <<std::endl;
+                 //writeFileRobotPoses(mRobotPose);
 
                 break;
             }

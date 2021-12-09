@@ -42,7 +42,7 @@ public:
     cv::Mat getTransformationMatrixImage2Camera(cv::Mat rvec, cv::Mat tvec);
     cv::Mat getTransformationFlange2CameraHandEye(int numbOfPose, int method);
     cv::Mat getInversMatrix(cv::Mat);
-    void vispHandEyeCalibration(bool flagChoice, std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec);
+    void vispHandEyeCalibration(bool flagChoice);
     vpHomogeneousMatrix testAfVisp(int numbOfPose);
     double lineLength(double sX, double sY, double eX, double eY);
     double getDistance2Object(cv::Point2f origo, cv::Point2f dia);

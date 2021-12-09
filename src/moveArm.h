@@ -45,7 +45,7 @@ public:
 
     std::vector<std::vector<double>> mRobotTCPPoses;
 
-    void writeFileRobotTCPPoses(std::vector<std::vector<double>> robotPoses);
+    void writeFileRobotTCPPoses(bool flagChoice, std::vector<std::vector<double>> robotPoses);
 
     bool change;
 
@@ -54,6 +54,7 @@ private:
     bool lastPose;
     std::vector<std::vector<double>> mRobotPose;
     std::vector<std::vector<double>> mRobotjointData;
+    bool writeFileRobotTCPPosesFlagChoice;
 
     //double mXtcp, mYtcp, mZtcp;
     //double mRXtcp, mRYtcp, mRZtcp;

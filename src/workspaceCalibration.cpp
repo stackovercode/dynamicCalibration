@@ -730,8 +730,6 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
     loadFileTranRot(fileLocation);
 
 
-
-
 //    for(size_t i = 0; i < mTcpPose.size()-1;i++){
 ////        float rv_len = sqrt(pow(mTcpPose[i].at<float>(0,3), 2) + pow(mTcpPose[i].at<float>(0,4), 2) + pow(mTcpPose[i].at<float>(0,5), 2));
 ////        float scale = 1 - 2 * M_PI / rv_len;
@@ -911,7 +909,7 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
 
 }
 
-void WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice, std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec){
+void WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice){
 
     if (flagChoice){
 
@@ -934,12 +932,12 @@ void WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice, std::vector<c
 
 
         cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
-        //float factor = sqrt(pow(robotPoseRVec[0], 2) + pow(robotPoseRVec[1], 2) + pow(robotPoseRVec[2], 2));
-        //cv::Vec3f robotUnitVector{robotPoseRVec[0]/factor, robotPoseRVec[1]/factor, robotPoseRVec[2]/factor};
-        //cv::Mat robotPoseRM = rvec2RotationMatrix(robotUnitVector);
+//        float factor = sqrt(pow(robotPoseRVec[0], 2) + pow(robotPoseRVec[1], 2) + pow(robotPoseRVec[2], 2));
+//        cv::Vec3f robotUnitVector{robotPoseRVec[0]/factor, robotPoseRVec[1]/factor, robotPoseRVec[2]/factor};
+//        cv::Mat robotPoseRM = rvec2RotationMatrix(robotUnitVector);
 
-        const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
-        // cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0),mTcpPose[i].at<float>(0,1),mTcpPose[i].at<float>(0,2));
+        //const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
+         cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0),mTcpPose[i].at<float>(0,1),mTcpPose[i].at<float>(0,2));
 
 
 //        cv::Mat Trans_robotMatrix = (cv::Mat_<double>(4, 4) <<
@@ -980,6 +978,7 @@ void WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice, std::vector<c
 
 
         rMe.push_back(robotHomoTrans.inverse());
+        //rMe.push_back(robotHomoTrans);
     }
 
 
@@ -1006,12 +1005,13 @@ void WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice, std::vector<c
         vpHomogeneousMatrix cameraHomoTrans(cameraTrans);
 
         cMo.push_back(cameraHomoTrans.inverse());
+        //cMo.push_back(cameraHomoTrans);
     }
 
 
     int doneCalibrationas = vpHandEyeCalibration::calibrate(cMo,rMe,eMc);
 
-    std::cout << "Hand: \n" << eMc << std::endl;
+    std::cout << "Hand eye Visp: \n" << eMc << std::endl;
 
     } else if (!flagChoice){
         std::vector<vpHomogeneousMatrix> cMo;
