@@ -96,13 +96,6 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             }
 
 
-             mWidth = openCvImage.size().width * 60/100;
-             mHeight = openCvImage.size().height * 60/100;
-
-            cv::Size dimension (mWidth, mHeight);
-            cv::resize(openCvImage,openCvImage,dimension);
-
-
 
             char keyPressed;
 
@@ -111,6 +104,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             } else {
                 keyPressed = cv::waitKey(1);
             }
+
 
             // std::cout << "" << std::endl;
             // Detect key press 'q' is pressed
@@ -136,13 +130,36 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 }
             }
 
+            framePoints.push_back(cv::Point3f(0.0, 0.0, 0.0));
+            framePoints.push_back(cv::Point3f(2.0, 0.0, 0.0));
+            framePoints.push_back(cv::Point3f(0.0, 2.0, 0.0));
+            framePoints.push_back(cv::Point3f(0.0, 0.0, 2.0));
+            framePoints.push_back(cv::Point3f(4.0, 5.0, 0.0));
+            framePoints.push_back(cv::Point3f(4.0, 0.0, 0.0));
+            framePoints.push_back(cv::Point3f(0.0, 5.0, 0.0));
+
             try{
                 solvePnP(cv::Mat(boardPoints), cv::Mat(corners), newCameraMatrix, mNewDistortionCoefficient, mNewRvec, mNewTvec);
             } catch(std::exception& e){
                 std::cout<< "Exception: " << std::endl;
             }
 
+            projectPoints(framePoints, mNewRvec, mNewTvec, newCameraMatrix, mNewDistortionCoefficient, imageFramePoints);
+
+            line(imgUndistorted, imageFramePoints[0], imageFramePoints[1], cv::Scalar(0,255,0), 2, cv::LINE_AA);
+            line(imgUndistorted, imageFramePoints[0], imageFramePoints[2], cv::Scalar(255,0,0), 2, cv::LINE_AA);
+            line(imgUndistorted, imageFramePoints[0], imageFramePoints[3], cv::Scalar(0,0,255), 2, cv::LINE_AA);
+
+
             /*SolvePnP Slut*/
+
+
+            mWidth = openCvImage.size().width * 60/100;
+            mHeight = openCvImage.size().height * 60/100;
+
+           cv::Size dimension (mWidth, mHeight);
+           cv::resize(openCvImage,openCvImage,dimension);
+
 
 
 
@@ -150,6 +167,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             vindue << "Video feed: Press A to automatic grab and collect image, Press G to manully grab and colect imge, Q to Cancel and Quit or B to brake and reuse old image to calibration. nr. or press N to regrab existing image" << imageNr;
             cv::namedWindow( vindue.str() , cv::WINDOW_AUTOSIZE);
             // Display the current image in the OpenCV display window.
+            //cv::imshow( vindue.str(), openCvImage);
             cv::imshow( vindue.str(), openCvImage);
 
             if(keyPressed == 'a'|| keyPressed == 'A' ){
