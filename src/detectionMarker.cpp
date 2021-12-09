@@ -10,6 +10,7 @@ using namespace std;
 
 
 
+
 DetectionMarker::DetectionMarker( CameraSettings& cameraSettings, int verticalIntersections, int horizontalIntersections, int squareSize, int numberOfCalibrationImages)
     : Camera(cameraSettings),
       mVerticalIntersections(verticalIntersections),
@@ -256,7 +257,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 //std::cout<< "RobotPoint: " << "\n" << robotTransMatrix <<endl;
                 //std::cout << "Hand eye trans: " << "\n" << transMatrix.getTransformationFlange2CameraHandEye(65, 0) << std::endl;
                 //std::cout << "Cam to end effector: " << "\n" << transMatrix.getTransformationCamera2EndEffector(30, 1) << std::endl;
-                std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration(true) <<std::endl;
+                //std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration(true) <<std::endl;
 
                 cv::Mat cameraTCPRM = (cv::Mat_<double>(3, 3) <<
                                         robotTransMatrix.at<double>(0,0), robotTransMatrix.at<double>(0,1), robotTransMatrix.at<double>(0,2),

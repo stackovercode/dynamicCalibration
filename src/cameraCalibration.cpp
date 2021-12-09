@@ -42,6 +42,30 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
     bool calibrateRunTime = false;
     bool addGausNoise = false;
     std::vector<double> initPose = {0.0,0.0,0.0,0.0,0.0,0.0};
+
+    /*SolveVaribales*/
+    cv::Mat newMapX, newMapY, newImgUndistorted;
+    cv::Size newFrameSize(1920, 1200);
+    cv::Size patternSize(7 - 1, 6 - 1);
+    std::vector<cv::Point2f> corners, imageFramePoints;
+    std::vector<cv::Point3f> framePoints, boardPoints;
+    cv::Mat newRotationMatrix = (cv::Mat_<double>(3,3));
+    cv::Vec3d eulerAngels;
+    cv::Mat newTMethoedRotationMatrix = (cv::Mat_<double>(3,3));
+
+    cv::Matx33f newCameraMatrix(cv::Matx33f::eye());
+        newCameraMatrix = {2261.2676, 0, 959.5,
+        0, 2261.2676, 599.5,
+        0, 0, 1};
+
+    cv::Vec<float, 5> mNewDistortionCoefficient(0, 0, 0, 0, 0);
+        mNewDistortionCoefficient = {-0.141533, -1.23625, 0, 0, 0};
+
+    cv::Mat mNewRvec = cv::Mat(cv::Size(3, 1), CV_64F);
+    cv::Mat mNewTvec = cv::Mat(cv::Size(3, 1), CV_64F);
+    /*END*/
+
+
     while ( camera.IsGrabbing())
     {
         camera.RetrieveResult( 5000, ptrGrabResult, Pylon::TimeoutHandling_ThrowException);
@@ -95,6 +119,37 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             // std::cout << "" << std::endl;
             // Detect key press 'q' is pressed
 
+            /*SolvePnP Start*/
+
+
+
+
+            cv::initUndistortRectifyMap(newCameraMatrix, mNewDistortionCoefficient, cv::Matx33f::eye(), newCameraMatrix, newFrameSize, CV_32FC1, newMapX, newMapY);
+            cv::remap(openCvImage,newImgUndistorted,newMapX,newMapY,1);
+
+            bool patternfound = cv::findChessboardCorners(newImgUndistorted, patternSize, corners, cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK);
+
+            if(patternfound){
+              cv::cornerSubPix(gray,corners,cv::Size(4,4), cv::Size(-1, -1), cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 30, 0.1));
+            }
+
+            for (int i = 0; i < patternSize.height; i++){
+                for (int j = 0; j < patternSize.width; j++){
+                    boardPoints.push_back(cv::Point3f(float(i), float(j), 0.0));
+                }
+            }
+
+            try{
+                solvePnP(cv::Mat(boardPoints), cv::Mat(corners), newCameraMatrix, newImgUndistorted, mNewRvec, mNewTvec, false);
+            } catch(std::exception& e){
+                std::cout<< "Exception: " << std::endl;
+                std::cout << "HEJQ!!" << std::endl;
+            }
+
+            /*SolvePnP Slut*/
+
+
+
 
             if(keyPressed == 'a'|| keyPressed == 'A' ){
                 calibrateRunTime = true;
@@ -106,8 +161,18 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 cv::destroyWindow(vindue.str());
                 /* RTDE handler object */
                 MoveArm ur5arm;
+                Rodrigues(mNewRvec, newRotationMatrix);
+                newTMethoedRotationMatrix = getAngles(newRotationMatrix, eulerAngels);
+                cv::Point3d pa{eulerAngels};
+                pa.x = vpMath::rad(pa.x);
+                pa.y = vpMath::rad(pa.y);
+                pa.z = vpMath::rad(pa.z);
+                //std::cout << "Euler angles: \n" << eulerAngels << std::endl;
+                //writeFileTranRot3(newTMethoedRotationMatrix);
                 //mRobotPose.push_back(ur5arm.moveCalibrate(reciver, controller,1.0,0.9, imageNr));
-                initPose = ur5arm.poseSwift(reciver,controller,0.15,0.15,imageNr, initPose, mNumberOfCalibrationImages, false);
+                tempRvec.push_back(mNewRvec);
+                tempTvec.push_back(mNewTvec);
+                initPose = ur5arm.poseSwift(reciver,controller,0.10,0.10,imageNr, initPose, mNumberOfCalibrationImages, false);
                 imageNr++;
 
             } else if(keyPressed == 'g'|| keyPressed == 'G' ){
@@ -156,6 +221,9 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             }
 
             if (imageNr > mNumberOfCalibrationImages ) {
+                WorkspaceCalibration transMatrix;
+                transMatrix.vispHandEyeCalibration(true, tempRvec, tempTvec);
+                //std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration(true, tempRvec, tempTvec) <<std::endl;
                 //writeFileRobotPoses(mRobotPose);
 
                 break;
@@ -439,4 +507,39 @@ void CameraCalibration::dataPacker(std::vector<std::vector<double>> dataArray)
     }
 
 
+}
+
+cv::Mat CameraCalibration::getAngles(cv::Mat &rotCamerMatrix, cv::Vec3d &eulerAngles){
+
+    cv::Mat cameraMatrix,rotMatrix,transVect,rotMatrixX,rotMatrixY,rotMatrixZ;
+    double* _r = rotCamerMatrix.ptr<double>();
+    double projMatrix[12] = {_r[0],_r[1],_r[2],0,
+                          _r[3],_r[4],_r[5],0,
+                          _r[6],_r[7],_r[8],0};
+
+    decomposeProjectionMatrix(cv::Mat(3,4, CV_64FC1,projMatrix),
+                               cameraMatrix,
+                               rotMatrix,
+                               transVect,
+                               rotMatrixX,
+                               rotMatrixY,
+                               rotMatrixZ,
+                               eulerAngles);
+//    std::cout << "rotCamerMatrix: " << "\n" << rotCamerMatrix << std::endl;
+//    std::cout << "cameraMatrix: " << "\n" << cameraMatrix << std::endl;
+//    std::cout << "rotMatrix: " << "\n" << rotMatrix << std::endl;
+//    std::cout << "transVect: " << "\n" << transVect << std::endl;
+//    std::cout << "rotMatrixX: " << "\n" << rotMatrixX << std::endl;
+//    std::cout << "rotMatrixY: " << "\n" << rotMatrixY << std::endl;
+//    std::cout << "rotMatrixZ: " << "\n" << rotMatrixZ << std::endl;
+//    std::cout << "eulerAngles: " << "\n"  << eulerAngles << std::endl;
+    return rotMatrix;
+}
+
+void CameraCalibration::writeFileTranRot4 (cv::Mat tempRvec){
+    std::ofstream myfile;
+    myfile.open ("../Detection/RotationTransposeData.txt", std::ios::app);
+        myfile << "--------------------" << std::endl
+               << tempRvec << std::endl;
+    myfile.close();
 }

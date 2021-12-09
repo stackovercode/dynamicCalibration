@@ -16,6 +16,7 @@ class DetectionMarker : public Camera
 {
 public:
 
+
     DetectionMarker( CameraSettings& cameraSettings, int verticalIntersections = 5, int horizontalIntersections = 6,
                                                        int squareSize = 10, int numberOfCalibrationImages = 65);
     virtual ~DetectionMarker() = default;

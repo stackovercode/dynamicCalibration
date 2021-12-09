@@ -10,13 +10,20 @@
 #include <vector>
 #include <ostream>
 #include <filesystem>
+#include <visp3/core/vpMath.h>
+#include <visp3/vision/vpHandEyeCalibration.h>
+#include <visp3/core/vpHomogeneousMatrix.h>
+#include <opencv2/calib3d.hpp>
+#include <visp3/core/vpRxyzVector.h>
+#include <visp3/core/vpRotationMatrix.h>
+#include "detectionMarker.h"
 
 
 class CameraCalibration : public Camera
 {
 public:
     CameraCalibration( CameraSettings& cameraSettings, int verticalIntersections = 5, int horizontalIntersections = 6,
-                                                       int squareSize = 10, int numberOfCalibrationImages = 65);
+                                                       int squareSize = 10, int numberOfCalibrationImages = 25);
     virtual ~CameraCalibration() = default;
 
 
@@ -27,8 +34,13 @@ public:
     // Currently not in use:
     void dataPacker(std::vector<std::vector<double>>); //mangeler et client parameter adder når det kan testes.
 
+    cv::Mat getAngles(cv::Mat &rotCamerMatrix, cv::Vec3d &eulerAngles);
+    void writeFileTranRot4 (cv::Mat tempRvec);
 
 private:
+
+    std::vector<cv::Mat> tempRvec;
+    std::vector<cv::Mat> tempTvec;
 
     std::vector<std::vector<double>> mRobotPose;
     int mNumberOfCalibrationImages;

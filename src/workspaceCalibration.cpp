@@ -911,10 +911,15 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
 
 }
 
-vpHomogeneousMatrix WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice){
+void WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice, std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec){
 
     if (flagChoice){
-
+        for (int i = 0; i < tempRvec.size(); i++) {
+            std::cout << "tempRvec: \n " << tempRvec[i] << std::endl;
+            std::cout << "tempTvec: \n " << tempTvec[i] << std::endl;
+        }
+    }
+/*
     std::vector<vpHomogeneousMatrix> cMo;
     std::vector<vpHomogeneousMatrix> rMe;
     vpHomogeneousMatrix eMc;
@@ -1008,11 +1013,7 @@ vpHomogeneousMatrix WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice
         cMo.push_back(cameraHomoTrans.inverse());
     }
 
-    /*
 
-      TEST
-
-    */
     int doneCalibrationas = vpHandEyeCalibration::calibrate(cMo,rMe,eMc);
     return eMc;
 
@@ -1144,7 +1145,7 @@ vpHomogeneousMatrix WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice
  //   return eMc;
     return e2c;
     }
-
+*/
 }
 
 vpHomogeneousMatrix WorkspaceCalibration::testAfVisp(int numbOfPose){
