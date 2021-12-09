@@ -102,11 +102,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             cv::Size dimension (mWidth, mHeight);
             cv::resize(openCvImage,openCvImage,dimension);
 
-            std::stringstream vindue;
-            vindue << "Video feed: Press A to automatic grab and collect image, Press G to manully grab and colect imge, Q to Cancel and Quit or B to brake and reuse old image to calibration. nr. or press N to regrab existing image" << imageNr;
-            cv::namedWindow( vindue.str() , cv::WINDOW_AUTOSIZE);
-            // Display the current image in the OpenCV display window.
-            cv::imshow( vindue.str(), openCvImage);
+
 
             char keyPressed;
 
@@ -124,10 +120,13 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
 
 
 
-            cv::initUndistortRectifyMap(newCameraMatrix, mNewDistortionCoefficient, cv::Matx33f::eye(), newCameraMatrix, newFrameSize, CV_32FC1, newMapX, newMapY);
-            cv::remap(openCvImage,newImgUndistorted,newMapX,newMapY,1);
+            //cv::initUndistortRectifyMap(newCameraMatrix, mNewDistortionCoefficient, cv::Matx33f::eye(), newCameraMatrix, newFrameSize, CV_32FC1, newMapX, newMapY);
+            //cv::remap(openCvImage,newImgUndistorted,newMapX,newMapY,1);
 
             bool patternfound = cv::findChessboardCorners(newImgUndistorted, patternSize, corners, cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK);
+
+            cv::Mat gray;
+            cvtColor(newImgUndistorted,gray,cv::COLOR_BGR2GRAY);
 
             if(patternfound){
               cv::cornerSubPix(gray,corners,cv::Size(4,4), cv::Size(-1, -1), cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 30, 0.1));
@@ -140,16 +139,20 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             }
 
             try{
-                solvePnP(cv::Mat(boardPoints), cv::Mat(corners), newCameraMatrix, newImgUndistorted, mNewRvec, mNewTvec, false);
+                solvePnP(cv::Mat(boardPoints), cv::Mat(corners), newCameraMatrix, newImgUndistorted, mNewRvec, mNewTvec);
             } catch(std::exception& e){
                 std::cout<< "Exception: " << std::endl;
-                std::cout << "HEJQ!!" << std::endl;
             }
 
             /*SolvePnP Slut*/
 
 
 
+            std::stringstream vindue;
+            vindue << "Video feed: Press A to automatic grab and collect image, Press G to manully grab and colect imge, Q to Cancel and Quit or B to brake and reuse old image to calibration. nr. or press N to regrab existing image" << imageNr;
+            cv::namedWindow( vindue.str() , cv::WINDOW_AUTOSIZE);
+            // Display the current image in the OpenCV display window.
+            cv::imshow( vindue.str(), openCvImage);
 
             if(keyPressed == 'a'|| keyPressed == 'A' ){
                 calibrateRunTime = true;
