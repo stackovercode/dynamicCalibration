@@ -938,8 +938,8 @@ void WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice, std::vector<c
         //cv::Vec3f robotUnitVector{robotPoseRVec[0]/factor, robotPoseRVec[1]/factor, robotPoseRVec[2]/factor};
         //cv::Mat robotPoseRM = rvec2RotationMatrix(robotUnitVector);
 
-        //const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
-         cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0),mTcpPose[i].at<float>(0,1),mTcpPose[i].at<float>(0,2));
+        const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
+        // cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0),mTcpPose[i].at<float>(0,1),mTcpPose[i].at<float>(0,2));
 
 
 //        cv::Mat Trans_robotMatrix = (cv::Mat_<double>(4, 4) <<

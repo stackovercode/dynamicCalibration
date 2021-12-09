@@ -70,12 +70,12 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             cv::Mat newTMethoedRotationMatrix = (cv::Mat_<double>(3,3));
 
             cv::Matx33f newCameraMatrix(cv::Matx33f::eye());
-                newCameraMatrix = {2476.3694, 0, 959.5,
-                                   0, 2476.3694, 599.5,
+                newCameraMatrix = {2492.366, 0, 959.5,
+                                   0, 2492.366, 599.5,
                                    0, 0, 1};
 
             cv::Vec<float, 5> mNewDistortionCoefficient(0, 0, 0, 0, 0);
-                mNewDistortionCoefficient = {-0.0656526, -2.14544, 0, 0, 0};
+                mNewDistortionCoefficient = {-0.0721785, -2.06161, 0, 0, 0};
 
             cv::Mat mNewRvec = cv::Mat(cv::Size(3, 1), CV_64F);
             cv::Mat mNewTvec = cv::Mat(cv::Size(3, 1), CV_64F);
@@ -243,7 +243,8 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             if (imageNr > mNumberOfCalibrationImages ) {
                 WorkspaceCalibration transMatrix;
                 writeFileTranRot(tempRvec, tempTvec);
-                transMatrix.vispHandEyeCalibration(true, tempRvec, tempTvec);
+                std::cout << "Hand Eye: \n" << transMatrix.getTransformationFlange2CameraHandEye(25, 0) << std::endl;
+                //transMatrix.vispHandEyeCalibration(true, tempRvec, tempTvec);
                 //std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration(true, tempRvec, tempTvec) <<std::endl;
                 //writeFileRobotPoses(mRobotPose);
 
