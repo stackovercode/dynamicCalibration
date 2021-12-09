@@ -138,11 +138,12 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             framePoints.push_back(cv::Point3f(4.0, 0.0, 0.0));
             framePoints.push_back(cv::Point3f(0.0, 5.0, 0.0));
 
-            try{
-                solvePnP(cv::Mat(boardPoints), cv::Mat(corners), newCameraMatrix, mNewDistortionCoefficient, mNewRvec, mNewTvec);
-            } catch(std::exception& e){
-                std::cout<< "Exception: " << std::endl;
-            }
+            solvePnP(cv::Mat(boardPoints), cv::Mat(corners), newCameraMatrix, mNewDistortionCoefficient, mNewRvec, mNewTvec, false);
+//            try{
+//                solvePnP(cv::Mat(boardPoints), cv::Mat(corners), newCameraMatrix, mNewDistortionCoefficient, mNewRvec, mNewTvec, cv::SOLVEPNP_ITERATIVE);
+//            } catch(std::exception& e){
+//                std::cout<< "Exception: " << std::endl;
+//            }
 
             projectPoints(framePoints, mNewRvec, mNewTvec, newCameraMatrix, mNewDistortionCoefficient, imageFramePoints);
 
