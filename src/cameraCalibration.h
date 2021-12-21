@@ -17,13 +17,14 @@
 #include <visp3/core/vpRxyzVector.h>
 #include <visp3/core/vpRotationMatrix.h>
 #include "detectionMarker.h"
+#include <visp3/core/vpCameraParameters.h>
 
 
 class CameraCalibration : public Camera
 {
 public:
     CameraCalibration( CameraSettings& cameraSettings, int verticalIntersections = 5, int horizontalIntersections = 6,
-                                                       int squareSize = 10, int numberOfCalibrationImages = 33);
+                                                       int squareSize = 1, int numberOfCalibrationImages = 33);
     virtual ~CameraCalibration() = default;
 
 

@@ -70,12 +70,12 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             cv::Mat newTMethoedRotationMatrix = (cv::Mat_<double>(3,3));
 
             cv::Matx33f newCameraMatrix(cv::Matx33f::eye());
-                newCameraMatrix = {2492.366, 0, 959.5,
-                                   0, 2492.366, 599.5,
+                newCameraMatrix = {3352.4404, 0, 959.5,
+                                   0, 3352.4404, 599.5,
                                    0, 0, 1};
 
             cv::Vec<float, 5> mNewDistortionCoefficient(0, 0, 0, 0, 0);
-                mNewDistortionCoefficient = {-0.0721785, -2.06161, 0, 0, 0};
+                mNewDistortionCoefficient = {-0.752718, 19.6554, 0, 0, 0};
 
             cv::Mat mNewRvec = cv::Mat(cv::Size(3, 1), CV_64F);
             cv::Mat mNewTvec = cv::Mat(cv::Size(3, 1), CV_64F);
@@ -111,8 +111,11 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
 
             /*SolvePnP Start*/
 
-            cv::initUndistortRectifyMap(newCameraMatrix, mNewDistortionCoefficient, cv::Matx33f::eye(), newCameraMatrix, newFrameSize, CV_32FC1, newMapX, newMapY);
-            cv::remap(openCvImage,newImgUndistorted,newMapX,newMapY,1);
+
+            //cv::initUndistortRectifyMap(newCameraMatrix, mNewDistortionCoefficient, cv::Matx33f::eye(), newCameraMatrix, newFrameSize, CV_32FC1, newMapX, newMapY);
+            //cv::remap(openCvImage,newImgUndistorted,newMapX,newMapY,1);
+
+            newImgUndistorted = openCvImage.clone();
 
             cv::Mat gray;
             cvtColor(newImgUndistorted,gray,cv::COLOR_BGR2GRAY);
@@ -147,21 +150,19 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
 
             projectPoints(framePoints, mNewRvec, mNewTvec, newCameraMatrix, mNewDistortionCoefficient, imageFramePoints);
 
-            line(imgUndistorted, imageFramePoints[0], imageFramePoints[1], cv::Scalar(0,255,0), 2, cv::LINE_AA);
-            line(imgUndistorted, imageFramePoints[0], imageFramePoints[2], cv::Scalar(255,0,0), 2, cv::LINE_AA);
-            line(imgUndistorted, imageFramePoints[0], imageFramePoints[3], cv::Scalar(0,0,255), 2, cv::LINE_AA);
+            line(newImgUndistorted, imageFramePoints[0], imageFramePoints[1], cv::Scalar(0,255,0), 2, cv::LINE_AA);
+            line(newImgUndistorted, imageFramePoints[0], imageFramePoints[2], cv::Scalar(255,0,0), 2, cv::LINE_AA);
+            line(newImgUndistorted, imageFramePoints[0], imageFramePoints[3], cv::Scalar(0,0,255), 2, cv::LINE_AA);
 
 
             /*SolvePnP Slut*/
 
 
-            mWidth = openCvImage.size().width * 60/100;
-            mHeight = openCvImage.size().height * 60/100;
+            //mWidth = openCvImage.size().width * 60/100;
+            //mHeight = openCvImage.size().height * 60/100;
 
-           cv::Size dimension (mWidth, mHeight);
-           cv::resize(openCvImage,openCvImage,dimension);
-
-
+ //          cv::Size dimension (mWidth, mHeight);
+   //        cv::resize(newImgUndistorted,newImgUndistorted,dimension);
 
 
             std::stringstream vindue;
@@ -169,13 +170,13 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             cv::namedWindow( vindue.str() , cv::WINDOW_AUTOSIZE);
             // Display the current image in the OpenCV display window.
             //cv::imshow( vindue.str(), openCvImage);
-            cv::imshow( vindue.str(), openCvImage);
+            cv::imshow( vindue.str(), newImgUndistorted);
 
             if(keyPressed == 'a'|| keyPressed == 'A' ){
                 calibrateRunTime = true;
                 //std::cout << "Grabbing and saving imge" << imageNr << ". to folder \"imageResources\"..." << std::endl;
                 std::stringstream fileName;
-                fileName<< "../imageResources/" << "Image" << imageNr << ".png";
+                fileName<< "../imageResources/" << "Image" << std::setw(4) << std::setfill('0') << imageNr << ".png";
                 cv::imwrite( fileName.str(), openCvImage );
                 //std::cout << "Grabing and saving image to location was succesfull" << std::endl;
                 cv::destroyWindow(vindue.str());
@@ -198,7 +199,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             } else if(keyPressed == 'g'|| keyPressed == 'G' ){
                 std::cout << "Grabbing and saving imge" << imageNr << ". to folder \"imageResources\"..." << std::endl;
                 std::stringstream fileName;
-                fileName<< "../imageResources/" << "Image00" << imageNr << ".png";
+                fileName<< "../imageResources/" << "Image" << std::setw(2) << std::setfill('0') << imageNr << ".png";
                 cv::imwrite( fileName.str(), openCvImage );
                 std::cout << "Grabing and saving image to lacation was succesfull" << std::endl;
                 cv::destroyWindow(vindue.str());
@@ -226,6 +227,11 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                           << "Closing program" << std::endl;
                 exit(0);
             }else if (keyPressed == 'b'|| keyPressed == 'B' ) { // Brake and reuse old images.
+
+                WorkspaceCalibration transMatrix;
+                //std::cout << "Hand Eye: \n" << transMatrix.getTransformationFlange2CameraHandEye(33, 0) << std::endl;
+                 transMatrix.vispHandEyeCalibration(true);
+
                 std::cout << "Shutting down camera..." << std::endl;
                 camera.Close();
                 cv::destroyWindow(vindue.str());
