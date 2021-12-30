@@ -30,13 +30,7 @@ find_package(Qt5Network REQUIRED)
 find_package(VISP REQUIRED)
 
 #UR_RTDE
-FIND_PACKAGE( ur_rtde REQUIRED COMPONENTS
-	spin_msgs
-	spin_srvs
-	geometry_msgs
-	tf2_geometry_msgs
-	tf2
-)
+FIND_PACKAGE( ur_rtde REQUIRED COMPONENTS)
 
 
 FIND_PACKAGE( Boost COMPONENTS system program_options filesystem thread REQUIRED )
@@ -53,7 +47,7 @@ ENDIF(CURL_FOUND)
 
 include_directories(
 	${Pylon_INCLUDE_DIRS}
-	${CURL_INCLUDE_DIR}
+        #${CURL_INCLUDE_DIR}
         ${ROBWORK_INCLUDE_DIRS}
         ${Qt5Widgets_INCLUDE_DIRS}
         ${Qt5Core_INCLUDE_DIRS}
@@ -63,25 +57,45 @@ include_directories(
 add_definitions(${Qt5Widgets_DEFINITIONS})
 
 LINK_DIRECTORIES(
-	${Boost_LIBRARY_DIR}
+        #${Boost_LIBRARY_DIR}
 	${ROBWORK_LIBRARY_DIRS})
 
 set(QT_LIBRARIES Qt5::Widgets)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 
-add_executable( main main.cpp camera.cpp camera.h cameraSettings.h cameraCalibration.cpp cameraCalibration.h detectionObject.cpp detectionObject.h workspaceCalibration.cpp workspaceCalibration.h detectionMarker.cpp detectionMarker.h moveArm.cpp moveArm.h myHTTPClient.cpp myHTTPClient.h socket.cpp socket.h mytcpserver.cpp mytcpserver.h)
+add_executable( main
+    main.cpp
+    camera.cpp
+    camera.h
+    cameraSettings.h
+    cameraCalibration.cpp
+    cameraCalibration.h
+    #detectionObject.cpp
+    #detectionObject.h
+    workspaceCalibration.cpp
+    workspaceCalibration.h
+    detectionMarker.cpp
+    detectionMarker.h
+    moveArm.cpp
+    moveArm.h
+    #myHTTPClient.cpp
+    #myHTTPClient.h
+    socket.cpp
+    socket.h
+    mytcpserver.cpp
+    mytcpserver.h
+    )
+
 target_link_libraries( main 
-	${OpenCV_LIBS} 
+        #${OpenCV_LIBS}
 	${Pylon_LIBRARIES} 
 	${ADDITIONAL_LINK_LIBRARIES}
-	${Boost_SYSTEM_LIBRARY}
-        ${Boost_FILESYSTEM_LIBRARY}
-        ${CURLPP_LDFLAGS}
+        #${Boost_SYSTEM_LIBRARY}
+        #${Boost_FILESYSTEM_LIBRARY}
+        #${CURLPP_LDFLAGS}
         ${ROBWORK_LIBRARIES}
         ${VISP_LIBRARIES}
-        #${Qt5::Core}
-        #${CURL_LIBRARIES}
         )
 
 TARGET_LINK_LIBRARIES(main ur_rtde::rtde )

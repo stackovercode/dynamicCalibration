@@ -9,26 +9,23 @@ class CameraSettings
 {
 public:
     CameraSettings(int focalLength = 12, int exposure = 30000 , std::pair<double, double> sensorSize = {6.6, 4.1}, cv::Size resolution = {1920, 1200} )
-        : mFocalLength{focalLength}, mExposure{exposure}, mSensorSize{sensorSize}, mResolution{resolution}
-    {}
+        : mFocalLength{focalLength}, mExposure{exposure}, mSensorSize{sensorSize}, mResolution{resolution}{
 
-    int getExposure() const
-    {
+    }
+
+    int getExposure() const{
     return mExposure;
     }
 
-    int getFocalLength() const
-    {
+    int getFocalLength() const{
     return mFocalLength;
     }
 
-    std::pair<double, double> getSensorSize() const
-    {
+    std::pair<double, double> getSensorSize() const{
     return mSensorSize;
     }
 
-    cv::Size getResolution() const
-    {
+    cv::Size getResolution() const{
     return mResolution;
     }
 

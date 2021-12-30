@@ -104,7 +104,7 @@ void MyTcpServer::newConnection() {
         msg += "\n\t\t\t\tThe amount of programs which has been executed: " + std::to_string(programTimes[11] - 1);
         msg += "\n\t\t\t\tThe amount of failures: " + std::to_string(times - (programTimes[11] - 1));
 
-        dayLogFile(msg);
+        //dayLogFile(msg);
 
 
         // The server waits for a bit 00after the client has shutdown, before it itself shuts down.
@@ -154,16 +154,15 @@ bool MyTcpServer::exist(const std::string &name) {
     return (stat (name.c_str(), &buffer) == 0);
 }
 
-void MyTcpServer::dayLogFile(std::string logMsg) {
-    std::string filePathLog = "C:/Users/kaspe/Desktop/TcpServerGripper/build-TcpServer-Desktop_Qt_5_12_0_MinGW_64_bit-Debug/release/Log_" + getCurrentDateTime("date") + ".txt";
-    //std::string filePathLog = "/home/pi/TcpServerGripper/build-TcpServer-Desktop_Qt_5_12_0_MinGW_64_bit-Debug/release/Log_" + getCurrentDateTime("date") + ".txt";
-    std::string text;
-    if (!exist(filePathLog)) {text = "This program contains the log for the gripper.\n";}
-    std::string now = getCurrentDateTime("now");
-    std::ofstream ofstream(filePathLog.c_str(), std::ios_base::out | std::ios_base::app);
-    ofstream << text << "\n\n" << now << '\t' << logMsg;
-    ofstream.close();
-}
+//void MyTcpServer::dayLogFile(std::string logMsg) {
+//    std::string filePathLog = "C:/Users/Emil/Desktop/TcpServerGripper/build-TcpServer-Desktop_Qt_5_12_0_MinGW_64_bit-Debug/release/Log_" + getCurrentDateTime("date") + ".txt";
+//    std::string text;
+//    if (!exist(filePathLog)) {text = "This program contains the log for the gripper.\n";}
+//    std::string now = getCurrentDateTime("now");
+//    std::ofstream ofstream(filePathLog.c_str(), std::ios_base::out | std::ios_base::app);
+//    ofstream << text << "\n\n" << now << '\t' << logMsg;
+//    ofstream.close();
+//}
 
 
 

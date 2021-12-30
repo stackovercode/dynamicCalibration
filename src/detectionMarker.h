@@ -21,7 +21,7 @@ public:
                                                        int squareSize = 10, int numberOfCalibrationImages = 65);
     virtual ~DetectionMarker() = default;
 
-    void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, bool flagDetectMarker);
+    void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase, bool flagDetectMarker);
     void markerDet();
     cv::Mat getEulerAngles(cv::Mat &rotCamerMatrix, cv::Vec3d &eulerAngles);
 
@@ -31,7 +31,8 @@ public:
     std::vector<double> moveFrame;
 
     std::vector<cv::Mat> rvecs, tvecs;
-
+    bool mainProcesState;
+    std::vector<double> jointBaseFrame;
 
 private:
     int mNumberOfCalibrationImages;
@@ -39,6 +40,7 @@ private:
     int mHorizontalIntersections;
     int mSquareSize;
     bool flagDetect;
+
 
 
     double mErrorRMS;
@@ -66,7 +68,7 @@ private:
     cv::Vec3d eulerAngels;
 
     void getCalibrationData(std::string fileLocation);
-    void action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
+    void action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase);
 
     double lineLength(double sX, double sY, double eX, double eY);
     double getDistance2Object(cv::Point2f origo, cv::Point2f dia);
@@ -83,7 +85,7 @@ private:
     void writeFileTranRot3 (cv::Mat tempRvec);
 
     bool writeFileTranRot (cv::Mat tempRvec, cv::Mat tempTvec);
-    void detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
+    void detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase);
 
 };
 

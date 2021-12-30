@@ -5,7 +5,6 @@
 #include <pylon/PylonIncludes.h>
 #include "cameraCalibration.h"
 #include "workspaceCalibration.h"
-#include "detectionObject.h"
 #include "detectionMarker.h"
 #include "moveArm.h"
 #include <ur_rtde/rtde_receive_interface.h>
@@ -13,7 +12,6 @@
 #include <ur_rtde/rtde_export.h>
 #include <ur_rtde/robot_state.h>
 #include <ur_rtde/rtde_utility.h>
-#include "myHTTPClient.h"
 #include <QtCore/QCoreApplication>
 #include "socket.h"
 #include "mytcpserver.h"
@@ -28,41 +26,28 @@ using namespace std;
 
 
 int main(int argc, char* argv[]){
-
-    /* Simulate */
-    bool runWhitGUI = false;
-    /* HTTP Server variables */
-    std::string httpServerIP    = "10.126.33.179";
-    int httpServerPort          = 33333;
-
-    // working on HTTP Com for database
+    /* Universal robot IP-Adress */
     std::string ur5IP = "192.168.100.50";
 
+    /* RTDE handler object */
     ur_rtde::RTDEIOInterface rtde_io(ur5IP);
     ur_rtde::RTDEReceiveInterface rtde_receive(ur5IP);
     ur_rtde::RTDEControlInterface rtde_control(ur5IP, 30004);
-    /* RTDE handler object */
-    MoveArm ur5arm;
-    // HTTP
-    MyHTTPClient httpClient(httpServerIP,httpServerPort);
 
+    /* Movement object */
+    MoveArm ur5arm;
 
     // I made something
-    bool runFinalSekvens = false;
-    bool runCalibrateCameraSekvens = true;
+    bool runFinalSekvens = true;
+    bool runCalibrateCameraSekvens = false;
     bool runCalibrateWorkSpaceSekvens = false;
     bool runDetectionMarker = false;
     bool runComToRobot = false;
     bool runMainSekvens = false;
     bool runTransSekvens = false;
 
-    /* Camera variabler */
-    int lengthXROImm     = 599;  // Lengt of width in cammera region of interrest in [mm] on tabele
-    int lengthYROImm     = 959;  // Lengt of height in cammera region of interrest in [mm] on tabele
-
-    /* cammera object */
+    /* Confirgurations objects */
     CameraSettings cameraSettings; /* Width default parameter*/
-    DetectionObject checkerboard(cameraSettings); /* Width default parameter*/
     CameraCalibration cameraCalibrate(cameraSettings); /* Width default parameter*/
     WorkspaceCalibration workspaceCalibrate;
     DetectionMarker detectMarker(cameraSettings);
@@ -72,13 +57,101 @@ int main(int argc, char* argv[]){
     //////////// Final sekvens //////////////
     if (runFinalSekvens){
         std::cout << "/* Final sekvens */" << std::endl;
-        robotCom.initialize(rtde_receive, rtde_control);
-        detectMarker.initialize(rtde_receive, rtde_control, true);
-        cameraCalibrate.initialize(rtde_receive, rtde_control);
-        detectMarker.initialize(rtde_receive, rtde_control, false);
-        cv::Vec6d point = detectMarker.mRobotPoint3d;
-        std::vector<double> baseFrame = detectMarker.moveFrame;
-        robotCom.getToJob(rtde_receive, rtde_control, point, baseFrame, 0, 0.05, 0.05);
+        /* Varibles */
+        bool beginProces = false;
+        int procesState = 0;
+        bool procesVerification;
+        std::vector<double> jointBase = {0,0,0,0,0,0};
+        cv::Vec6d poses;
+
+        /* Process states: */
+        /*
+            * 1:....Complete the safety check and begin proces state.
+            * 2:....Robotarm has reach the overview position.
+            * 3:....
+            * 4:....
+            * 5:....
+            * 6:....
+            * 7:....
+            * 8:....
+            * 9:....
+            * 10:...
+        */
+
+
+        /* Stoprobot for Safty if any script is runnning on the robots */
+        try {
+            if (!(rtde_control.isProgramRunning())) {
+                /* Safety Aproved */
+                std::cout << "Safety Aproved" << std::endl;
+            }
+        } catch (exception& e) {
+            /* Safety Declined */
+            std::cout << "Safety Declined" << std::endl;
+            std::cout << "Exception"
+                         ": " << std::endl;
+        }
+
+
+
+            std::cout << "Press Y to begin: ";
+
+            char keyPressed;
+            std::cin>>keyPressed;
+
+            if (keyPressed == 'y'|| keyPressed == 'Y' ) {
+                beginProces = true;
+                procesState = 1;
+            } else {
+                std::cout << "Wrong command, not ready to begin." << std::endl;
+            }
+
+
+        while (beginProces) {
+
+            if (procesState == 1) {
+                procesVerification = robotCom.initialize(rtde_receive, rtde_control);
+                //detectMarker.initialize(rtde_receive, rtde_control, true);
+                if (procesVerification) {
+                    procesState = 2;
+                }
+            }
+            if (procesState == 2) {
+                detectMarker.initialize(rtde_receive, rtde_control, poses, true);
+                procesVerification = true;
+                if (procesVerification) {
+                    procesState = 3;
+                }
+            }
+//            if (procesState == 3) {
+//                cameraCalibrate.initialize(rtde_receive, rtde_control);
+//                procesVerification = detectMarker.mainProcesState;
+//                if (procesVerification) {
+//                    procesState = 4;
+//                }
+//            }
+            if (procesState == 3) {
+                ur_rtde::RTDEReceiveInterface receiverNew("192.168.100.50");
+                jointBase = receiverNew.getTargetQ();
+                for (size_t i = 0; i < jointBase.size(); i++) {
+                    poses[i] = jointBase[i];
+                }
+                detectMarker.initialize(rtde_receive, rtde_control, poses, true);
+                procesVerification = detectMarker.mainProcesState;
+                if (procesVerification) {
+                    procesState = 4;
+                    break;
+                }
+            }
+
+
+}
+
+//        cameraCalibrate.initialize(rtde_receive, rtde_control);
+//        detectMarker.initialize(rtde_receive, rtde_control, false);
+//        cv::Vec6d point = detectMarker.mRobotPoint3d;
+//        std::vector<double> baseFrame = detectMarker.moveFrame;
+//        robotCom.getToJob(rtde_receive, rtde_control, point, baseFrame, 0, 0.05, 0.05);
     }
 
     //////////// Calibrate camera sekvens //////////////
@@ -86,7 +159,7 @@ int main(int argc, char* argv[]){
     {
 
         std::cout << "/* Calibrate camera sekvens */" << std::endl;
-        cameraCalibrate.initialize(rtde_receive, rtde_control);
+        //cameraCalibrate.initialize(rtde_receive, rtde_control,);
         //httpClient.sendCameraCalibrationMatrix(cameraCalibrate.cameraCalibrationToString());
     }
 
@@ -111,7 +184,7 @@ int main(int argc, char* argv[]){
          std::cout << "/* Detection marker sekvens */" << std::endl;
 
 
-         detectMarker.initialize(rtde_receive, rtde_control, true);
+         //detectMarker.initialize(rtde_receive, rtde_control, true);
          //cv::Vec6d point = detectMarker.mRobotPoint3d;
          //std::cout << "featureFrame: " << point << std::endl;
 

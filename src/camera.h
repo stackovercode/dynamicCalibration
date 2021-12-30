@@ -17,12 +17,12 @@ public:
     Camera(CameraSettings);
     virtual ~Camera() = default;
 
-    void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
+    void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase);
 
 protected:
     CameraSettings mCamerasettings;
 
-    virtual void action(Pylon::CInstantCamera& camera, ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller) = 0;
+    virtual void action(Pylon::CInstantCamera& camera, ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase) = 0;
 };
 
 #endif // CAMERA_H

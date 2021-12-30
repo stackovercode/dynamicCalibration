@@ -1,12 +1,10 @@
 #include "camera.h"
 
 Camera::Camera(CameraSettings cammeraSettings)
-    : mCamerasettings{cammeraSettings}
-{
+    : mCamerasettings{cammeraSettings}{
 }
 
-void Camera::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller)
-{
+void Camera::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase){
     Pylon::PylonAutoInitTerm autoInitTerm;
     try {
         Pylon::CInstantCamera camera( Pylon::CTlFactory::GetInstance().CreateFirstDevice());
@@ -24,21 +22,17 @@ void Camera::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECon
 
         std::cout << "Trying to set exposure to: " << mCamerasettings.getExposure() << std::endl;
         std::cout << "Exposure changed from: " << exposureTime->GetValue();
-        if(exposureTime.IsValid())
-        {
-            if(mCamerasettings.getExposure() >= exposureTime->GetMin() && mCamerasettings.getExposure()<= exposureTime->GetMax())
-            {
+        if(exposureTime.IsValid()){
+            if(mCamerasettings.getExposure() >= exposureTime->GetMin() && mCamerasettings.getExposure()<= exposureTime->GetMax()){
                 exposureTime->SetValue(mCamerasettings.getExposure());
                 std::cout << " To: " << mCamerasettings.getExposure() << std::endl;
             }
-            else if(mCamerasettings.getExposure() <= exposureTime->GetMin())
-            {
+            else if(mCamerasettings.getExposure() <= exposureTime->GetMin()){
                 exposureTime->SetValue(exposureTime->GetMin());
                 std::cout << "To: " << exposureTime->GetValue() << std::endl;
                 std::cout << ">> Exposure was set to the minimum available value." << std::endl;
             }
-            else
-            {
+            else{
                 exposureTime->SetValue(exposureTime->GetMax());
                 std::cout << "To: " << exposureTime->GetValue() << std::endl;
                 std::cout << ">> Exposure was set to the maximum available value." << std::endl;
@@ -49,12 +43,11 @@ void Camera::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECon
         camera.StartGrabbing(Pylon::GrabStrategy_LatestImageOnly);
         std:: cout << "Starting the grabing proces..." << std::endl;
 
-        action(camera, reciver, controller);
+        action(camera, reciver, controller, jointBase);
 
 
     }
-    catch (GenICam::GenericException &e)
-    {
+    catch (GenICam::GenericException &e){
         // Error handling.
         std::cerr << "[ Fail ]: An exception occurred." << std::endl
                   << e.GetDescription() << std::endl;

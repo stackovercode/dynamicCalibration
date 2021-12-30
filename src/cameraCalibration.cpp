@@ -12,9 +12,9 @@ CameraCalibration::CameraCalibration(CameraSettings& cameraSettings, int vertica
 
 }
 
-void CameraCalibration::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller){
+void CameraCalibration::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase){
 
-    collectCalibratingImages(reciver, controller);
+    collectCalibratingImages(reciver, controller, jointBase);
 
     drawChessboardCorners(chessboardCornersArray, false);
 
@@ -23,12 +23,12 @@ void CameraCalibration::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rt
     calibrate(chessboardCornersArray,checkerboardWorldArray, false);
 }
 
-void CameraCalibration::collectCalibratingImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller){
-   Camera::initialize(reciver, controller);
+void CameraCalibration::collectCalibratingImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase){
+   Camera::initialize(reciver, controller, jointBase);
 }
 
 // Override
-void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller )
+void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase )
 {
     Pylon::CImageFormatConverter formatConverter;
     formatConverter.OutputPixelFormat= Pylon::PixelType_BGR8packed;
@@ -68,6 +68,15 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
             cv::Mat newRotationMatrix = (cv::Mat_<double>(3,3));
             cv::Vec3d eulerAngels;
             cv::Mat newTMethoedRotationMatrix = (cv::Mat_<double>(3,3));
+
+//            cv::Matx33f newCameraMatrix(cv::Matx33f::eye());
+//                newCameraMatrix = {3352.4404, 0, 959.5,
+//                                   0, 3352.4404, 599.5,
+//                                   0, 0, 1};
+
+//            cv::Vec<float, 5> mNewDistortionCoefficient(0, 0, 0, 0, 0);
+//                mNewDistortionCoefficient = {-0.752718, 19.6554, 0, 0, 0};
+
 
             cv::Matx33f newCameraMatrix(cv::Matx33f::eye());
                 newCameraMatrix = {3352.4404, 0, 959.5,

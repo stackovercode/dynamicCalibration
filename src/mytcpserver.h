@@ -39,7 +39,7 @@ private:
     inline bool exist(const std::string& name);
 
     /** Create a daily logfile, and handle the message wich are send to the log */
-    inline void dayLogFile(std::string logMsg);
+    //inline void dayLogFile(std::string logMsg);
 
     /** Send the physical output message to 'Command' */
     inline void physicalOutput(std::string message);

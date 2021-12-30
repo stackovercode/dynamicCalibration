@@ -21,7 +21,7 @@ public:
 
     ~MoveArm();
 
-    void initialize(ur_rtde::RTDEReceiveInterface& reciver, ur_rtde::RTDEControlInterface &controller);
+    bool initialize(ur_rtde::RTDEReceiveInterface& reciver, ur_rtde::RTDEControlInterface &controller);
 
     std::vector<double> receivePose(ur_rtde::RTDEReceiveInterface& reciver);
 
@@ -46,6 +46,8 @@ public:
     std::vector<std::vector<double>> mRobotTCPPoses;
 
     void writeFileRobotTCPPoses(bool flagChoice, std::vector<std::vector<double>> robotPoses);
+
+    std::vector<double> getToPoseEstimation(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, int type, cv::Vec6d position, double velocity, double acceleration);
 
     bool change;
 

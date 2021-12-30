@@ -132,7 +132,7 @@ void Socket::choicesProgram() {
     char choice;
     qDebug() << "\n";
     qDebug() << "__________________________________________________________________________________";
-    qDebug() << " -  List of drinks: "
+    qDebug() << " -  List of commands: "
              << "\n" << "\t" << "Number 1: pose estimation"
              << "\n" << "\t" << "Number 2: _______________"
              << "\n"
@@ -145,9 +145,8 @@ void Socket::choicesProgram() {
 
     switch (choice) {
       case '1':
-        //Client->write("Load /usbdisk/poseEstimation.urp\r\n");
-        Client->write("Load /usbdisk/testCom.urp\r\n");
-        Client->write("popup Hej Anton!\n");
+        Client->write("Load /usbdisk/poseEstimation.urp\r\n");
+        //Client->write("Load /usbdisk/testCom.urp\r\n");
         play();
 
         if (programHasBeenLoaded == false) {

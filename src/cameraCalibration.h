@@ -24,11 +24,11 @@ class CameraCalibration : public Camera
 {
 public:
     CameraCalibration( CameraSettings& cameraSettings, int verticalIntersections = 5, int horizontalIntersections = 6,
-                                                       int squareSize = 1, int numberOfCalibrationImages = 33);
+                                                       int squareSize = 10, int numberOfCalibrationImages = 5);
     virtual ~CameraCalibration() = default;
 
 
-    void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
+    void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase);
     std::string readVector(std::vector<double> result);
     std::string cameraCalibrationToString();
 
@@ -75,8 +75,8 @@ private:
     cv::Vec<float, 5> mDistortionCoefficient = {0, 0, 0, 0, 0}; // distortion coefficients
 
     // In use
-    void action(Pylon::CInstantCamera& camera, ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
-    void collectCalibratingImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller);
+    void action(Pylon::CInstantCamera& camera, ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase);
+    void collectCalibratingImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase);
     void drawChessboardCorners(std::vector<std::vector<cv::Point2f>>& chessboardCornersArray, bool flagShowImage = true);
     void generateCheckerboardWorld(std::vector<std::vector<cv::Point3f>>& checkerboardWorldArray );
     void calibrate(std::vector<std::vector<cv::Point2f>> const chessboardCornersArray, std::vector<std::vector<cv::Point3f>> const checkerboardWorldArray, bool flagShowImage = true );

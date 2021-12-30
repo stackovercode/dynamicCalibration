@@ -21,22 +21,22 @@ DetectionMarker::DetectionMarker( CameraSettings& cameraSettings, int verticalIn
     getCalibrationData("../Detection/CalibrationData.txt");
 
     /////////// Creating rectifying Maps //////////////
-    cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, mCamerasettings.getResolution(), CV_32FC1, mMapX, mMapY);
+    //cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, mCamerasettings.getResolution(), CV_32FC1, mMapX, mMapY);
 
 }
 
-void DetectionMarker::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, bool flagDetectMarker){
+void DetectionMarker::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller,cv::Vec6f jointBase, bool flagDetectMarker){
     std::cout<< "Inside detectionMarker!" << std::endl;
     flagDetect = flagDetectMarker;
-    detectImages(reciver, controller);
+    detectImages(reciver, controller, jointBase);
 }
 
-void DetectionMarker::detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller){
-   Camera::initialize(reciver, controller);
+void DetectionMarker::detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase){
+   Camera::initialize(reciver, controller, jointBase);
 }
 
 // Override
-void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller){
+void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase){
     Pylon::CImageFormatConverter formatConverter;
     formatConverter.OutputPixelFormat= Pylon::PixelType_BGR8packed;
     Pylon::CGrabResultPtr ptrGrabResult;
@@ -66,9 +66,10 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             imgUndistorted = openCvImage.clone();
             cv::Mat mRvec = Mat(Size(3, 1), CV_64F);
             cv::Mat mTvec = Mat(Size(3, 1), CV_64F);
-            cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, frameSize, CV_32FC1, mMapX, mMapY);
+            //cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, frameSize, CV_32FC1, mMapX, mMapY);
 
-            cv::remap(openCvImage,imgUndistorted,mMapX,mMapY,1);
+            //cv::remap(openCvImage,imgUndistorted,mMapX,mMapY,1);
+
 
             cv::Mat gray;
             cvtColor(imgUndistorted,gray,COLOR_BGR2GRAY);
@@ -93,19 +94,28 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             framePoints.push_back(Point3f(4.0, 0.0, 0.0));
             framePoints.push_back(Point3f(0.0, 5.0, 0.0));
 
+            cv::Matx33f mNewCameraMatrix(cv::Matx33f::eye());
+                mNewCameraMatrix = {2261.2676, 0, 959.5,
+                                   0, 2261.2676, 599.5,
+                                   0, 0, 1};
+
+            cv::Vec<float, 5> mNewDistortionCoefficient(-0.141533, -1.23625, 0, 0, 0);
+
             try{
-                solvePnP(Mat(boardPoints), Mat(corners), mCameraMatrix, mDistortionCoefficient, mRvec, mTvec, false);
+                solvePnP(Mat(boardPoints), Mat(corners), mNewCameraMatrix, mNewDistortionCoefficient, mRvec, mTvec, false);
                 //cout<< "Rotation vector " << mRvec <<endl;
                 //cout<< "Translation vector " << mTvec <<endl;
             } catch(exception& e){
                 cout<< "Exception: " << endl;
             }
 
-            projectPoints(framePoints, mRvec, mTvec, mCameraMatrix, mDistortionCoefficient, imageFramePoints);
+            projectPoints(framePoints, mRvec, mTvec, mNewCameraMatrix, mNewDistortionCoefficient, imageFramePoints);
 
-            line(imgUndistorted, imageFramePoints[0], imageFramePoints[1], Scalar(0,255,0), 2, LINE_AA);
-            line(imgUndistorted, imageFramePoints[0], imageFramePoints[2], Scalar(255,0,0), 2, LINE_AA);
-            line(imgUndistorted, imageFramePoints[0], imageFramePoints[3], Scalar(0,0,255), 2, LINE_AA);
+            std::cout<< "Rvec: " << mRvec <<std::endl;
+
+            line(imgUndistorted, imageFramePoints[0], imageFramePoints[1], Scalar(0,0,255), 2, LINE_AA);
+            line(imgUndistorted, imageFramePoints[0], imageFramePoints[2], Scalar(0,255,0), 2, LINE_AA);
+            line(imgUndistorted, imageFramePoints[0], imageFramePoints[3], Scalar(255,0,0), 2, LINE_AA);
 
             double focalL = 3316.188;
             double widthObj = 64.03;
@@ -121,7 +131,8 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             Point2i checkerboardCenter = centerPoint(checkerboardLine1, checkerboardLine2);
             Point2i frameCenter = {imgUndistorted.size().width/2, imgUndistorted.size().height/2};
-
+            Point2f vectorToCheckerboardCenter = vectorBetween2Points(checkerboardCenter, frameCenter) * pixelPmm;
+            //Point2f robotPointtest = vectorBetween2Points(imageFramePoints[0], frameCenter) * pixelPmm;
 
 
             cv::Mat Origo = (cv::Mat_<double>(4, 1) << vectorBetween2Points(imageFramePoints[0],frameCenter).x, vectorBetween2Points(imageFramePoints[0],frameCenter).y, (distanceObj/pixelPmm), 1);
@@ -232,14 +243,27 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             if(keyPressed == 'j'|| keyPressed == 'J' ){
                 cv::destroyWindow(vindue.str());
                 MoveArm urArm;
-                double velocity = 0.02;
-                double acceleration = 0.02;
-                if(progress < 4){
-                std::cout << "Inside loop. start Progress: " << progress << std::endl;
-                //urArm.getToJob(reciver, controller, mRobotPoint3d, progress, velocity, acceleration);
-                progress++;
-                }
-                imageNr++;
+                double velocity = 0.15;
+                double acceleration = 0.15;
+                cv::Vec6f centerCamera;
+
+                centerCamera[0] = vectorToCheckerboardCenter.x/1000;
+                centerCamera[1] = vectorToCheckerboardCenter.y/1000;
+                centerCamera[2] = 0.2;
+                centerCamera[3] = 0;//robotRvec.at<double>(0,0);
+                centerCamera[4] = 0;//robotRvec.at<double>(0,1);
+                centerCamera[5] = 0;//robotRvec.at<double>(0,2);
+
+                std::cout<< "Center camera above checkerboard. " << centerCamera << std::endl;
+
+                jointBaseFrame = urArm.getToCheckerboard(reciver, controller, 0, centerCamera, velocity, acceleration);
+                break;
+//                if(progress < 4){
+//                std::cout << "Inside loop. start Progress: " << progress << std::endl;
+//                //urArm.getToJob(reciver, controller, mRobotPoint3d, progress, velocity, acceleration);
+//                progress++;
+//                }
+//                imageNr++;
             } else if (keyPressed == 't'|| keyPressed == 'T' ) { // Quit if Q is Pressed
 
                 cv::destroyWindow(vindue.str());
@@ -248,13 +272,18 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
                 MoveArm urArm;
                 WorkspaceCalibration transMatrix;
-//                cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) * transMatrix.getTransformationFlange2EndEffector() * transMatrix.getTransformationEndEffector2Camera();
-                cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver));
+                //urArm.receiveJPose(reciver))
+                cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(jointBase) * transMatrix.getTransformationFlange2EndEffector() * transMatrix.getTransformationEndEffector2Camera();
+                //cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver));
                 //* transMatrix.getTransformationEndEffector2Camera(); * transMatrix.getTransformationEndEffector2CameraHandEye();
                 //CALIB_HAND_EYE_TSAI, CALIB_HAND_EYE_PARK, CALIB_HAND_EYE_HORAUD, CALIB_HAND_EYE_ANDREFF, CALIB_HAND_EYE_DANIILIDIS
                 cv::Mat robotTvec = robotTransMatrix * OrigoPoint;
                 //std::cout << "Flange coor: " << transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) <<std::endl;
-                //std::cout<< "RobotPoint: " << "\n" << robotTransMatrix <<endl;
+                std::cout<< "RobotPoint: " << "\n" << transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) * transMatrix.getTransformationFlange2EndEffector()  <<endl;
+                std::cout<< "Grpper: " << "\n" << transMatrix.getTransformationFlange2EndEffector() <<endl;
+                std::cout<< "To camera: " << "\n" << transMatrix.getTransformationEndEffector2Camera() <<endl;
+
+                std::cout<< "OrigoPoint: " << OrigoPoint <<std::endl;
                 //std::cout << "Hand eye trans: " << "\n" << transMatrix.getTransformationFlange2CameraHandEye(65, 0) << std::endl;
                 //std::cout << "Cam to end effector: " << "\n" << transMatrix.getTransformationCamera2EndEffector(30, 1) << std::endl;
                 //std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration(true) <<std::endl;
@@ -272,17 +301,18 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 robotPoint[0] = robotTvec.at<double>(0,0);
                 robotPoint[1] = robotTvec.at<double>(0,1);
                 robotPoint[2] = robotTvec.at<double>(0,2);
-                robotPoint[3] = 0;//robotRvec.at<double>(0,0);
-                robotPoint[4] = 0;//robotRvec.at<double>(0,1);
-                robotPoint[5] = 0;//robotRvec.at<double>(0,2);
+                robotPoint[3] = M_PI + mRvec.at<double>(0,0);//robotRvec.at<double>(0,0);
+                robotPoint[4] = mRvec.at<double>(0,1);//robotRvec.at<double>(0,1);
+                robotPoint[5] = mRvec.at<double>(0,2);//robotRvec.at<double>(0,2);
 
                 std::cout << robotPoint << std::endl;
+                std::cout<< "zRotation: " << zRotation <<std::endl;
 
 
 
-                double velocity = 0.02;
-                double acceleration = 0.02;
-                //moveFrame = urArm.getToCheckerboard(reciver, controller, 0, robotPoint, velocity, acceleration);
+                double velocity = 0.1;
+                double acceleration = 0.1;
+                moveFrame = urArm.getToPoseEstimation(reciver, controller, 0, robotPoint, velocity, acceleration);
 
                 //imageNr++;
             } else if (keyPressed == 'f'|| keyPressed == 'F' ) {
