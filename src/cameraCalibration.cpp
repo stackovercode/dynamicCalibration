@@ -260,7 +260,7 @@ void CameraCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDERecei
                 WorkspaceCalibration transMatrix;
                 writeFileTranRot(tempRvec, tempTvec);
                 //std::cout << "Hand Eye: \n" << transMatrix.getTransformationFlange2CameraHandEye(33, 0) << std::endl;
-                 transMatrix.vispHandEyeCalibration(true);
+                 //transMatrix.vispHandEyeCalibration(true);
                  //std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration(true, tempRvec, tempTvec) <<std::endl;
                  //writeFileRobotPoses(mRobotPose);
 

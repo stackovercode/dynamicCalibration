@@ -48,6 +48,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
     int frame = 1;
     int progress = 1;
     bool runSQ = false;
+    bool calibrateRunTime = false;
     while ( camera.IsGrabbing()){
         camera.RetrieveResult( 5000, ptrGrabResult, Pylon::TimeoutHandling_ThrowException);
 
@@ -239,12 +240,19 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             cv::namedWindow( vindue.str() , cv::WINDOW_AUTOSIZE);
             cv::imshow( vindue.str(), openCvImage);
 
-            char keyPressed = cv::waitKey(1);
+            char keyPressed;  //= cv::waitKey(1);
+
+            if (calibrateRunTime) {
+                keyPressed = 'a';
+            } else {
+                keyPressed = cv::waitKey(1);
+            }
+
             if(keyPressed == 'j'|| keyPressed == 'J' ){
                 cv::destroyWindow(vindue.str());
                 MoveArm urArm;
-                double velocity = 0.15;
-                double acceleration = 0.15;
+                double velocity = 0.08;
+                double acceleration = 0.08;
                 cv::Vec6f centerCamera;
 
                 centerCamera[0] = vectorToCheckerboardCenter.x/1000;
@@ -264,7 +272,31 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 //                progress++;
 //                }
 //                imageNr++;
-            } else if (keyPressed == 't'|| keyPressed == 'T' ) { // Quit if Q is Pressed
+            } else if (keyPressed == 'a'|| keyPressed == 'A' ) { // Quit if Q is Pressed
+                /******* AUTO MODE ********/
+                calibrateRunTime = true;
+                //cv::destroyWindow(vindue.str());
+                //getSolvepnpRvecTvec(false);
+                MoveArm urArm;
+                WorkspaceCalibration transMatrix;
+
+                cv::Vec6f followCDC;
+                double followDis = 0.30;
+
+                followCDC[0] = (vectorToCheckerboardCenter.x/1000);
+                followCDC[1] = (vectorToCheckerboardCenter.y/1000);
+                followCDC[2] = (distanceObj/1000)-followDis;
+                followCDC[3] = robotRvec[0];//robotRvec.at<double>(0,0);
+                followCDC[4] = robotRvec[1];//robotRvec.at<double>(0,1);
+                followCDC[5] = robotRvec[2];//robotRvec.at<double>(0,2);
+
+
+                double velocity = 0.1;
+                double acceleration = 0.1;
+                jointBaseFrame = urArm.getLiveEstimation(reciver, controller, 0, followCDC, velocity, acceleration);
+
+                //imageNr++;
+            }else if (keyPressed == 't'|| keyPressed == 'T' ) { // Quit if Q is Pressed
 
                 cv::destroyWindow(vindue.str());
 
@@ -295,18 +327,18 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
                 Vec3f camerarvecRotation = ToRotVector(rotationMatrixToEulerAngles(cameraTCPRM));
 
-                Mat robotRvec = (cv::Mat_<double>(3, 1) << camerarvecRotation[0] + (camerarvecRotation[0]-mRvec.at<double>(0,0)), camerarvecRotation[1] + (camerarvecRotation[1]-(-mRvec.at<double>(0,1))), camerarvecRotation[2] + (camerarvecRotation[2]-mRvec.at<double>(0,2)));
+                //Mat robotRvec = (cv::Mat_<double>(3, 1) << camerarvecRotation[0] + (camerarvecRotation[0]-mRvec.at<double>(0,0)), camerarvecRotation[1] + (camerarvecRotation[1]-(-mRvec.at<double>(0,1))), camerarvecRotation[2] + (camerarvecRotation[2]-mRvec.at<double>(0,2)));
                 cv::Vec6f robotPoint;
 
                 robotPoint[0] = robotTvec.at<double>(0,0);
                 robotPoint[1] = robotTvec.at<double>(0,1);
                 robotPoint[2] = robotTvec.at<double>(0,2);
-                robotPoint[3] = M_PI + mRvec.at<double>(0,0);//robotRvec.at<double>(0,0);
-                robotPoint[4] = mRvec.at<double>(0,1);//robotRvec.at<double>(0,1);
-                robotPoint[5] = mRvec.at<double>(0,2);//robotRvec.at<double>(0,2);
+                robotPoint[3] = robotRvec[0];//M_PI + mRvec.at<double>(0,0);//robotRvec.at<double>(0,0);
+                robotPoint[4] = robotRvec[1];//mRvec.at<double>(0,1);//robotRvec.at<double>(0,1);
+                robotPoint[5] = robotRvec[2];//mRvec.at<double>(0,2);//robotRvec.at<double>(0,2);
 
                 std::cout << robotPoint << std::endl;
-                std::cout<< "zRotation: " << zRotation <<std::endl;
+                std::cout<< "Rotation: " << robotRvec[0] << robotRvec[1] << robotRvec[2] <<std::endl;
 
 
 

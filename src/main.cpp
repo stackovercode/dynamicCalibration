@@ -123,14 +123,14 @@ int main(int argc, char* argv[]){
                     procesState = 3;
                 }
             }
-//            if (procesState == 3) {
-//                cameraCalibrate.initialize(rtde_receive, rtde_control);
-//                procesVerification = detectMarker.mainProcesState;
-//                if (procesVerification) {
-//                    procesState = 4;
-//                }
-//            }
             if (procesState == 3) {
+                cameraCalibrate.initialize(rtde_receive, rtde_control,{0,0,0,0,0,0});
+                procesVerification = detectMarker.mainProcesState;
+                if (procesVerification) {
+                    procesState = 4;
+                }
+            }
+            if (procesState == 4) {
                 ur_rtde::RTDEReceiveInterface receiverNew("192.168.100.50");
                 jointBase = receiverNew.getTargetQ();
                 for (size_t i = 0; i < jointBase.size(); i++) {
@@ -139,7 +139,7 @@ int main(int argc, char* argv[]){
                 detectMarker.initialize(rtde_receive, rtde_control, poses, true);
                 procesVerification = detectMarker.mainProcesState;
                 if (procesVerification) {
-                    procesState = 4;
+                    procesState = 5;
                     break;
                 }
             }
