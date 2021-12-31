@@ -664,7 +664,7 @@ cv::Mat WorkspaceCalibration::rvec2RotationMatrix(cv::Vec3f theta){
 
     float c = cos(angle);
     float s = sin(angle);
-    float C = 1 - sin(angle);
+    float C = 1 - cos(angle);
 
 
     cv::Mat R = (cv::Mat_<float>(3, 3) <<
