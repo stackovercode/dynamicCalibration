@@ -10,40 +10,7 @@ WorkspaceCalibration::WorkspaceCalibration(){
 
 WorkspaceCalibration::~WorkspaceCalibration(){}
 
-
-
-//WorkspaceCalibration::WorkspaceCalibration(CameraSettings& cameraSetting, DetectionObject& detectionObject)
-//    : Camera(cameraSetting), mDetectionObject{detectionObject}{
-//    ////////// Redding ind data //////////////
-//    getCalibrationData("../Detection/CalibrationData.txt");
-//    loadFileTranRot("../Detection/MarkertransposeData.txt");
-//    loadFileRobotJoint("../Detection/RobotjointData.txt");
-//    loadFileRobotTCP("../Detection/RobotposeData.txt");
-//    loadFileImagePoints("../Detection/CalibrationData.txt");
-//    /////////// Creating rectifying Maps //////////////
-//    cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, mCamerasettings.getResolution(), CV_32FC1, mMapX, mMapY);
-//}
-
 cv::Mat WorkspaceCalibration::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, double lengthXmm, double lengthYmm, cv::Vec6f robotJointAngels){
-    //cv::Vec6f robotJointAngles = {-1.36689,-1.28005,-1.90308,-3.10318,-1.70538,1.5708};
-//    cv::Vec6f robotJointAngles = mJointPose[24];
-//    cv::Mat testMatrix = getTransformationMatrixBase2Cam(robotJointAngles);
-
-//    cv::Point2f centerPoint = mCenterPoint;
-//    cv::Point2f diaPoint = mDiaPoint;
-
-//    cv::Point2i frameCenter = {1920/2, 1200/2};
-
-//    cv::Mat OrigoMat = (cv::Mat_<double>(4, 1) << vectorBetween2Points(imageFramePoints[0],frameCenter).x, vectorBetween2Points(imageFramePoints[0],frameCenter).y, getDistance2Object(centerPoint, diaPoint)/getPixelPermm(centerPoint, diaPoint), 1);
-//    cv::Mat OrigoPoint = getTransformationMatrixImage2Camera(mR_target2cam[0], mT_target2cam[0]) * OrigoMat;
-//    OrigoPoint.at<double>(0,0) = (OrigoMat.at<double>(0,0) * getPixelPermm(centerPoint, diaPoint))/1000;
-//    OrigoPoint.at<double>(1,0) = (OrigoMat.at<double>(1,0) * getPixelPermm(centerPoint, diaPoint))/1000;
-//    OrigoPoint.at<double>(2,0) = (OrigoMat.at<double>(2,0) * getPixelPermm(centerPoint, diaPoint))/1000;
-
-//    cv::Mat robotPoint = testMatrix * OrigoPoint;
-
-//    std::cout << "Point: " << robotPoint << std::endl;
-//    std::cout << "Transformation: " << testMatrix << std::endl;
 
     cv::Mat robotTransformationMatrix = getRobotTransformationMatrix(robotJointAngels) * getTransformationFlange2EndEffector() * getTransformationEndEffector2Camera();
 
@@ -52,110 +19,6 @@ cv::Mat WorkspaceCalibration::initialize(ur_rtde::RTDEReceiveInterface &reciver,
 
 }
 
-void WorkspaceCalibration::action(Pylon::CInstantCamera& camera, ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller)
-{
-
-//    Pylon::CImageFormatConverter formatConverter;
-//    formatConverter.OutputPixelFormat= Pylon::PixelType_BGR8packed;
-//    Pylon::CGrabResultPtr ptrGrabResult;
-//    Pylon::CPylonImage pylonImage;
-//    cv::Mat openCvImage, undistortedImage;
-
-//    for (int i = 0; i < mWorkspaceCorners.size(); ++i) {
-//        bool isGrabbingPosition = false;
-//        cv::Vec3d vecObjectPosition;
-//        std::vector<double> objectVectorX;
-//        std::vector<double> objectVectorY;
-//        std::vector<double> objectVectorZ;
-
-//        int noDetection = 0;
-//        int grabbingIterator = 0;
-//        int frame = 1;
-//        while ( camera.IsGrabbing())
-//        {
-//            camera.RetrieveResult( 5000, ptrGrabResult, Pylon::TimeoutHandling_ThrowException);
-
-//            if (ptrGrabResult->GrabSucceeded())
-//            {
-//                formatConverter.Convert(pylonImage, ptrGrabResult);
-//                openCvImage = cv::Mat(ptrGrabResult->GetHeight(), ptrGrabResult->GetWidth(), CV_8UC3, (uint8_t *) pylonImage.GetBuffer());
-
-//                cv::remap(openCvImage, undistortedImage, mMapX, mMapY, cv::INTER_LINEAR, cv::BORDER_CONSTANT, cv::Scalar(0,0,0) );
-
-////                bool isObjectFound = mDetectionObject.locate(vecObjectPosition, undistortedImage);
-////                if ( !isObjectFound )
-////                {
-////                    ++noDetection;
-////                    std::cerr << "Error: object not detected:" << noDetection << " times."<< std::endl;
-////                }
-
-//                //Textbox counter in the bottom of video feed
-//                std::stringstream ss;
-//                ss << "[ " << grabbingIterator << " images of 10" <<" ]";
-//                //cv::putText(undistortedImage, ss.str(), cv::Point(600,30), cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0,0,255),2);
-
-//                // Create an OpenCV display window.
-//                std::stringstream window;
-//                window << "Video feed:" << ( ( !isGrabbingPosition ) ? "Press G to grab Object Center" : " "  )
-//                                        << ( ( i==0 ) ? " At top left corner in ROI" : " "  )
-//                                        << ( ( i==1 ) ? " At top right corner in ROI" : " "  )
-//                                        << ( ( i==2 ) ? " At buttom left corner in ROI" : " "  )
-//                                        << ( ( i==3 ) ? " At buttom right corner in ROI" : " "  );
-//                cv::namedWindow( window.str() , cv::WINDOW_AUTOSIZE);
-//                cv::imshow( window.str(), undistortedImage);
-
-//                // Detect 'key' is pressed
-//                int keyPressed = cv::waitKey(1);
-//                if(keyPressed == 'g'|| keyPressed == 'G' || isGrabbingPosition)
-//                {
-//                    isGrabbingPosition = true;
-
-//                    if (grabbingIterator < 10 && isObjectFound){
-//                        objectVectorX.push_back(vecObjectPosition[0]);
-//                        objectVectorY.push_back(vecObjectPosition[1]);
-//                        objectVectorZ.push_back(vecObjectPosition[2]);
-
-//                        grabbingIterator++;
-
-//                    } else if(grabbingIterator == 10) {
-//                        std::sort(objectVectorX.begin(), objectVectorX.end());
-//                        std::sort(objectVectorY.begin(), objectVectorY.end());
-//                        std::sort(objectVectorZ.begin(), objectVectorZ.end());
-
-//                        cv::Point meanObjectPosition(objectVectorX[5], objectVectorY[5]);
-//                        mWorkspaceCorners[i] = meanObjectPosition;
-//                        std::cout << "Mean object position =\n " << meanObjectPosition << std::endl;
-
-//                        std::cout << "Destroying Window..." << std::endl;
-//                        cv::destroyAllWindows();
-
-//                        std::stringstream vindue;
-//                        vindue << "Result of grab";
-//                        cv::namedWindow( vindue.str() , cv::WINDOW_AUTOSIZE);
-//                        cv::imshow( vindue.str(), undistortedImage);
-//                        cv::waitKey(0);
-//                        break;
-//                    }
-//                }
-
-//                frame++;
-//            }
-//            else
-//            {
-//                std::cerr << "[ Fail ]:  " << ptrGrabResult->GetErrorCode() << " " << ptrGrabResult->GetErrorDescription() << std::endl;
-//                exit(-1);
-//            }
-//        }
-//    }
-//    std::cout << "Shutting down camera..." << std::endl;
-//    camera.Close();
-//    std::cout << "Camera successfully closed." << std::endl;
-
-//    std::cout << "point1 " << mWorkspaceCorners[0] << std::endl
-//              << "point2 " << mWorkspaceCorners[1] << std::endl
-//              << "point3 " << mWorkspaceCorners[2] << std::endl
-//              << "point4 " << mWorkspaceCorners[3] << std::endl;
-}
 
 void WorkspaceCalibration::getCalibrationData(std::string fileLocation)
 {
@@ -333,11 +196,6 @@ cv::Mat WorkspaceCalibration::getTransformationEndEffector2Camera(){
         0, 0, 1, -0.129,
         0, 0, 0, 1);
 
-//    cv::Mat TEECAM = (cv::Mat_<double>(4, 4) <<
-//        1, 0, 0, 0.0261,
-//        0, 1, 0, 0.0347,
-//        0, 0, 1, -0.139,
-//        0, 0, 0, 1);
 
     return TEECAM;
 }
@@ -730,21 +588,6 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
     loadFileTranRot(fileLocation);
 
 
-//    for(size_t i = 0; i < mTcpPose.size()-1;i++){
-////        float rv_len = sqrt(pow(mTcpPose[i].at<float>(0,3), 2) + pow(mTcpPose[i].at<float>(0,4), 2) + pow(mTcpPose[i].at<float>(0,5), 2));
-////        float scale = 1 - 2 * M_PI / rv_len;
-////        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3) * scale,mTcpPose[i].at<float>(0,4) * scale,mTcpPose[i].at<float>(0,5) * scale};
-////        cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
-////        cv::Mat robotPoseRM;
-////        Rodrigues(robotPoseRVec, robotPoseRM);
-////        R_gripper2baseRM.push_back(robotPoseRM);
-//        cv::Vec3f theta{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
-//        float factor = sqrt(pow(theta[0], 2) + pow(theta[1], 2) + pow(theta[2], 2));
-//        cv::Vec3f robotUnitVector{theta[0]/factor, theta[1]/factor, theta[2]/factor};
-//        cv::Mat robotRm = eulerAnglesToRotationMatrix(robotUnitVector);
-//        R_gripper2base.push_back(robotRm);
-//    }
-
 
     for(int i = 0; i < numbOfPose; i++){
         cv::Vec3f theta{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
@@ -781,30 +624,14 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
 
     for(int i = 0; i < numbOfPose; i++){
         cv::Vec3f theta{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
-//        float factor = sqrt(pow(theta[0], 2) + pow(theta[1], 2) + pow(theta[2], 2));
-//        cv::Vec3f robotUnitVector{theta[0]/factor, theta[1]/factor, theta[2]/factor};
-//        cv::Mat robotRm = eulerAnglesToRotationMatrix(robotUnitVector);
         cv::Mat robotRm;
         Rodrigues(theta,robotRm);
         R_base2gripper.push_back(robotRm);
     }
-
-//    for(size_t i = 0; i < R_gripper2baseRM.size(); i++){
-//        std::cout<< "Test af R_gripper2baseRM " << i << ": " << R_gripper2baseRM[i] <<std::endl;
-//    }
-
-//    for(size_t i = 0; i < mTcpPose.size()-1; i++){
-//        const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
-//        T_gripper2base.push_back(robotPoseTVec);
-//    }
     for(int i = 0; i < numbOfPose; i++){
         const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0),mTcpPose[i].at<float>(0,1),mTcpPose[i].at<float>(0,2));
         T_base2gripper.push_back(robotPoseTVec);
     }
-
-//    for(size_t i = 0; i < T_gripper2base.size(); i++){
-//        std::cout<< "Test af robotPoseTVec " << i << ": " << T_gripper2base[i] <<std::endl;
-//    }
 
 
     for(int i = 0; i < numbOfPose; i++){
@@ -812,46 +639,15 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
         cv::Mat camImgPoseRM;
         Rodrigues(camImgPoseRVec, camImgPoseRM);
         R_target2cam.push_back(camImgPoseRM);
-//        R_target2camRM.push_back(eulerAnglesToRotationMatrix(camImgPoseRVec));
     }
 
-//    for(size_t i = 0; i < R_target2camRM.size(); i++){
-//        std::cout<< "Test af R_target2cam " << i << ": " << R_target2camRM[i] <<std::endl;
-//    }
 
     for(int i = 0; i < numbOfPose; i++){
         const cv::Mat camImgPose = (cv::Mat_<double>(3, 1) << mT_target2cam[i].at<double>(0,0), mT_target2cam[i].at<double>(0,1), mT_target2cam[i].at<double>(0,2));
         T_target2cam.push_back(camImgPose);
     }
 
-//    for(size_t i = 0; i < T_target2cam.size(); i++){
-//        std::cout<< "Test af T_target2cam " << i << ": " << T_target2cam[i] <<std::endl;
-//    }
 
-
-
-//    calibrateHandEye(R_gripper2baseRM, T_gripper2base, R_target2camRM, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_ANDREFF);
-    //CALIB_HAND_EYE_TSAI, CALIB_HAND_EYE_PARK, CALIB_HAND_EYE_HORAUD, CALIB_HAND_EYE_ANDREFF, CALIB_HAND_EYE_DANIILIDIS ////// Andreff
-
-//            std::cout<< "Er noget her til 2!" <<std::endl;
-//            std::cout<< "Robot rotation matrix: " << "\n" << R_base2gripper[0] <<std::endl;
-//            std::cout<< "Robot translation matrix: " << "\n" << T_base2gripper[0] <<std::endl;
-//            std::cout<< "Robot rotation matrix inverse: " << "\n" << R_gripper2base[0] <<std::endl;
-//            std::cout<< "Robot translation matri inverse: x" << "\n" << T_gripper2base[0] <<std::endl;
-
-//    if(method == 0){
-//        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);
-//    } else if (method == 1) {
-//        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_PARK);
-//    }else if (method == 2) {
-//        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_HORAUD);
-//    }else if (method == 3) {
-//        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_ANDREFF);
-//    }else if (method == 4) {
-//        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_DANIILIDIS);
-//    }else {
-//        calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);
-//    }
 
     if(method == 0){
         calibrateHandEye(R_base2gripper, T_base2gripper, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_TSAI);
@@ -869,9 +665,6 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
 
 
 
-//    calibrateHandEye(R_gripper2base, T_gripper2base, R_target2cam, T_target2cam, R_cam2gripper, T_cam2gripper, cv::CALIB_HAND_EYE_PARK);// cv::CALIB_HAND_EYE_ANDREFF);
-//    std::cout << R_cam2gripper << std::endl;
-
     cv::calibrateRobotWorldHandEye(R_target2cam,T_target2cam,R_base2gripper,T_base2gripper, R_base2world, T_base2world, R_gripper2cam, T_gripper2cam,cv::CALIB_ROBOT_WORLD_HAND_EYE_SHAH);
 
     cv::Mat TRANS_calibrateRobotWorldHandEye = (cv::Mat_<double>(4, 4) <<
@@ -885,11 +678,6 @@ cv::Mat WorkspaceCalibration::getTransformationFlange2CameraHandEye(int numbOfPo
             R_base2world.at<double>(1,0), R_base2world.at<double>(1,1), R_base2world.at<double>(1,2), T_base2world.at<double>(0,1),
             R_base2world.at<double>(2,0), R_base2world.at<double>(2,1), R_base2world.at<double>(2,2), T_base2world.at<double>(0,2),
             0, 0, 0, 1);
-
-//    std::cout<< "RobotWorld gripper to camera: " << "\n" << TRANS_calibrateRobotWorldHandEye <<std::endl;
-//    std::cout<< "RobotWorld base to world: " << "\n" << TRANS_calibrateRobotWorldHandEyeBase2World <<std::endl;
-
-
 
 
     cv::Mat TEECAMHANDEYE_ORIGINAL = (cv::Mat_<double>(4, 4) <<
@@ -932,30 +720,7 @@ void WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice){
 
 
         cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
-//        float factor = sqrt(pow(robotPoseRVec[0], 2) + pow(robotPoseRVec[1], 2) + pow(robotPoseRVec[2], 2));
-//        cv::Vec3f robotUnitVector{robotPoseRVec[0]/factor, robotPoseRVec[1]/factor, robotPoseRVec[2]/factor};
-//        cv::Mat robotPoseRM = rvec2RotationMatrix(robotUnitVector);
-
-        //const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
          cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0),mTcpPose[i].at<float>(0,1),mTcpPose[i].at<float>(0,2));
-
-
-//        cv::Mat Trans_robotMatrix = (cv::Mat_<double>(4, 4) <<
-//                robotPoseRM.at<double>(0,0), robotPoseRM.at<double>(0,1), robotPoseRM.at<double>(0,2), robotPoseTVec.at<double>(0,0),
-//                robotPoseRM.at<double>(1,0), robotPoseRM.at<double>(1,1), robotPoseRM.at<double>(1,2), robotPoseTVec.at<double>(0,1),
-//                robotPoseRM.at<double>(2,0), robotPoseRM.at<double>(2,1), robotPoseRM.at<double>(2,2), robotPoseTVec.at<double>(0,2),
-//                0, 0, 0, 1);
-
-
-
-//        cv::Mat inverseRobotMatrix = getInversMatrix(Trans_robotMatrix);
-
-//        cv::Mat inverseRotationMatrix = (cv::Mat_<double>(3, 3) <<
-//                inverseRobotMatrix.at<double>(0,0), inverseRobotMatrix.at<double>(0,1), inverseRobotMatrix.at<double>(0,2),
-//                inverseRobotMatrix.at<double>(1,0), inverseRobotMatrix.at<double>(1,1), inverseRobotMatrix.at<double>(1,2),
-//                inverseRobotMatrix.at<double>(2,0), inverseRobotMatrix.at<double>(2,1), inverseRobotMatrix.at<double>(2,2));
-
-//        cv::Mat inverseTranslationMatrix = (cv::Mat_<float>(3, 1) << inverseRobotMatrix.at<float>(0,3),inverseRobotMatrix.at<float>(1,3),inverseRobotMatrix.at<float>(2,3));
 
 
         cv::Mat robotPoseRM;
@@ -1013,233 +778,7 @@ void WorkspaceCalibration::vispHandEyeCalibration(bool flagChoice){
 
     std::cout << "Hand eye Visp: \n" << eMc << std::endl;
 
-    } else if (!flagChoice){
-        std::vector<vpHomogeneousMatrix> cMo;
-        std::vector<vpHomogeneousMatrix> rMe;
-        vpHomogeneousMatrix eMc;
-
-
-        //Load TCP poses from file
-        std::string fileLocationRobotTcp = ("../Detection/RobotposeData.txt");
-
-        loadFileRobotTCP(fileLocationRobotTcp);
-
-        //Load Rvec and Tvec from camera from file
-        std::string fileLocation = ("../Detection/MarkertransposeData.txt");
-
-        loadFileTranRot(fileLocation);
-
-        for(size_t i = 0; i < mTcpPose.size()-1;i++){
-
-
-            cv::Vec3f robotPoseRVec{mTcpPose[i].at<float>(0,3),mTcpPose[i].at<float>(0,4),mTcpPose[i].at<float>(0,5)};
-            //float factor = sqrt(pow(robotPoseRVec[0], 2) + pow(robotPoseRVec[1], 2) + pow(robotPoseRVec[2], 2));
-            //cv::Vec3f robotUnitVector{robotPoseRVec[0]/factor, robotPoseRVec[1]/factor, robotPoseRVec[2]/factor};
-            //cv::Mat robotPoseRM = rvec2RotationMatrix(robotUnitVector);
-
-            //const cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0)*1000,mTcpPose[i].at<float>(0,1)*1000,mTcpPose[i].at<float>(0,2)*1000);
-             cv::Mat robotPoseTVec = (cv::Mat_<float>(3, 1) << mTcpPose[i].at<float>(0,0),mTcpPose[i].at<float>(0,1),mTcpPose[i].at<float>(0,2));
-
-
-    //        cv::Mat Trans_robotMatrix = (cv::Mat_<double>(4, 4) <<
-    //                robotPoseRM.at<double>(0,0), robotPoseRM.at<double>(0,1), robotPoseRM.at<double>(0,2), robotPoseTVec.at<double>(0,0),
-    //                robotPoseRM.at<double>(1,0), robotPoseRM.at<double>(1,1), robotPoseRM.at<double>(1,2), robotPoseTVec.at<double>(0,1),
-    //                robotPoseRM.at<double>(2,0), robotPoseRM.at<double>(2,1), robotPoseRM.at<double>(2,2), robotPoseTVec.at<double>(0,2),
-    //                0, 0, 0, 1);
-
-
-
-    //        cv::Mat inverseRobotMatrix = getInversMatrix(Trans_robotMatrix);
-
-    //        cv::Mat inverseRotationMatrix = (cv::Mat_<double>(3, 3) <<
-    //                inverseRobotMatrix.at<double>(0,0), inverseRobotMatrix.at<double>(0,1), inverseRobotMatrix.at<double>(0,2),
-    //                inverseRobotMatrix.at<double>(1,0), inverseRobotMatrix.at<double>(1,1), inverseRobotMatrix.at<double>(1,2),
-    //                inverseRobotMatrix.at<double>(2,0), inverseRobotMatrix.at<double>(2,1), inverseRobotMatrix.at<double>(2,2));
-
-    //        cv::Mat inverseTranslationMatrix = (cv::Mat_<float>(3, 1) << inverseRobotMatrix.at<float>(0,3),inverseRobotMatrix.at<float>(1,3),inverseRobotMatrix.at<float>(2,3));
-
-
-            cv::Mat robotPoseRM;
-            Rodrigues(robotPoseRVec, robotPoseRM);
-            std::vector<float> robotPoseTrans(12, 0);
-            robotPoseTrans[0] = robotPoseRM.at<float>(0,0);//r11
-            robotPoseTrans[1] = robotPoseRM.at<float>(0,1);//r12
-            robotPoseTrans[2] = robotPoseRM.at<float>(0,2);//r13
-            robotPoseTrans[3] = robotPoseTVec.at<float>(0,0);//t1
-            robotPoseTrans[4] = robotPoseRM.at<float>(1,0);//r21
-            robotPoseTrans[5] = robotPoseRM.at<float>(1,1);//r22
-            robotPoseTrans[6] = robotPoseRM.at<float>(1,2);//r23
-            robotPoseTrans[7] = robotPoseTVec.at<float>(0,1);//t2
-            robotPoseTrans[8] = robotPoseRM.at<float>(2,0);//r31
-            robotPoseTrans[9] = robotPoseRM.at<float>(2,1);//r32
-            robotPoseTrans[10] = robotPoseRM.at<float>(2,2);//r33
-            robotPoseTrans[11] = robotPoseTVec.at<float>(0,2);//t3
-
-            vpHomogeneousMatrix robotHomoTrans(robotPoseTrans);
-
-
-            rMe.push_back(robotHomoTrans.inverse());
-        }
-
-
-        for(size_t i = 0; i < mR_target2cam.size()-1;i++){
-
-            cv::Vec3d camImgPoseRVec{mR_target2cam[i].at<double>(0,0), mR_target2cam[i].at<double>(0,1), mR_target2cam[i].at<double>(0,2)};
-            const cv::Mat camImgPose = (cv::Mat_<double>(3, 1) << mT_target2cam[i].at<double>(0,0), mT_target2cam[i].at<double>(0,1), mT_target2cam[i].at<double>(0,2));
-            cv::Mat camImgPoseRM;
-            Rodrigues(camImgPoseRVec, camImgPoseRM);
-            std::vector<double> cameraTrans(12, 0);
-            cameraTrans[0] = camImgPoseRM.at<double>(0,0);//r11
-            cameraTrans[1] = camImgPoseRM.at<double>(0,1);//r12
-            cameraTrans[2] = camImgPoseRM.at<double>(0,2);//r13
-            cameraTrans[3] = camImgPose.at<double>(0,0);//t1
-            cameraTrans[4] = camImgPoseRM.at<double>(1,0);//r21
-            cameraTrans[5] = camImgPoseRM.at<double>(1,1);//r22
-            cameraTrans[6] = camImgPoseRM.at<double>(1,2);//r23
-            cameraTrans[7] = camImgPose.at<double>(0,1);//t2
-            cameraTrans[8] = camImgPoseRM.at<double>(2,0);//r31
-            cameraTrans[9] = camImgPoseRM.at<double>(2,1);//r32
-            cameraTrans[10] = camImgPoseRM.at<double>(2,2);//r33
-            cameraTrans[11] = camImgPose.at<double>(0,2);//t3
-
-            vpHomogeneousMatrix cameraHomoTrans(cameraTrans);
-
-            cMo.push_back(cameraHomoTrans.inverse());
-        }
-
-
-        int doneCalibrationas = vpHandEyeCalibration::calibrate(cMo,rMe,eMc);
-
-        std::cout << eMc << std::endl;
-    }else{
-    ///////////////////////////////
-    std::vector<vpHomogeneousMatrix> c2t;
-    std::vector<vpHomogeneousMatrix> r2e;
-    vpHomogeneousMatrix e2c;
-
-    ///////////////////////////////
-
-    //int doneCalibration = vpHandEyeCalibration::calibrate(cMo,rMe,eMc);
-    vpRxyzVector rxyzCam1;
-    rxyzCam1[0] = vpMath::rad(163.642), rxyzCam1[1]  = vpMath::rad(4.49577), rxyzCam1[2] = vpMath::rad(86.1222);
-    vpRotationMatrix R1(rxyzCam1);
-    std::cout << "R1: \n" << R1 << std::endl;
-    vpHomogeneousMatrix cam1( vpTranslationVector(-10.42132674036853,
-                                                  -6.815370978897847,
-                                                  47.54886276469742), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpRxyzVector rxyzCam2;
-    rxyzCam2[0] = vpMath::rad(-179.633), rxyzCam2[1]  = vpMath::rad(-21.4717), rxyzCam2[2] = vpMath::rad(89.8091);
-    vpRotationMatrix R2(rxyzCam2);
-    std::cout << "R2: \n" << R2 << std::endl;
-    vpHomogeneousMatrix cam2( vpTranslationVector(-10.27885560165879,
-                                                  -9.90229990975995,
-                                                  45.92548864739609), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpRxyzVector rxyzCam3;
-    rxyzCam3[0] = vpMath::rad(178.827), rxyzCam3[1]  = vpMath::rad(-22.0406), rxyzCam3[2] = vpMath::rad(90.20422);
-    vpRotationMatrix R3(rxyzCam3);
-    std::cout << "R3: \n" << R3 << std::endl;
-    vpHomogeneousMatrix cam3( vpTranslationVector(-11.06223914775678,
-                                                  -9.855915907031962,
-                                                  45.51328691272404), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpRxyzVector rxyzCam4;
-    rxyzCam4[0] = vpMath::rad(177.346), rxyzCam4[1]  = vpMath::rad(-22.4574), rxyzCam4[2] = vpMath::rad(90.5839);
-    vpRotationMatrix R4(rxyzCam4);
-    std::cout << "R4: \n" << R4 << std::endl;
-    vpHomogeneousMatrix cam4( vpTranslationVector(-11.80688933087717,
-                                                  -9.824136731537934,
-                                                  45.1758291651404), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpRxyzVector rxyzCam5;
-    rxyzCam5[0] = vpMath::rad(175.932), rxyzCam5[1]  = vpMath::rad(-22.7201), rxyzCam5[2] = vpMath::rad(90.9703);
-    vpRotationMatrix R5(rxyzCam5);
-    std::cout << "R5: \n" << R5 << std::endl;
-    vpHomogeneousMatrix cam5( vpTranslationVector(-12.55818568739926,
-                                                  -9.804886574955807,
-                                                   44.87842685051832), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpRxyzVector rxyzCam6;
-    rxyzCam6[0] = vpMath::rad(157.702), rxyzCam6[1]  = vpMath::rad(1.52976), rxyzCam6[2] = vpMath::rad(85.4246);
-    vpRotationMatrix R6(rxyzCam6);
-    std::cout << "R6: \n" << R6 << std::endl;
-    vpHomogeneousMatrix cam6( vpTranslationVector(-13.40610323608032,
-                                                   -9.82852805654009,
-                                                   44.64466884600932), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpRxyzVector rxyzCam7;
-    rxyzCam7[0] = vpMath::rad(157.971), rxyzCam7[1]  = vpMath::rad(2.85607), rxyzCam7[2] = vpMath::rad(85.2288);
-    vpRotationMatrix R7(rxyzCam7);
-    std::cout << "R7: \n" << R7 << std::endl;
-    vpHomogeneousMatrix cam7( vpTranslationVector(-13.43062117507011,
-                                                   -8.995579015391197,
-                                                   44.96451074026582), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpRxyzVector rxyzCam8;
-    rxyzCam8[0] = vpMath::rad(158.221), rxyzCam8[1]  = vpMath::rad(4.10538), rxyzCam8[2] = vpMath::rad(85.0424);
-    vpRotationMatrix R8(rxyzCam8);
-    std::cout << "R8: \n" << R8 << std::endl;
-    vpHomogeneousMatrix cam8( vpTranslationVector(-13.46324794765814,
-                                                   -8.24838859200235,
-                                                   45.27254693213309), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpRxyzVector rxyzCam9;
-    rxyzCam9[0] = vpMath::rad(158.603), rxyzCam9[1]  = vpMath::rad(5.37897), rxyzCam9[2] = vpMath::rad(84.8538);
-    vpRotationMatrix R9(rxyzCam9);
-    std::cout << "R9: \n" << R9 << std::endl;
-    vpHomogeneousMatrix cam9( vpTranslationVector(-13.51063512394965,
-                                                  -7.504323096866346,
-                                                  45.61799248634797), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpRxyzVector rxyzCam10;
-    rxyzCam10[0] = vpMath::rad(158.934), rxyzCam10[1]  = vpMath::rad(6.69487), rxyzCam10[2] = vpMath::rad(84.6597);
-    vpRotationMatrix R10(rxyzCam10);
-    std::cout << "R10: \n" << R10 << std::endl;
-    vpHomogeneousMatrix cam10( vpTranslationVector(-13.5660531751234,
-                                                   -6.709594009003127,
-                                                   45.98592811340792), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpRxyzVector rxyzCam11;
-    rxyzCam11[0] = vpMath::rad(159.431), rxyzCam11[1]  = vpMath::rad(8.08444), rxyzCam11[2] = vpMath::rad(84.4737);
-    vpRotationMatrix R11(rxyzCam11);
-    std::cout << "R11: \n" << R11 << std::endl;
-    vpHomogeneousMatrix cam11( vpTranslationVector(-13.6367517904527,
-                                                   -5.913232413425681,
-                                                   46.38614950143113), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    c2t.push_back(cam1);
-    c2t.push_back(cam2);
-    c2t.push_back(cam3);
-    c2t.push_back(cam4);
-    c2t.push_back(cam5);
-    c2t.push_back(cam6);
-    c2t.push_back(cam7);
-    c2t.push_back(cam8);
-    c2t.push_back(cam9);
-    c2t.push_back(cam10);
-    c2t.push_back(cam11);
-
-    vpHomogeneousMatrix robot1( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpHomogeneousMatrix robot2( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpHomogeneousMatrix robot3( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpHomogeneousMatrix robot4( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpHomogeneousMatrix robot5( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpHomogeneousMatrix robot6( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpHomogeneousMatrix robot7( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpHomogeneousMatrix robot8( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpHomogeneousMatrix robot9( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpHomogeneousMatrix robot10( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    vpHomogeneousMatrix robot11( vpTranslationVector(0.1, 0.2, 0.3), vpRotationMatrix( {0, 0, -1, 0, -1, 0, -1, 0, 0} ) );
-    r2e.push_back(robot1);
-    r2e.push_back(robot2);
-    r2e.push_back(robot3);
-    r2e.push_back(robot4);
-    r2e.push_back(robot5);
-    r2e.push_back(robot6);
-    r2e.push_back(robot7);
-    r2e.push_back(robot8);
-    r2e.push_back(robot9);
-    r2e.push_back(robot10);
-    r2e.push_back(robot11);
-
-
-    //int doneCalibration = vpHandEyeCalibration::calibrate(c2t,r2e,e2c);
-
-
- //   return eMc;
-    std::cout << e2c << std::endl;
     }
-
 }
 
 vpHomogeneousMatrix WorkspaceCalibration::testAfVisp(int numbOfPose){
@@ -1291,47 +830,3 @@ vpHomogeneousMatrix WorkspaceCalibration::testAfVisp(int numbOfPose){
 
     return eMc;
 }
-
-//std::vector<double> WorkspaceCalibration::targetPointTransform(std::vector<double> startPoint, std::vector<double> targetPoint){
-
-//    cv::Mat startPointRvec = (cv::Mat_<double>(3,1) << startPoint[3], startPoint[4], startPoint[5]);
-//    cv::Mat startPointRM;
-//    cv::Mat startPointTvec = (cv::Mat_<double>(3,1) << startPoint[0], startPoint[1], startPoint[2]);
-
-//    Rodrigues(startPointRvec, startPointRM);
-
-//    cv::Mat startPointTransform = (cv::Mat_<double>(4, 4) <<
-//            startPointRM.at<double>(0,0), startPointRM.at<double>(0,1), startPointRM.at<double>(0,2), startPointTvec.at<double>(0,0),
-//            startPointRM.at<double>(1,0), startPointRM.at<double>(1,1), startPointRM.at<double>(1,2), startPointTvec.at<double>(0,1),
-//            startPointRM.at<double>(2,0), startPointRM.at<double>(2,1), startPointRM.at<double>(2,2), startPointTvec.at<double>(0,2),
-//            0, 0, 0, 1);
-
-//    cv::Mat targetPointRvec = (cv::Mat_<double>(3,1) << targetPoint[3], targetPoint[4], targetPoint[5]);
-//    cv::Mat targetPointRM;
-//    cv::Mat targetPointTvec = (cv::Mat_<double>(3,1) << targetPoint[0], targetPoint[1], targetPoint[2]);
-
-//    Rodrigues(targetPointRvec, targetPointRM);
-
-//    cv::Mat targetTransform = (cv::Mat_<double>(4, 4) <<
-//            targetPointRM.at<double>(0,0), targetPointRM.at<double>(0,1), targetPointRM.at<double>(0,2), targetPointTvec.at<double>(0,0),
-//            targetPointRM.at<double>(1,0), targetPointRM.at<double>(1,1), targetPointRM.at<double>(1,2), targetPointTvec.at<double>(0,1),
-//            targetPointRM.at<double>(2,0), targetPointRM.at<double>(2,1), targetPointRM.at<double>(2,2), targetPointTvec.at<double>(0,2),
-//            0, 0, 0, 1);
-
-//    cv::Mat endTransform = startPointTransform.inv() * targetTransform;
-
-//    cv::Mat endPointRM = (cv::Mat_<double>(3,3) <<
-//                      endTransform.at<double>(0,0), endTransform.at<double>(0,1), endTransform.at<double>(0,2),
-//                      endTransform.at<double>(1,0), endTransform.at<double>(1,1), endTransform.at<double>(1,2),
-//                      endTransform.at<double>(2,0), endTransform.at<double>(2,1), endTransform.at<double>(2,2));
-
-//    cv::Mat endPointRVec;
-
-//    Rodrigues(endPointRM, endPointRVec);
-
-//    cv::Mat endPointTvec = (cv::Mat_<double>(3,1) << endTransform.at<double>(0,3), endTransform.at<double>(1,3), endTransform.at<double>(2,3));
-
-//    std::vector<double> endPoint = {endPointTvec.at<double>(0,0), endPointTvec.at<double>(0,1), endPointTvec.at<double>(0,2), endPointRVec.at<double>(0,0), endPointRVec.at<double>(0,1), endPointRVec.at<double>(0,2)};
-
-//    return endPoint;
-//}

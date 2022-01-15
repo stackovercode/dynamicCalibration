@@ -9,18 +9,18 @@
 #include <ur_rtde/rtde.h>
 #include <ur_rtde/rtde_receive_interface.h>
 #include <ur_rtde/rtde_control_interface.h>
-#include "cameraSettings.h"
+#include "cameraConfirguration.h"
 
 class Camera
 {
 public:
-    Camera(CameraSettings);
+    Camera(CameraConfirguration);
     virtual ~Camera() = default;
 
     void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase);
 
 protected:
-    CameraSettings mCamerasettings;
+    CameraConfirguration mCameraConfirguration;
 
     virtual void action(Pylon::CInstantCamera& camera, ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase) = 0;
 };

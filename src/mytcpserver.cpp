@@ -77,18 +77,15 @@ void MyTcpServer::newConnection() {
         std::string timeSpend{timeWithTwoDigitStringHour + " hour and " + timeWithTwoDigitStringMin + " minutes and " + timeWithTwoDigitStringSec + " seconds."};
 
         // Write to log file
-        // Basic layout with number of grips, active time
         msg += "The total number of grips is " + std::to_string(mActivation) + ", done in this program."
                 + "\n\t\t\tThe active time for this server is " + timeSpend
                 + "\n\t\t\tThe activated programs are:";
 
-        // Write if 'System' programs has been executed, and if so, create a new line after
         for (int index{0}; index < 2; index++) {
             if (programTimes[index] > 0) {msg += "\n\t\t\t\t" + programs[index] + " was executed";}
         }
         if ((programTimes[0] > 0) || (programTimes[1] > 0)) {msg += '\n';}
 
-        // Write which 'Drink' programs has been executed, and times for each program
         for (int index{2}; index < 11; index++) {
             if (programTimes[index] > 0) {
                 msg += "\n\t\t\t\t" + programs[index] + " was executed " + std::to_string(programTimes[index]);
@@ -104,12 +101,6 @@ void MyTcpServer::newConnection() {
         msg += "\n\t\t\t\tThe amount of programs which has been executed: " + std::to_string(programTimes[11] - 1);
         msg += "\n\t\t\t\tThe amount of failures: " + std::to_string(times - (programTimes[11] - 1));
 
-        //dayLogFile(msg);
-
-
-        // The server waits for a bit 00after the client has shutdown, before it itself shuts down.
-        // It does so to counter a problem with the addreess being in use after the server otherwise closes down normally.
-        // Also the robots program needs to be shut down promptly afer its connection is shut down.
         usleep(2 * mSeconds);
         socket->close();
 
@@ -133,9 +124,6 @@ void MyTcpServer::newConnection() {
 
 
 
-//***************************************************************************************
-//*         Log file section                                                            *
-//***************************************************************************************
 std::string MyTcpServer::getCurrentDateTime(std::string currentDateTime) {
     time_t now = time(nullptr);
     struct tm  tstruct;
@@ -154,35 +142,17 @@ bool MyTcpServer::exist(const std::string &name) {
     return (stat (name.c_str(), &buffer) == 0);
 }
 
-//void MyTcpServer::dayLogFile(std::string logMsg) {
-//    std::string filePathLog = "C:/Users/Emil/Desktop/TcpServerGripper/build-TcpServer-Desktop_Qt_5_12_0_MinGW_64_bit-Debug/release/Log_" + getCurrentDateTime("date") + ".txt";
-//    std::string text;
-//    if (!exist(filePathLog)) {text = "This program contains the log for the gripper.\n";}
-//    std::string now = getCurrentDateTime("now");
-//    std::ofstream ofstream(filePathLog.c_str(), std::ios_base::out | std::ios_base::app);
-//    ofstream << text << "\n\n" << now << '\t' << logMsg;
-//    ofstream.close();
-//}
 
-
-
-//***************************************************************************************
-//*         Send message to 'Command'                                                   *
-//***************************************************************************************
 void MyTcpServer::physicalOutput(std::string message) {
     if (message == "Close gripper") {
-       //digitalWrite(1, HIGH);
 
         mFlag = 0;
         mActivation++;
 
     } else if (message == "Open gripper") {
-        //digitalWrite(1, LOW);
-
         mFlag = 1;
 
     } else if (message == "Close server") {
-        //digitalWrite(1, LOW);
 
         mFlag = 2;
     } else if (message == "Pose") {

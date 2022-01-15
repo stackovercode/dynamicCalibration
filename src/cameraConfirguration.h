@@ -1,14 +1,14 @@
-#ifndef CAMERASETTINGS_H
-#define CAMERASETTINGS_H
+#ifndef CAMERACONFIRGURATION_H
+#define CAMERACONFIRGURATION_H
 #include <ur_rtde/rtde.h>
 #include <ur_rtde/rtde_receive_interface.h>
 #include <ur_rtde/rtde_control_interface.h>
 #include <opencv2/opencv.hpp>
 
-class CameraSettings
+class CameraConfirguration
 {
 public:
-    CameraSettings(int focalLength = 12, int exposure = 30000 , std::pair<double, double> sensorSize = {6.6, 4.1}, cv::Size resolution = {1920, 1200} )
+    CameraConfirguration(int focalLength = 12, int exposure = 30000 , std::pair<double, double> sensorSize = {6.6, 4.1}, cv::Size resolution = {1920, 1200} )
         : mFocalLength{focalLength}, mExposure{exposure}, mSensorSize{sensorSize}, mResolution{resolution}{
 
     }
@@ -38,4 +38,4 @@ private:
     void initialize();
 };
 
-#endif // CAMERASETTINGS_H
+#endif // CAMERACONFIRGURATION_H

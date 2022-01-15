@@ -1,6 +1,5 @@
 #ifndef SOCKET_H
 #define SOCKET_H
-
 #include <iostream>
 #include <string>
 #include <unistd.h>

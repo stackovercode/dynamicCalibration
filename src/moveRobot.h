@@ -1,9 +1,8 @@
-#ifndef MOVEARM_H
-#define MOVEARM_H
+#ifndef MOVEROBOT_H
+#define MOVEROBOT_H
 #include <ur_rtde/rtde.h>
 #include <ur_rtde/rtde_receive_interface.h>
 #include <ur_rtde/rtde_control_interface.h>
-//#include "client.h"
 #include <vector>
 #include <iostream>
 #include <opencv2/opencv.hpp>
@@ -12,14 +11,13 @@
 #include "workspaceCalibration.h"
 
 
-
-class MoveArm
+class MoveRobot
 {
 public:
 
-    MoveArm();
+    MoveRobot();
 
-    ~MoveArm();
+    ~MoveRobot();
 
     bool initialize(ur_rtde::RTDEReceiveInterface& reciver, ur_rtde::RTDEControlInterface &controller);
 
@@ -59,8 +57,6 @@ private:
     std::vector<std::vector<double>> mRobotjointData;
     bool writeFileRobotTCPPosesFlagChoice;
 
-    //double mXtcp, mYtcp, mZtcp;
-    //double mRXtcp, mRYtcp, mRZtcp;
     std::vector<std::string> mTempRobotPose;
     std::vector<std::vector<std::string>> mRobotPosesFromFile;
     double m2mm = 0.001;
@@ -69,4 +65,4 @@ private:
 
 };
 
-#endif // MOVEARM_H
+#endif // MOVEROBOT_H

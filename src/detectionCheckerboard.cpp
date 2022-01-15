@@ -1,4 +1,4 @@
-#include "detectionMarker.h"
+#include "detectionCheckerboard.h"
 #include <cstddef>
 #include<iostream>
 #include<fstream>
@@ -9,10 +9,8 @@ using namespace cv;
 using namespace std;
 
 
-
-
-DetectionMarker::DetectionMarker( CameraSettings& cameraSettings, int verticalIntersections, int horizontalIntersections, int squareSize, int numberOfCalibrationImages)
-    : Camera(cameraSettings),
+DetectionCheckerboard::DetectionCheckerboard( CameraConfirguration& cameraConfirguration, int verticalIntersections, int horizontalIntersections, int squareSize, int numberOfCalibrationImages)
+    : Camera(cameraConfirguration),
       mVerticalIntersections(verticalIntersections),
       mHorizontalIntersections(horizontalIntersections),
       mSquareSize(squareSize),
@@ -25,18 +23,18 @@ DetectionMarker::DetectionMarker( CameraSettings& cameraSettings, int verticalIn
 
 }
 
-void DetectionMarker::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller,cv::Vec6f jointBase, bool flagDetectMarker){
-    std::cout<< "Inside detectionMarker!" << std::endl;
+void DetectionCheckerboard::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller,cv::Vec6f jointBase, bool flagDetectMarker){
+    std::cout<< "Inside DetectionCheckerboard!" << std::endl;
     flagDetect = flagDetectMarker;
     detectImages(reciver, controller, jointBase);
 }
 
-void DetectionMarker::detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase){
+void DetectionCheckerboard::detectImages(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase){
    Camera::initialize(reciver, controller, jointBase);
 }
 
 // Override
-void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase){
+void DetectionCheckerboard::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase){
     Pylon::CImageFormatConverter formatConverter;
     formatConverter.OutputPixelFormat= Pylon::PixelType_BGR8packed;
     Pylon::CGrabResultPtr ptrGrabResult;
@@ -68,7 +66,6 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             cv::Mat mRvec = Mat(Size(3, 1), CV_64F);
             cv::Mat mTvec = Mat(Size(3, 1), CV_64F);
             //cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, frameSize, CV_32FC1, mMapX, mMapY);
-
             //cv::remap(openCvImage,imgUndistorted,mMapX,mMapY,1);
 
 
@@ -104,8 +101,6 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             try{
                 solvePnP(Mat(boardPoints), Mat(corners), mNewCameraMatrix, mNewDistortionCoefficient, mRvec, mTvec, false);
-                //cout<< "Rotation vector " << mRvec <<endl;
-                //cout<< "Translation vector " << mTvec <<endl;
             } catch(exception& e){
                 cout<< "Exception: " << endl;
             }
@@ -133,7 +128,6 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             Point2i checkerboardCenter = centerPoint(checkerboardLine1, checkerboardLine2);
             Point2i frameCenter = {imgUndistorted.size().width/2, imgUndistorted.size().height/2};
             Point2f vectorToCheckerboardCenter = vectorBetween2Points(checkerboardCenter, frameCenter) * pixelPmm;
-            //Point2f robotPointtest = vectorBetween2Points(imageFramePoints[0], frameCenter) * pixelPmm;
 
 
             cv::Mat Origo = (cv::Mat_<double>(4, 1) << vectorBetween2Points(imageFramePoints[0],frameCenter).x, vectorBetween2Points(imageFramePoints[0],frameCenter).y, (distanceObj/pixelPmm), 1);
@@ -186,44 +180,6 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
             }
             robotRvec[2] = zRotation;
 
-           //char keyPressed;
-
-
-//          if (flagDetect) {
-//              mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
-//              mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
-//              mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
-//              mRobotPoint3d[3] = 0.0;
-//              mRobotPoint3d[4] = 0.0;
-//              mRobotPoint3d[5] = zRotation;
-//              keyPressed = 'c';
-//          } else if (flagDetect && runSQ){
-//              keyPressed = cv::waitKey(1);
-//          } else {
-//              mRobotPoint3d[0] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).x;
-//              mRobotPoint3d[1] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).y;
-//              mRobotPoint3d[2] = vectorfromframeCPtoCBCp(checkerboardCenter, frameCenter, pixelPmm, distanceObj).z;
-
-
-//              if(rotation[0] > 0){
-//                  mRobotPoint3d[3] = -(M_PI - rotation[0]);
-
-//              }else if(rotation[0] < 0){
-//                  mRobotPoint3d[3] = M_PI + rotation[0];
-//              }
-
-//              if(rotation[1] > 0){
-//                  mRobotPoint3d[4] = -rotation[1];
-
-//              }else if(rotation[1] < 0){
-//                  mRobotPoint3d[4] = -(rotation[1]);
-//              }
-//              mRobotPoint3d[5] = zRotation;
-//              //keyPressed = 'j';
-//              keyPressed = cv::waitKey(1);
-//          }
-
-
 
             drawMarker(imgUndistorted, {frameCenter.x, frameCenter.y}, Scalar(0,0,255), MARKER_STAR, 20, 4, 4);
             drawMarker(imgUndistorted, {checkerboardCenter.x, checkerboardCenter.y}, Scalar(0,0,255), MARKER_CROSS, 20, 4, 4);
@@ -250,7 +206,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
             if(keyPressed == 'j'|| keyPressed == 'J' ){
                 cv::destroyWindow(vindue.str());
-                MoveArm urArm;
+                MoveRobot urArm;
                 double velocity = 0.08;
                 double acceleration = 0.08;
                 cv::Vec6f centerCamera;
@@ -266,18 +222,13 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
                 jointBaseFrame = urArm.getToCheckerboard(reciver, controller, 0, centerCamera, velocity, acceleration);
                 break;
-//                if(progress < 4){
-//                std::cout << "Inside loop. start Progress: " << progress << std::endl;
-//                //urArm.getToJob(reciver, controller, mRobotPoint3d, progress, velocity, acceleration);
-//                progress++;
-//                }
-//                imageNr++;
+
             } else if (keyPressed == 'a'|| keyPressed == 'A' ) { // Quit if Q is Pressed
                 /******* AUTO MODE ********/
                 calibrateRunTime = true;
                 //cv::destroyWindow(vindue.str());
                 //getSolvepnpRvecTvec(false);
-                MoveArm urArm;
+                MoveRobot urArm;
                 WorkspaceCalibration transMatrix;
 
                 cv::Vec6f followCDC;
@@ -297,28 +248,14 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
 
                 //imageNr++;
             }else if (keyPressed == 't'|| keyPressed == 'T' ) { // Quit if Q is Pressed
-
                 cv::destroyWindow(vindue.str());
-
                 //getSolvepnpRvecTvec(false);
-
-                MoveArm urArm;
+                MoveRobot urArm;
                 WorkspaceCalibration transMatrix;
                 //urArm.receiveJPose(reciver))
                 cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(jointBase) * transMatrix.getTransformationFlange2EndEffector() * transMatrix.getTransformationEndEffector2Camera();
-                //cv::Mat robotTransMatrix = transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver));
-                //* transMatrix.getTransformationEndEffector2Camera(); * transMatrix.getTransformationEndEffector2CameraHandEye();
                 //CALIB_HAND_EYE_TSAI, CALIB_HAND_EYE_PARK, CALIB_HAND_EYE_HORAUD, CALIB_HAND_EYE_ANDREFF, CALIB_HAND_EYE_DANIILIDIS
                 cv::Mat robotTvec = robotTransMatrix * OrigoPoint;
-                //std::cout << "Flange coor: " << transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) <<std::endl;
-                std::cout<< "RobotPoint: " << "\n" << transMatrix.getRobotTransformationMatrix(urArm.receiveJPose(reciver)) * transMatrix.getTransformationFlange2EndEffector()  <<endl;
-                std::cout<< "Grpper: " << "\n" << transMatrix.getTransformationFlange2EndEffector() <<endl;
-                std::cout<< "To camera: " << "\n" << transMatrix.getTransformationEndEffector2Camera() <<endl;
-
-                std::cout<< "OrigoPoint: " << OrigoPoint <<std::endl;
-                //std::cout << "Hand eye trans: " << "\n" << transMatrix.getTransformationFlange2CameraHandEye(65, 0) << std::endl;
-                //std::cout << "Cam to end effector: " << "\n" << transMatrix.getTransformationCamera2EndEffector(30, 1) << std::endl;
-                //std::cout << "Hand eye trans form visp: " << transMatrix.vispHandEyeCalibration(true) <<std::endl;
 
                 cv::Mat cameraTCPRM = (cv::Mat_<double>(3, 3) <<
                                         robotTransMatrix.at<double>(0,0), robotTransMatrix.at<double>(0,1), robotTransMatrix.at<double>(0,2),
@@ -326,10 +263,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                                         robotTransMatrix.at<double>(2,0), robotTransMatrix.at<double>(2,1), robotTransMatrix.at<double>(2,2));
 
                 Vec3f camerarvecRotation = ToRotVector(rotationMatrixToEulerAngles(cameraTCPRM));
-
-                //Mat robotRvec = (cv::Mat_<double>(3, 1) << camerarvecRotation[0] + (camerarvecRotation[0]-mRvec.at<double>(0,0)), camerarvecRotation[1] + (camerarvecRotation[1]-(-mRvec.at<double>(0,1))), camerarvecRotation[2] + (camerarvecRotation[2]-mRvec.at<double>(0,2)));
                 cv::Vec6f robotPoint;
-
                 robotPoint[0] = robotTvec.at<double>(0,0);
                 robotPoint[1] = robotTvec.at<double>(0,1);
                 robotPoint[2] = robotTvec.at<double>(0,2);
@@ -340,28 +274,21 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
                 std::cout << robotPoint << std::endl;
                 std::cout<< "Rotation: " << robotRvec[0] << robotRvec[1] << robotRvec[2] <<std::endl;
 
-
-
                 double velocity = 0.1;
                 double acceleration = 0.1;
                 moveFrame = urArm.getToPoseEstimation(reciver, controller, 0, robotPoint, velocity, acceleration);
 
                 //imageNr++;
             } else if (keyPressed == 'f'|| keyPressed == 'F' ) {
-            // f/F som i fuck mit liv
-
                 cv::destroyWindow(vindue.str());
                 getSolvepnpRvecTvec(true);
                 WorkspaceCalibration transMatrix;
-                //std::cout << "Hand eye trans form visp New: \n" << transMatrix.vispHandEyeCalibration(false) << std::endl;
-
-
 
             } else if (keyPressed == 'c'|| keyPressed == 'C' ) { // Quit if Q is Pressed
                 runSQ = true;
                 std::cout << "Shutting down camera..." << std::endl;
                 cv::destroyWindow(vindue.str());
-                MoveArm urArm;
+                MoveRobot urArm;
                 double velocity = 0.02;
                 double acceleration = 0.02;
                 //moveFrame = urArm.getToCheckerboard(reciver, controller, mRobotPoint3d, velocity, acceleration);
@@ -397,7 +324,7 @@ void DetectionMarker::action(Pylon::CInstantCamera& camera,  ur_rtde::RTDEReceiv
     }
 }
 
-void DetectionMarker::getCalibrationData(std::string fileLocation)
+void DetectionCheckerboard::getCalibrationData(std::string fileLocation)
 {
     std::ifstream ifs;
     ifs.open(fileLocation);
@@ -443,7 +370,7 @@ void DetectionMarker::getCalibrationData(std::string fileLocation)
     }
 }
 
-double DetectionMarker::lineLength(double sX, double sY, double eX, double eY){
+double DetectionCheckerboard::lineLength(double sX, double sY, double eX, double eY){
     double v1Coordinate, v2Coordinate;
     double vLength;
 
@@ -455,7 +382,7 @@ double DetectionMarker::lineLength(double sX, double sY, double eX, double eY){
     return vLength;
 }
 
-cv::Point2f DetectionMarker::centerPoint(cv::Vec4f line1, cv::Vec4f line2)
+cv::Point2f DetectionCheckerboard::centerPoint(cv::Vec4f line1, cv::Vec4f line2)
 {
     float cPX, cPY;
     cv::Point2f cPoint;
@@ -470,21 +397,17 @@ cv::Point2f DetectionMarker::centerPoint(cv::Vec4f line1, cv::Vec4f line2)
     return cPoint;
 }
 
-cv::Point2f DetectionMarker::vectorBetween2Points(cv::Point2f startPoint, cv::Point2f endPoint){
+cv::Point2f DetectionCheckerboard::vectorBetween2Points(cv::Point2f startPoint, cv::Point2f endPoint){
 
     cv::Point2f pointVector = {(endPoint.x - startPoint.x), (endPoint.y - startPoint.y)};
 
     return pointVector;
 }
 
-cv::Point3f DetectionMarker::vectorfromframeCPtoCBCp(cv::Point2i checkerBoardCP, cv::Point2i frameCP, double pixelPmm, double distanceObj){
+cv::Point3f DetectionCheckerboard::vectorfromframeCPtoCBCp(cv::Point2i checkerBoardCP, cv::Point2i frameCP, double pixelPmm, double distanceObj){
 
     Point2f robotPoint2d = vectorBetween2Points(checkerBoardCP, frameCP) * pixelPmm;
     Point3f robotPoint3d;
-
-//    robotPoint3d.x = (robotPoint2d.x + 16)/1000; // + 16 for translation between camera and tcp(gripper) in x axis
-//    robotPoint3d.y = (robotPoint2d.y + 43)/1000; // + 43 for translation between camera and tcp(gripper) in y axis
-//    robotPoint3d.z = (distanceObj - 129)/1000; // - 129 for translation between camera and tcp(gripper) in z axis
 
     robotPoint3d.x = (robotPoint2d.x)/1000;
     robotPoint3d.y = (robotPoint2d.y)/1000;
@@ -494,24 +417,24 @@ cv::Point3f DetectionMarker::vectorfromframeCPtoCBCp(cv::Point2i checkerBoardCP,
     return robotPoint3d;
 }
 
-double DetectionMarker::getDistance2Object(cv::Point2f origo, cv::Point2f dia){
+double DetectionCheckerboard::getDistance2Object(cv::Point2f origo, cv::Point2f dia){
     double focalL = 3316.188; //f = (pixel*distance)/width = (536.6*395.52/64)
     double widthObj = 64.03;
 
-    double distanceObj = (widthObj*focalL)/ DetectionMarker::lineLength(origo.x, origo.y, dia.x, dia.y);
+    double distanceObj = (widthObj*focalL)/ DetectionCheckerboard::lineLength(origo.x, origo.y, dia.x, dia.y);
 
     return distanceObj;
 }
 
-double DetectionMarker::getPixelPermm(cv::Point2f origo, cv::Point2f dia){
+double DetectionCheckerboard::getPixelPermm(cv::Point2f origo, cv::Point2f dia){
     double widthObj = 64.03;
 
-    double pixelPmm = widthObj / DetectionMarker::lineLength(origo.x, origo.y, dia.x, dia.y);
+    double pixelPmm = widthObj / DetectionCheckerboard::lineLength(origo.x, origo.y, dia.x, dia.y);
 
     return pixelPmm;
 }
 
-bool DetectionMarker::isRotationMatrix(cv::Mat &R)
+bool DetectionCheckerboard::isRotationMatrix(cv::Mat &R)
 {
     cv::Mat Rt;
     transpose(R, Rt);
@@ -522,7 +445,7 @@ bool DetectionMarker::isRotationMatrix(cv::Mat &R)
 
 }
 
-cv::Vec3f DetectionMarker::rotationMatrixToEulerAngles(cv::Mat &R)
+cv::Vec3f DetectionCheckerboard::rotationMatrixToEulerAngles(cv::Mat &R)
 {
 
     assert(isRotationMatrix(R));
@@ -548,7 +471,7 @@ cv::Vec3f DetectionMarker::rotationMatrixToEulerAngles(cv::Mat &R)
 
 }
 
-cv::Vec3f DetectionMarker::rpy2rv(cv::Vec3f rpy){
+cv::Vec3f DetectionCheckerboard::rpy2rv(cv::Vec3f rpy){
 
     float alpha = rpy[2];
     float beta = rpy[1];
@@ -585,7 +508,7 @@ cv::Vec3f DetectionMarker::rpy2rv(cv::Vec3f rpy){
     return rvec;
 }
 
-cv::Vec3f DetectionMarker::ToRotVector(cv::Vec3f rpy)
+cv::Vec3f DetectionCheckerboard::ToRotVector(cv::Vec3f rpy)
 {
      float roll = rpy[0];
      float pitch = rpy[1];
@@ -641,7 +564,7 @@ cv::Vec3f DetectionMarker::ToRotVector(cv::Vec3f rpy)
      return rotationVector;
 }
 
-bool DetectionMarker::writeFileTranRot (Mat tempRvec, Mat tempTvec){
+bool DetectionCheckerboard::writeFileTranRot (Mat tempRvec, Mat tempTvec){
     std::ofstream myfile;
     myfile.open ("../Detection/MarkertransposeData.txt");
     string matAsStringTempRvec (tempRvec.begin<unsigned char>(), tempRvec.end<unsigned char>());
@@ -655,7 +578,7 @@ bool DetectionMarker::writeFileTranRot (Mat tempRvec, Mat tempTvec){
 
 }
 
-void DetectionMarker::writeFileTranRot2 (std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec){
+void DetectionCheckerboard::writeFileTranRot2 (std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec){
     std::ofstream myfile;
     myfile.open ("../Detection/MarkertransposeData.txt", std::ios::app);
     for (size_t i = 0; i < tempRvec.size(); i++) {
@@ -666,7 +589,7 @@ void DetectionMarker::writeFileTranRot2 (std::vector<cv::Mat> tempRvec, std::vec
 
 }
 
-void DetectionMarker::writeFileTranRot3 (cv::Mat tempRvec){
+void DetectionCheckerboard::writeFileTranRot3 (cv::Mat tempRvec){
     std::ofstream myfile;
     myfile.open ("../Detection/RotationTransposeData.txt", std::ios::app);
         myfile << "--------------------" << std::endl
@@ -674,22 +597,19 @@ void DetectionMarker::writeFileTranRot3 (cv::Mat tempRvec){
     myfile.close();
 }
 
-void DetectionMarker::getSolvepnpRvecTvec(bool flagChangeInProcedureRotation){
+void DetectionCheckerboard::getSolvepnpRvecTvec(bool flagChangeInProcedureRotation){
 
     cv::Mat mapX, mapY;
     cv::Size patternSize(7 - 1, 6 - 1);//(13 - 1, 10 - 1);
     cv::Mat mRvec = cv::Mat(cv::Size(3, 1), CV_64F);
     cv::Mat mTvec = cv::Mat(cv::Size(3, 1), CV_64F);
 
-    cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, mCamerasettings.getResolution(), CV_32FC1, mapX, mapY);
+    cv::initUndistortRectifyMap(mCameraMatrix, mDistortionCoefficient, cv::Matx33f::eye(), mCameraMatrix, mCameraConfirguration.getResolution(), CV_32FC1, mapX, mapY);
 
 
     std::vector<cv::String> fileNames;
 
     cv::VideoCapture videoCap;
-
-    //videoCap = cv::VideoCapture("../imageResources/Image*.png", cv::CAP_IMAGES);
-
 
     cv::glob("../imageResources/Image*.png", fileNames, false); // Generate a list of all files that match the globbing pattern.
 
@@ -755,7 +675,7 @@ void DetectionMarker::getSolvepnpRvecTvec(bool flagChangeInProcedureRotation){
 
 }
 
-cv::Mat DetectionMarker::getEulerAngles(cv::Mat &rotCamerMatrix, cv::Vec3d &eulerAngles){
+cv::Mat DetectionCheckerboard::getEulerAngles(cv::Mat &rotCamerMatrix, cv::Vec3d &eulerAngles){
 
     cv::Mat cameraMatrix,rotMatrix,transVect,rotMatrixX,rotMatrixY,rotMatrixZ;
     double* _r = rotCamerMatrix.ptr<double>();
@@ -771,13 +691,5 @@ cv::Mat DetectionMarker::getEulerAngles(cv::Mat &rotCamerMatrix, cv::Vec3d &eule
                                rotMatrixY,
                                rotMatrixZ,
                                eulerAngles);
-//    std::cout << "rotCamerMatrix: " << "\n" << rotCamerMatrix << std::endl;
-//    std::cout << "cameraMatrix: " << "\n" << cameraMatrix << std::endl;
-//    std::cout << "rotMatrix: " << "\n" << rotMatrix << std::endl;
-//    std::cout << "transVect: " << "\n" << transVect << std::endl;
-//    std::cout << "rotMatrixX: " << "\n" << rotMatrixX << std::endl;
-//    std::cout << "rotMatrixY: " << "\n" << rotMatrixY << std::endl;
-//    std::cout << "rotMatrixZ: " << "\n" << rotMatrixZ << std::endl;
-//    std::cout << "eulerAngles: " << "\n"  << eulerAngles << std::endl;
     return rotMatrix;
 }

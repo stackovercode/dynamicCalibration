@@ -1,7 +1,7 @@
 #include "camera.h"
 
-Camera::Camera(CameraSettings cammeraSettings)
-    : mCamerasettings{cammeraSettings}{
+Camera::Camera(CameraConfirguration cammeraConfirguration)
+    : mCameraConfirguration{cammeraConfirguration}{
 }
 
 void Camera::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase){
@@ -20,14 +20,14 @@ void Camera::initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDECon
                       << ">> The available exposure range is [" << exposureTime->GetMin() << " - " << exposureTime->GetMax() << "] (us)" << std::endl;
         }
 
-        std::cout << "Trying to set exposure to: " << mCamerasettings.getExposure() << std::endl;
+        std::cout << "Trying to set exposure to: " << mCameraConfirguration.getExposure() << std::endl;
         std::cout << "Exposure changed from: " << exposureTime->GetValue();
         if(exposureTime.IsValid()){
-            if(mCamerasettings.getExposure() >= exposureTime->GetMin() && mCamerasettings.getExposure()<= exposureTime->GetMax()){
-                exposureTime->SetValue(mCamerasettings.getExposure());
-                std::cout << " To: " << mCamerasettings.getExposure() << std::endl;
+            if(mCameraConfirguration.getExposure() >= exposureTime->GetMin() && mCameraConfirguration.getExposure()<= exposureTime->GetMax()){
+                exposureTime->SetValue(mCameraConfirguration.getExposure());
+                std::cout << " To: " << mCameraConfirguration.getExposure() << std::endl;
             }
-            else if(mCamerasettings.getExposure() <= exposureTime->GetMin()){
+            else if(mCameraConfirguration.getExposure() <= exposureTime->GetMin()){
                 exposureTime->SetValue(exposureTime->GetMin());
                 std::cout << "To: " << exposureTime->GetValue() << std::endl;
                 std::cout << ">> Exposure was set to the minimum available value." << std::endl;

@@ -3,7 +3,7 @@
 #include <ur_rtde/rtde.h>
 #include <ur_rtde/rtde_receive_interface.h>
 #include <ur_rtde/rtde_control_interface.h>
-#include "moveArm.h"
+#include "moveRobot.h"
 #include "camera.h"
 #include <fstream>
 #include "algorithm"
@@ -16,31 +16,26 @@
 #include <opencv2/calib3d.hpp>
 #include <visp3/core/vpRxyzVector.h>
 #include <visp3/core/vpRotationMatrix.h>
-#include "detectionMarker.h"
+#include "detectionCheckerboard.h"
 #include <visp3/core/vpCameraParameters.h>
 
 
 class CameraCalibration : public Camera
 {
 public:
-    CameraCalibration( CameraSettings& cameraSettings, int verticalIntersections = 5, int horizontalIntersections = 6,
+    CameraCalibration( CameraConfirguration& cameraConfirguration, int verticalIntersections = 5, int horizontalIntersections = 6,
                                                        int squareSize = 10, int numberOfCalibrationImages = 25);
     virtual ~CameraCalibration() = default;
-
 
     void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase);
     std::string readVector(std::vector<double> result);
     std::string cameraCalibrationToString();
-
-    // Currently not in use:
-    void dataPacker(std::vector<std::vector<double>>); //mangeler et client parameter adder når det kan testes.
 
     cv::Mat getAngles(cv::Mat &rotCamerMatrix, cv::Vec3d &eulerAngles);
     void writeFileTranRot4 (cv::Mat tempRvec);
     void writeFileTranRot5 (std::vector<cv::Mat> tempRvec, std::vector<cv::Mat> tempTvec);
 
 private:
-
     std::vector<cv::Mat> tempRvec;
     std::vector<cv::Mat> tempTvec;
 
@@ -65,7 +60,6 @@ private:
     cv::Mat mTvec = cv::Mat(cv::Size(3, 1), CV_64F);
     std::vector<cv::Mat> mRvecArr, mTvecArr;
     cv::Mat gray;
-
     
     int mWidth;
     int mHeight;

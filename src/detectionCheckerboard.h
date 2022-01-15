@@ -1,25 +1,25 @@
-#ifndef DETECTIONMARKER_H
-#define DETECTIONMARKER_H
+#ifndef DETECTIONCHECKERBOARD_H
+#define DETECTIONCHECKERBOARD_H
 #include <ur_rtde/rtde.h>
 #include <ur_rtde/rtde_receive_interface.h>
 #include <ur_rtde/rtde_control_interface.h>
 #include "camera.h"
-#include "moveArm.h"
-#include "cameraSettings.h"
+#include "moveRobot.h"
+#include "cameraConfirguration.h"
 #include "workspaceCalibration.h"
 #include <fstream>
 #include <opencv2/videoio.hpp>
 #include <visp3/core/vpMath.h>
 
 
-class DetectionMarker : public Camera
+class DetectionCheckerboard : public Camera
 {
 public:
 
 
-    DetectionMarker( CameraSettings& cameraSettings, int verticalIntersections = 5, int horizontalIntersections = 6,
-                                                       int squareSize = 10, int numberOfCalibrationImages = 65);
-    virtual ~DetectionMarker() = default;
+    DetectionCheckerboard( CameraConfirguration& cameraConfirguration, int verticalIntersections = 5, int horizontalIntersections = 6,
+                                                       int squareSize = 10, int numberOfCalibrationImages = 25);
+    virtual ~DetectionCheckerboard() = default;
 
     void initialize(ur_rtde::RTDEReceiveInterface &reciver, ur_rtde::RTDEControlInterface &controller, cv::Vec6f jointBase, bool flagDetectMarker);
     void markerDet();
@@ -40,8 +40,6 @@ private:
     int mHorizontalIntersections;
     int mSquareSize;
     bool flagDetect;
-
-
 
     double mErrorRMS;
     cv::Matx33f mCameraMatrix;
@@ -89,4 +87,4 @@ private:
 
 };
 
-#endif // DETECTIONMARKER_H
+#endif // DETECTIONCHECKERBOARD_H

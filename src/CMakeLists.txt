@@ -47,7 +47,6 @@ ENDIF(CURL_FOUND)
 
 include_directories(
 	${Pylon_INCLUDE_DIRS}
-        #${CURL_INCLUDE_DIR}
         ${ROBWORK_INCLUDE_DIRS}
         ${Qt5Widgets_INCLUDE_DIRS}
         ${Qt5Core_INCLUDE_DIRS}
@@ -57,7 +56,6 @@ include_directories(
 add_definitions(${Qt5Widgets_DEFINITIONS})
 
 LINK_DIRECTORIES(
-        #${Boost_LIBRARY_DIR}
 	${ROBWORK_LIBRARY_DIRS})
 
 set(QT_LIBRARIES Qt5::Widgets)
@@ -68,19 +66,15 @@ add_executable( main
     main.cpp
     camera.cpp
     camera.h
-    cameraSettings.h
+    cameraConfirguration.h
     cameraCalibration.cpp
     cameraCalibration.h
-    #detectionObject.cpp
-    #detectionObject.h
     workspaceCalibration.cpp
     workspaceCalibration.h
-    detectionMarker.cpp
-    detectionMarker.h
-    moveArm.cpp
-    moveArm.h
-    #myHTTPClient.cpp
-    #myHTTPClient.h
+    detectionCheckerboard.cpp
+    detectionCheckerboard.h
+    moveRobot.cpp
+    moveRobot.h
     socket.cpp
     socket.h
     mytcpserver.cpp
@@ -91,9 +85,6 @@ target_link_libraries( main
         #${OpenCV_LIBS}
 	${Pylon_LIBRARIES} 
 	${ADDITIONAL_LINK_LIBRARIES}
-        #${Boost_SYSTEM_LIBRARY}
-        #${Boost_FILESYSTEM_LIBRARY}
-        #${CURLPP_LDFLAGS}
         ${ROBWORK_LIBRARIES}
         ${VISP_LIBRARIES}
         )

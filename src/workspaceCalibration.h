@@ -7,7 +7,6 @@
 #include <ur_rtde/rtde_receive_interface.h>
 #include <ur_rtde/rtde_control_interface.h>
 #include "camera.h"
-#include "detectionObject.h"
 #include "cameraCalibration.h"
 #include <visp3/vision/vpHandEyeCalibration.h>
 #include <visp3/core/vpHomogeneousMatrix.h>
@@ -16,21 +15,15 @@
 #include <visp3/core/vpMath.h>
 #include <visp3/core/vpRotationMatrix.h>
 
-
-// Not done or in use
 class WorkspaceCalibration
 {
 public:
-
 
     WorkspaceCalibration();
 
     ~WorkspaceCalibration();
 
-//    WorkspaceCalibration(CameraSettings& cameraSettings, DetectionObject& detectionObject);
-
     cv::Mat initialize(ur_rtde::RTDEReceiveInterface &reciver,ur_rtde::RTDEControlInterface &controller, double lengthXmm, double lengthYmm, cv::Vec6f robotJointAngels);
-
 
     std::string transformationMatrixToString();
 
@@ -53,12 +46,9 @@ public:
     void loadFileRobotJoint(std::string fileLocation);
     void loadFileRobotTCP(std::string fileLocation);
 
-    //std::vector<double> targetPointTransform(std::vector<double> startPoint, std::vector<double> targetPoint);
     void loadFileImagePoints(std::string filepath);
 
 protected:
-    //DetectionObject mDetectionObject;
-
     double mErrorRMS;
     cv::Matx33f mCameraMatrix;
     std::vector<double> mRotMatrix;
@@ -73,7 +63,6 @@ protected:
     cv::Matx31d mTvec;
 
     std::vector<cv::Mat> mTcpPose;
-    //mJointPose ikke i brug
     std::vector<cv::Mat> mJointPose;
     std::vector<cv::Mat> mR_target2cam;
     std::vector<cv::Mat> mT_target2cam;
