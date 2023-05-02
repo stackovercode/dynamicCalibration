@@ -1,4 +1,2 @@
-# dynamicCalibration
-
-# Final Project Diploma in Robot systems
+# Bachelor thesis in Robot systems at University of sourthen Denmark
 dynamicCalibration_FinalProject2022
